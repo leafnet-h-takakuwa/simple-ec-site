@@ -17,10 +17,12 @@ new #[Layout('components.layouts.auth')] class extends Component {
             'password' => ['required', 'string'],
         ]);
 
-        if (! Auth::guard('web')->validate([
-            'email' => Auth::user()->email,
-            'password' => $this->password,
-        ])) {
+        if (
+            !Auth::guard('web')->validate([
+                'email' => Auth::user()->email,
+                'password' => $this->password,
+            ])
+        ) {
             throw ValidationException::withMessages([
                 'password' => __('auth.password'),
             ]);
@@ -28,15 +30,13 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
         session(['auth.password_confirmed_at' => time()]);
 
-        $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
+        $this->redirectIntended(default: route('home', absolute: false), navigate: true);
     }
 }; ?>
 
 <div class="flex flex-col gap-6">
-    <x-auth-header
-        title="Confirm password"
-        description="This is a secure area of the application. Please confirm your password before continuing."
-    />
+    <x-auth-header title="Confirm password"
+        description="This is a secure area of the application. Please confirm your password before continuing." />
 
     <!-- Session Status -->
     <x-auth-session-status class="text-center" :status="session('status')" />
@@ -44,16 +44,8 @@ new #[Layout('components.layouts.auth')] class extends Component {
     <form wire:submit="confirmPassword" class="flex flex-col gap-6">
         <!-- Password -->
         <div class="grid gap-2">
-            <flux:input
-                wire:model="password"
-                id="password"
-                label="{{ __('Password') }}"
-                type="password"
-                name="password"
-                required
-                autocomplete="new-password"
-                placeholder="Password"
-            />
+            <flux:input wire:model="password" id="password" label="{{ __('Password') }}" type="password" name="password"
+                required autocomplete="new-password" placeholder="Password" />
         </div>
 
         <flux:button variant="primary" type="submit" class="w-full">{{ __('Confirm') }}</flux:button>

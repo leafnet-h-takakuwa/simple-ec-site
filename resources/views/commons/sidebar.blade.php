@@ -8,28 +8,21 @@
     <ul class="menu w-full gap-1 p-0">
 
         <li>
-            <a href="#" class="rounded-lg">
+            <a href="{{ route('products.index') }}"
+                class="rounded-lg {{ request()->routeIs('products.index') && request()->query('category') === null ? 'menu-active' : '' }}">
                 すべての商品
             </a>
         </li>
 
-        <li>
-            <a href="#" class="rounded-lg">
-                すじこ
-            </a>
-        </li>
-
-        <li>
-            <a href="#" class="rounded-lg">
-                たらこ
-            </a>
-        </li>
-
-        <li>
-            <a href="#" class="rounded-lg">
-                その他の商品
-            </a>
-        </li>
+        {{-- カテゴリ別リンク --}}
+        @foreach (\App\Enums\ProductCategory::cases() as $category)
+            <li>
+                <a href="{{ route('products.index', ['category' => $category->value]) }}"
+                    class="rounded-lg {{ request()->routeIs('products.index') && request()->query('category') === $category->value ? 'menu-active' : '' }}">
+                    {{ $category->label() }}
+                </a>
+            </li>
+        @endforeach
 
     </ul>
 

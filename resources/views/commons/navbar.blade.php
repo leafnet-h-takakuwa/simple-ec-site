@@ -14,7 +14,7 @@
         <div class="flex-none">
             <ul class="menu menu-horizontal items-center gap-1 p-0">
 
-                {{-- ホーム --}}
+                {{-- TOP --}}
                 <li>
                     <a href="{{ route('home') }}" aria-label="ホーム" @class(['gap-2', 'menu-active' => request()->routeIs('home')])>
                         <svg xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0" fill="none"
@@ -23,13 +23,13 @@
                             <path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z" />
                             <path d="M9 21v-8h6v8" />
                         </svg>
-                        <span class="hidden sm:inline">ホーム</span>
+                        <span class="hidden sm:inline">TOP</span>
                     </a>
                 </li>
 
                 {{-- 商品一覧　--}}
                 <li>
-                    <a href="#" class="gap-2">
+                    <a href="{{ route('products.index') }}" class="gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0" fill="none"
                             viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
                             stroke-linejoin="round">

@@ -23,7 +23,7 @@
                     毎日の食卓に、ちょっとした贅沢を。
                 </p>
 
-                <a href="#" class="btn btn-neutral">
+                <a href="{{ route('products.index') }}" class="btn btn-neutral">
                     商品一覧を見る
                     <span aria-hidden="true">→</span>
                 </a>
@@ -63,33 +63,31 @@
 
         <div class="grid grid-cols-1 gap-5 sm:grid-cols-3">
 
-            @foreach (['魚卵', 'ヤマモト食品', 'その他の商品'] as $category)
-                <a href="#"
+            @foreach ($categories as $category)
+                <a href="{{ route('products.index', ['category' => $category->value]) }}"
                     class="group overflow-hidden rounded-xl border border-base-300 bg-base-100 transition hover:shadow-md">
 
                     {{-- 仮カテゴリ画像 --}}
                     <svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg" class="w-full" role="img"
-                        aria-label="{{ $category }}の仮画像">
+                        aria-label="{{ $category->label() }}の仮画像" <rect width="400" height="260" fill="#e5e7eb" />
 
-                        <rect width="400" height="260" fill="#e5e7eb" />
+                    <rect x="120" y="55" width="160" height="120" rx="12" fill="none" stroke="#9ca3af"
+                        stroke-width="7" />
 
-                        <rect x="120" y="55" width="160" height="120" rx="12" fill="none" stroke="#9ca3af"
-                            stroke-width="7" />
+                    <circle cx="165" cy="95" r="15" fill="#9ca3af" />
 
-                        <circle cx="165" cy="95" r="15" fill="#9ca3af" />
+                    <path d="M130 160 L175 115 L210 145 L240 120 L270 160" fill="none" stroke="#9ca3af" stroke-width="7"
+                        stroke-linejoin="round" />
 
-                        <path d="M130 160 L175 115 L210 145 L240 120 L270 160" fill="none" stroke="#9ca3af"
-                            stroke-width="7" stroke-linejoin="round" />
-
-                        <text x="200" y="220" text-anchor="middle" fill="#6b7280" font-size="18">
-                            {{ $category }}
-                        </text>
+                    <text x="200" y="220" text-anchor="middle" fill="#6b7280" font-size="18">
+                        {{ $category->label() }}
+                    </text>
 
                     </svg>
 
                     <div class="flex items-center justify-between p-4">
                         <h3 class="font-bold">
-                            {{ $category }}
+                            {{ $category->label() }}
                         </h3>
 
                         <span class="transition group-hover:translate-x-1">

@@ -201,9 +201,9 @@
                     ← お買い物を続ける
                 </a>
 
-                <button type="button" class="btn btn-primary w-full sm:w-auto sm:min-w-64" disabled>
+                <a href="{{ route('orders.create') }}" class="btn btn-primary w-full sm:w-auto sm:min-w-64">
                     注文手続きへ進む →
-                </button>
+                </a>
 
             </div>
         @endif

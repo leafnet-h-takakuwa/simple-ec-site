@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Enums\OrderStatus;
+use App\Enums\PaymentMethod;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
@@ -23,6 +24,7 @@ class OrderSeeder extends Seeder
             [
                 'user_id' => $user->id,
                 'status' => OrderStatus::RECEIVED,
+                'payment_method' => PaymentMethod::CashOnDelivery,
                 'orderer_name' => 'テストユーザー',
                 'orderer_postal_code' => '030-0801',
                 'orderer_address' => '青森県青森市新町1-1-1',
@@ -40,6 +42,7 @@ class OrderSeeder extends Seeder
             [
                 'user_id' => null,
                 'status' => OrderStatus::PREPARING,
+                'payment_method' => PaymentMethod::CashOnDelivery,
                 'orderer_name' => '青森 太郎',
                 'orderer_postal_code' => '036-8003',
                 'orderer_address' => '青森県弘前市駅前町2-2-2',
@@ -57,6 +60,7 @@ class OrderSeeder extends Seeder
             [
                 'user_id' => $user->id,
                 'status' => OrderStatus::SHIPPED,
+                'payment_method' => PaymentMethod::BankTransfer,
                 'orderer_name' => 'テストユーザー',
                 'orderer_postal_code' => '030-0801',
                 'orderer_address' => '青森県青森市新町1-1-1',
@@ -75,6 +79,7 @@ class OrderSeeder extends Seeder
             [
                 'user_id' => null,
                 'status' => OrderStatus::RECEIVED,
+                'payment_method' => PaymentMethod::CashOnDelivery,
                 'orderer_name' => '弘前 次郎',
                 'orderer_postal_code' => '036-8004',
                 'orderer_address' => '青森県弘前市大町4-4-4',
@@ -92,6 +97,7 @@ class OrderSeeder extends Seeder
             [
                 'user_id' => $user->id,
                 'status' => OrderStatus::PREPARING,
+                'payment_method' => PaymentMethod::CashOnDelivery,
                 'orderer_name' => 'テストユーザー',
                 'orderer_postal_code' => '030-0801',
                 'orderer_address' => '青森県青森市新町1-1-1',

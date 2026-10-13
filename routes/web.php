@@ -7,6 +7,7 @@ use App\Models\Product;
 
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\OrderController;
 use App\Enums\ProductCategory;
 
 
@@ -43,6 +44,12 @@ Route::patch('/carts/{product_id}', [CartController::class, 'update'])
     ->name('carts.update');
 Route::delete('/carts/{product_id}', [CartController::class, 'destroy'])
     ->name('carts.destroy');
+
+// 注文
+Route::get('/orders/create', [OrderController::class, 'create'])
+    ->name('orders.create');
+Route::post('/orders/confirm', [OrderController::class, 'confirm'])
+    ->name('orders.confirm');
 
 /**
  * 一般会員向け要認証ルート

@@ -110,7 +110,7 @@
                             </select>
                         </div>
 
-                        <button type="submit" class="btn btn-neutral w-full">
+                        <button type="submit" class="btn btn-primary w-full">
                             カートに入れる
                         </button>
                     </form>

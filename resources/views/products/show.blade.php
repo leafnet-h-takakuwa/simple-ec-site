@@ -94,29 +94,26 @@
 
                     </div>
                 @else
-                    {{-- 数量選択 --}}
-                    <div class="mb-6 flex items-center gap-5">
+                    <form action="{{ route('carts.store') }}" method="POST">
+                        <div class="mb-6 flex items-center gap-5">
+                            {{-- 数量選択 --}}
+                            <label for="quantity" class="font-bold">
+                                数量
+                            </label>
 
-                        <label for="quantity" class="font-bold">
-                            数量
-                        </label>
+                            @csrf
+                            <input type="hidden" name="product_id" value="{{ $product->id }}">
+                            <select name="quantity" class="select select-bordered">
+                                @for ($i = 1; $i <= 10; $i++)
+                                    <option value="{{ $i }}">{{ $i }}</option>
+                                @endfor
+                            </select>
+                        </div>
 
-                        <select id="quantity" name="quantity" class="select select-bordered w-28">
-
-                            @for ($i = 1; $i <= 10; $i++)
-                                <option value="{{ $i }}">
-                                    {{ $i }}
-                                </option>
-                            @endfor
-
-                        </select>
-
-                    </div>
-
-                    {{-- カート機能実装時に有効化 --}}
-                    <button type="button" class="btn btn-neutral w-full" disabled>
-                        カートに入れる（準備中）
-                    </button>
+                        <button type="submit" class="btn btn-neutral w-full">
+                            カートに入れる
+                        </button>
+                    </form>
                 @endif
 
             </div>

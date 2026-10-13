@@ -1,0 +1,227 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+use App\Models\Cart;
+use App\Models\CartItem;
+use App\Models\Product;
+
+class CartController extends Controller
+{
+    public function index(Request $request)
+    {
+        $cart_items = collect(); // 空のCollection
+
+        // ログインしてるか
+        if (Auth::check()) {
+            // 管理者なら表示しない
+            if (Auth::user()->is_admin === true) {
+                abort(403);
+            }
+
+            // カート情報取得
+            $cart = Cart::where('user_id', Auth::id())->first();
+            if ($cart !== null) {
+                // 存在するなら取得
+                $cart_items = CartItem::with('product')
+                    ->where('cart_id', $cart->id)
+                    ->whereHas('product', function ($query) {
+                        $query->where('is_active', true);
+                    })
+                    ->get();
+            }
+        } else {
+            // セッションからカート情報を取得
+            $session_cart = $request->session()->get('cart', []);
+
+            foreach ($session_cart as $product_id => $quantity) {
+                // 商品情報をDBから取得
+                $product = Product::where('id', $product_id)
+                    ->where('is_active', true)
+                    ->first();
+
+                if ($product !== null) {
+                    // 会員カートと同じように参照できる形式にする
+                    $cart_item = new CartItem();
+                    $cart_item->product_id = $product->id;
+                    $cart_item->quantity = $quantity;
+                    $cart_item->setRelation('product', $product);
+
+                    $cart_items->push($cart_item);
+                }
+            }
+        }
+        return view('carts.index', [
+            'cart_items' => $cart_items,
+        ]);
+    }
+
+
+    public function store(Request $request)
+    {
+        // 入力値のバリデーション
+        $validated = $request->validate([
+            'product_id' => ['required', 'integer', 'exists:products,id'],
+            'quantity' => ['required', 'integer', 'min:1', 'max:10'],
+        ]);
+
+        $product_id = $validated['product_id'];
+        $quantity = $validated['quantity'];
+
+        // 商品が販売中か確認
+        $product = Product::where('id', $product_id)
+            ->where('is_active', true)
+            ->firstOrFail();
+
+        if (Auth::check()) {
+            // 管理者は購入不可
+            if (Auth::user()->is_admin === true) {
+                abort(403);
+            }
+
+            // 会員のカートを取得
+            $cart = Cart::where('user_id', Auth::id())->first();
+
+            // カートがなければ作成
+            if ($cart === null) {
+                $cart = Cart::create([
+                    'user_id' => Auth::id(),
+                ]);
+            }
+
+            // 同じ商品がカートに存在するか確認
+            $cart_item = CartItem::where('cart_id', $cart->id)
+                ->where('product_id', $product_id)
+                ->first();
+
+            if ($cart_item !== null) {
+                // 既存の商品なら数量を加算
+                if ($cart_item->quantity + $quantity > 10) {
+                    return back()->with('error', '同じ商品は10個までカートに入れられます。');
+                }
+                $cart_item->quantity += $quantity;
+                $cart_item->save();
+            } else {
+                // 新しい商品なら明細を作成
+                CartItem::create([
+                    'cart_id' => $cart->id,
+                    'product_id' => $product_id,
+                    'quantity' => $quantity,
+                ]);
+            }
+        } else {
+            // ゲストのカートをセッションから取得
+            $session_cart = $request->session()->get('cart', []);
+
+            // 同じ商品が存在するか確認
+            if (isset($session_cart[$product_id])) {
+                // 既存の商品なら数量を加算
+                if ($session_cart[$product_id] + $quantity > 10) {
+                    return back()->with('error', '同じ商品は10個までカートに入れられます。');
+                }
+                $session_cart[$product_id] += $quantity;
+            } else {
+                // 新しい商品なら追加
+                $session_cart[$product_id] = $quantity;
+            }
+
+            // セッションに保存
+            $request->session()->put('cart', $session_cart);
+        }
+
+        // カート画面へ移動
+        return redirect()->route('carts.index')
+            ->with('success', '商品をカートに追加しました。');
+    }
+
+
+    public function update(Request $request, $product_id)
+    {
+        // 数量のバリデーション
+        $validated = $request->validate([
+            'quantity' => ['required', 'integer', 'min:1', 'max:10'],
+        ]);
+
+        $quantity = $validated['quantity'];
+
+        if (Auth::check()) {
+            // 管理者は操作禁止
+            if (Auth::user()->is_admin === true) {
+                abort(403);
+            }
+
+            // ログインユーザーのカートを取得
+            $cart = Cart::where('user_id', Auth::id())->firstOrFail();
+
+            // カート内の対象商品を取得
+            $cart_item = CartItem::where('cart_id', $cart->id)
+                ->where('product_id', $product_id)
+                ->firstOrFail();
+
+            // 数量を更新
+            $cart_item->quantity = $quantity;
+            $cart_item->save();
+        } else {
+            // ゲストのカートをセッションから取得
+            $session_cart = $request->session()->get('cart', []);
+
+            // 対象商品がカートに存在するか確認
+            if (!isset($session_cart[$product_id])) {
+                abort(404);
+            }
+
+            // 数量を更新
+            $session_cart[$product_id] = $quantity;
+
+            // セッションに保存
+            $request->session()->put('cart', $session_cart);
+        }
+
+        // カート画面へ戻る
+        return redirect()->route('carts.index')
+            ->with('success', 'カートの数量を変更しました。');
+    }
+
+
+    public function destroy(Request $request, $product_id)
+    {
+        if (Auth::check()) {
+            // 管理者は操作禁止
+            if (Auth::user()->is_admin === true) {
+                abort(403);
+            }
+
+            // ログインユーザーのカートを取得
+            $cart = Cart::where('user_id', Auth::id())->firstOrFail();
+
+            // カート内の対象商品を取得
+            $cart_item = CartItem::where('cart_id', $cart->id)
+                ->where('product_id', $product_id)
+                ->firstOrFail();
+
+            // カートから商品を削除
+            $cart_item->delete();
+        } else {
+            // ゲストのカートをセッションから取得
+            $session_cart = $request->session()->get('cart', []);
+
+            // 対象商品が存在するか確認
+            if (!isset($session_cart[$product_id])) {
+                abort(404);
+            }
+
+            // 対象商品を削除
+            unset($session_cart[$product_id]);
+
+            // セッションに保存
+            $request->session()->put('cart', $session_cart);
+        }
+
+        // カート画面へ戻る
+        return redirect()->route('carts.index')
+            ->with('success', '商品をカートから削除しました。');
+    }
+}

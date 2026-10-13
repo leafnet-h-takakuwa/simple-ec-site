@@ -6,7 +6,7 @@ use Livewire\Volt\Volt;
 use App\Models\Product;
 
 use App\Http\Controllers\ProductController;
-
+use App\Http\Controllers\CartController;
 use App\Enums\ProductCategory;
 
 
@@ -32,8 +32,17 @@ Route::get('/', function () {
 // 商品一覧
 Route::get('/products', [ProductController::class, 'index'])
     ->name('products.index');
-// 商品詳細
 Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
+
+// カート
+Route::get('/carts', [CartController::class, 'index'])
+    ->name('carts.index');
+Route::post('/carts', [CartController::class, 'store'])
+    ->name('carts.store');
+Route::patch('/carts/{product_id}', [CartController::class, 'update'])
+    ->name('carts.update');
+Route::delete('/carts/{product_id}', [CartController::class, 'destroy'])
+    ->name('carts.destroy');
 
 /**
  * 一般会員向け要認証ルート

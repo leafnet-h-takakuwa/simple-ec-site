@@ -18,7 +18,13 @@ class OrderController extends Controller
             'orderer_name' => ['nullable', 'string', 'max:255'],
             'date_from' => ['nullable', 'date_format:Y-m-d'],
             'date_to' => ['nullable', 'date_format:Y-m-d', 'after_or_equal:date_from'],
-            'status' => ['nullable', Rule::enum(OrderStatus::class)],
+            'status' => [
+                'nullable',
+                Rule::in([
+                    'active',
+                    ...array_column(OrderStatus::cases(), 'value'),
+                ]),
+            ],
         ]);
 
         $query = Order::query();
@@ -49,7 +55,15 @@ class OrderController extends Controller
 
         // ステータス
         if (!empty($conditions['status'])) {
-            $query->where('status', $conditions['status']);
+            if ($conditions['status'] === 'active') {
+                $query->whereIn('status', [
+                    OrderStatus::RECEIVED->value,
+                    OrderStatus::AWAITING_PAYMENT->value,
+                    OrderStatus::PREPARING->value,
+                ]);
+            } else {
+                $query->where('status', $conditions['status']);
+            }
         }
 
         // 新しい順に10件ずつ取得

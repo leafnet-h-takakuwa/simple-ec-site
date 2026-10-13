@@ -19,11 +19,13 @@
 
         {{-- 進行中の注文 --}}
         <div class="rounded-xl border border-slate-200 bg-white p-4 lg:p-6">
-            <h2 class="text-sm font-bold lg:text-base">進行中の注文</h2>
-            <p class="mt-4 text-3xl font-bold text-green-800 lg:text-4xl">
-                {{ number_format($active_orders) }}
-                <span class="text-sm font-normal text-slate-500">件</span>
-            </p>
+            <h2 class="text-sm font-bold lg:text-base">対応中の注文</h2>
+            <a href="{{ route('admin.orders.index', ['status' => 'active']) }}">
+                <p class="mt-4 text-3xl font-bold text-green-800 lg:text-4xl">
+                    {{ number_format($active_orders) }}
+                    <span class="text-sm font-normal text-slate-500">件</span>
+                </p>
+            </a>
             <p class="mt-3 text-xs text-slate-500">
                 受付・入金待ち・発送準備中
             </p>
@@ -32,22 +34,27 @@
         {{-- 直近7日間の注文 --}}
         <div class="rounded-xl border border-slate-200 bg-white p-4 lg:p-6">
             <h2 class="text-sm font-bold lg:text-base">直近7日間の注文</h2>
-            <p class="mt-4 text-3xl font-bold text-green-800 lg:text-4xl">
-                {{ number_format($recent_orders) }}
-                <span class="text-sm font-normal text-slate-500">件</span>
-            </p>
+            <a href="{{ route('admin.orders.index', ['date_from' => now()->subDays(7)->toDateString()]) }}">
+                <p class="mt-4 text-3xl font-bold text-green-800 lg:text-4xl">
+                    {{ number_format($recent_orders) }}
+                    <span class="text-sm font-normal text-slate-500">件</span>
+                </p>
+            </a>
             <p class="mt-3 text-xs text-slate-500">
                 過去7日間の受付件数
             </p>
         </div>
+        </a>
 
         {{-- 全注文 --}}
         <div class="rounded-xl border border-slate-200 bg-white p-4 lg:p-6">
             <h2 class="text-sm font-bold lg:text-base">全注文</h2>
-            <p class="mt-4 text-3xl font-bold text-green-800 lg:text-4xl">
-                {{ number_format($total_orders) }}
-                <span class="text-sm font-normal text-slate-500">件</span>
-            </p>
+            <a href="{{ route('admin.orders.index') }}">
+                <p class="mt-4 text-3xl font-bold text-green-800 lg:text-4xl">
+                    {{ number_format($total_orders) }}
+                    <span class="text-sm font-normal text-slate-500">件</span>
+                </p>
+            </a>
             <p class="mt-3 text-xs text-slate-500">
                 これまでの累計件数
             </p>
@@ -56,10 +63,12 @@
         {{-- 発送済み --}}
         <div class="rounded-xl border border-slate-200 bg-white p-4 lg:p-6">
             <h2 class="text-sm font-bold lg:text-base">発送済みの注文</h2>
-            <p class="mt-4 text-3xl font-bold text-green-800 lg:text-4xl">
-                {{ number_format($shipped_orders) }}
-                <span class="text-sm font-normal text-slate-500">件</span>
-            </p>
+            <a href="{{ route('admin.orders.index', ['status' => \App\Enums\OrderStatus::SHIPPED->value]) }}">
+                <p class="mt-4 text-3xl font-bold text-green-800 lg:text-4xl">
+                    {{ number_format($shipped_orders) }}
+                    <span class="text-sm font-normal text-slate-500">件</span>
+                </p>
+            </a>
             <p class="mt-3 text-xs text-slate-500">
                 発送済みの累計件数
             </p>
@@ -98,9 +107,11 @@
             </div>
 
             <div class="rounded-xl border border-slate-200 p-5">
-                <div class="font-bold text-green-800">
-                    注文管理へ →
-                </div>
+                <a href="{{ route('admin.orders.index') }}">
+                    <div class="font-bold text-green-800">
+                        注文管理へ →
+                    </div>
+                </a>
                 <p class="mt-2 text-sm text-slate-500">
                     注文詳細・発送状況の更新
                 </p>

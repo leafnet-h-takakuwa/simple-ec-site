@@ -66,6 +66,10 @@
                 <select id="status" name="status" class="select w-full">
                     <option value="">すべて</option>
 
+                    <option value="active" @selected(($conditions['status'] ?? '') === 'active')>
+                        対応中（発送済み以外）
+                    </option>
+
                     @foreach ($statuses as $status)
                         <option value="{{ $status->value }}" @selected(old('status', $conditions['status'] ?? '') === $status->value)>
                             {{ $status->label() }}
@@ -95,6 +99,11 @@
         <span class="text-sm text-slate-500">
             注文日：新しい順 ↓
         </span>
+    </div>
+
+    {{-- ページネーション --}}
+    <div class="mt-6">
+        {{ $orders->links() }}
     </div>
 
     {{-- PC：テーブル表示 --}}
@@ -152,7 +161,7 @@
 
                 <div class="flex items-center justify-between gap-3">
                     <span class="font-bold">
-                        #{{ sprintf('%08d', $order->id) }}
+                        注文番号 #{{ sprintf('%08d', $order->id) }}
                     </span>
 
                     <span class="text-sm text-slate-500">
@@ -192,9 +201,4 @@
             該当する注文はありません。
         </div>
     @endif
-
-    {{-- ページネーション --}}
-    <div class="mt-6">
-        {{ $orders->links() }}
-    </div>
 @endsection

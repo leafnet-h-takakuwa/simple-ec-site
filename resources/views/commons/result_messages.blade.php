@@ -14,11 +14,15 @@
             </div>
         @endif
 
-        @foreach ($errors->all() as $error)
+        @if ($errors->any())
             <div role="alert" class="alert alert-error shadow-lg">
-                <span>{{ $error }}</span>
+                <div>
+                    @foreach ($errors->all() as $error)
+                        <p>{{ $error }}</p>
+                    @endforeach
+                </div>
             </div>
-        @endforeach
+        @endif
 
     </div>
 

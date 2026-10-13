@@ -50,6 +50,12 @@ Route::get('/orders/create', [OrderController::class, 'create'])
     ->name('orders.create');
 Route::post('/orders/confirm', [OrderController::class, 'confirm'])
     ->name('orders.confirm');
+Route::get('/orders/confirm', [OrderController::class, 'showConfirm'])
+    ->name('orders.confirm.show');
+Route::post('/orders', [OrderController::class, 'store'])
+    ->name('orders.store');
+Route::get('/orders/complete', [OrderController::class, 'complete'])
+    ->name('orders.complete');
 
 /**
  * 一般会員向け要認証ルート

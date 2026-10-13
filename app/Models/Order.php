@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\OrderStatus;
+use App\Enums\PaymentMethod;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -16,6 +17,7 @@ class Order extends Model
     protected $fillable = [
         'user_id',
         'status',
+        'payment_method',
         'total_amount',
         'orderer_name',
         'orderer_postal_code',
@@ -32,6 +34,7 @@ class Order extends Model
     {
         return [
             'status' => OrderStatus::class,
+            'payment_method' => PaymentMethod::class,
             'total_amount' => 'integer',
         ];
     }

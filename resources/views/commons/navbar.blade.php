@@ -14,6 +14,29 @@
         <div class="flex-none">
             <ul class="menu menu-horizontal items-center gap-1 p-0">
 
+                @if (Auth::check() && Auth::user()->is_admin)
+                    {{-- 管理者ページ --}}
+                    <li>
+                        <a href="{{ route('admin.dashboard') }}" aria-label="管理画面" @class(['gap-2', 'menu-active' => request()->routeIs('admin.*')])>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z
+                       M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.86 2.86-.06-.06
+                       A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1.2 1.56V21h-4v-.04
+                       A1.7 1.7 0 0 0 8.6 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06
+                       -2.86-2.86.06-.06A1.7 1.7 0 0 0 4.6 15 1.7 1.7 0 0 0 3.04 13.8H3v-4h.04
+                       A1.7 1.7 0 0 0 4.6 8.6a1.7 1.7 0 0 0-.34-1.88l-.06-.06
+                       2.86-2.86.06.06A1.7 1.7 0 0 0 9 4.6 1.7 1.7 0 0 0 10.2 3.04V3h4v.04
+                       A1.7 1.7 0 0 0 15.4 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06
+                       2.86 2.86-.06.06A1.7 1.7 0 0 0 19.4 9a1.7 1.7 0 0 0 1.56 1.2H21v4h-.04
+                       A1.7 1.7 0 0 0 19.4 15Z" />
+                            </svg>
+                            <span class="hidden sm:inline">管理画面</span>
+                        </a>
+                    </li>
+                @endif
+
                 {{-- TOP --}}
                 <li>
                     <a href="{{ route('home') }}" aria-label="ホーム" @class(['gap-2', 'menu-active' => request()->routeIs('home')])>
@@ -106,8 +129,8 @@
                                 <button type="submit"
                                     class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-error hover:bg-error/10">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="size-5" fill="none"
-                                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-                                        stroke-linejoin="round">
+                                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"
+                                        stroke-linecap="round" stroke-linejoin="round">
                                         <path d="M10 17l5-5-5-5" />
                                         <path d="M15 12H3" />
                                         <path d="M12 3h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7" />
@@ -120,8 +143,8 @@
                         {{-- ログイン --}}
                         <li>
                             <a href="{{ route('login') }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="size-5" fill="none" viewBox="0 0 24 24"
-                                    stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                                <svg xmlns="http://www.w3.org/2000/svg" class="size-5" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
                                     stroke-linejoin="round">
                                     <path d="m10 17 5-5-5-5" />
                                     <path d="M15 12H3" />

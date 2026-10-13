@@ -2,14 +2,14 @@
 
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
-
 use App\Models\Product;
-
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Enums\ProductCategory;
-
+use App\Http\Middleware\EnsureUserIsAdmin;
+use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 
 /**
  * 認証不要ルート
@@ -68,5 +68,18 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/password', 'settings.password')->name('settings.password');
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
 });
+
+/**
+ * 管理者向け要認証ルート
+ */
+Route::middleware(['auth', EnsureUserIsAdmin::class])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+        Route::get('/', [DashboardController::class, 'index'])
+            ->name('dashboard');
+        Route::get('/orders', [AdminOrderController::class, 'index'])
+            ->name('orders.index');
+    });
 
 require __DIR__ . '/auth.php';

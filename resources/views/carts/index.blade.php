@@ -114,16 +114,52 @@
                                     </div>
                                 </div>
 
-                                <form action="{{ route('carts.destroy', ['product_id' => $item->product_id]) }}"
-                                    method="POST" onsubmit="return confirm('「{{ $product->name }}」をカートから削除しますか？')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <div class="text-right">
-                                        <button type="submit" class="text-sm text-error">
-                                            削除
-                                        </button>
+                                {{-- 削除ボタン --}}
+                                <div class="text-right">
+                                    <button type="button" class="text-sm text-error hover:underline"
+                                        onclick="document.getElementById('delete_modal_{{ $item->product_id }}').showModal()">
+                                        削除
+                                    </button>
+                                </div>
+
+                                {{-- 削除確認モーダル --}}
+                                <dialog id="delete_modal_{{ $item->product_id }}" class="modal">
+                                    <div class="modal-box">
+                                        <h3 class="text-lg font-bold">
+                                            商品を削除しますか？
+                                        </h3>
+
+                                        <p class="py-4">
+                                            「{{ $product->name }}」をカートから削除します。
+                                        </p>
+
+                                        <div class="modal-action">
+                                            {{-- キャンセル --}}
+                                            <form method="dialog">
+                                                <button type="submit" class="btn btn-ghost">
+                                                    キャンセル
+                                                </button>
+                                            </form>
+
+                                            {{-- 削除実行 --}}
+                                            <form
+                                                action="{{ route('carts.destroy', ['product_id' => $item->product_id]) }}"
+                                                method="POST">
+                                                @csrf
+                                                @method('DELETE')
+
+                                                <button type="submit" class="btn btn-error">
+                                                    削除する
+                                                </button>
+                                            </form>
+                                        </div>
                                     </div>
-                                </form>
+
+                                    {{-- モーダルの背景をクリックして閉じる --}}
+                                    <form method="dialog" class="modal-backdrop">
+                                        <button type="submit">閉じる</button>
+                                    </form>
+                                </dialog>
                             </div>
                         </div>
                     </div>

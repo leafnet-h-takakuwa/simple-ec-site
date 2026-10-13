@@ -75,16 +75,6 @@
             </fieldset>
         </div>
 
-        {{-- バリデーションエラー --}}
-        @if ($errors->any())
-            <div class="mt-4 text-sm text-red-600">
-                検索条件を確認してください。
-                @foreach ($errors->all() as $error)
-                    <p>{{ $error }}</p>
-                @endforeach
-            </div>
-        @endif
-
         {{-- 検索ボタン --}}
         <div class="mt-6 flex justify-end gap-3">
             <a href="{{ route('admin.orders.index') }}" class="btn btn-outline">
@@ -145,10 +135,9 @@
                         </td>
 
                         <td>
-                            {{-- 詳細画面実装後にリンクへ変更 --}}
-                            <button type="button" class="btn btn-outline btn-sm" disabled>
+                            <a href="{{ route('admin.orders.show', $order->id) }}" class="btn btn-outline btn-sm">
                                 詳細
-                            </button>
+                            </a>
                         </td>
                     </tr>
                 @endforeach
@@ -189,10 +178,9 @@
                 </div>
 
                 <div class="mt-4 text-right">
-                    {{-- 詳細画面実装後にリンクへ変更 --}}
-                    <button type="button" class="btn btn-outline btn-sm" disabled>
+                    <a href="{{ route('admin.orders.show', $order->id) }}" class="btn btn-outline btn-sm">
                         詳細
-                    </button>
+                    </a>
                 </div>
             </article>
         @endforeach

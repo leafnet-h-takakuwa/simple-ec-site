@@ -71,6 +71,9 @@
 
         {{-- メインコンテンツ --}}
         <main class="min-w-0 flex-1 px-4 py-8 lg:px-12 lg:py-10">
+            {{-- 成功・エラーメッセージ --}}
+            @include('commons.result_messages')
+
             @yield('content')
         </main>
 

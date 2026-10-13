@@ -80,6 +80,10 @@ Route::middleware(['auth', EnsureUserIsAdmin::class])
             ->name('dashboard');
         Route::get('/orders', [AdminOrderController::class, 'index'])
             ->name('orders.index');
+        Route::get('/orders/{order}', [AdminOrderController::class, 'show'])
+            ->name('orders.show');
+        Route::patch('/orders/{order}/status', [AdminOrderController::class, 'updateStatus'])
+            ->name('orders.updateStatus');
     });
 
 require __DIR__ . '/auth.php';

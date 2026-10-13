@@ -64,4 +64,37 @@ class OrderController extends Controller
             'statuses' => OrderStatus::cases(),
         ]);
     }
+
+    public function show($id)
+    {
+        $order = Order::with('orderItems')->findOrFail($id);
+
+        return view('admin.orders.show', [
+            'order' => $order,
+            'statuses' => OrderStatus::cases(),
+        ]);
+    }
+
+    public function updateStatus(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'status' => ['required', Rule::enum(OrderStatus::class)],
+        ]);
+
+        // 注文情報を取得
+        $order = Order::findOrFail($id);
+
+        // 変更がない場合
+        if ($order->status->value === $validated['status']) {
+            return redirect()->route('admin.orders.show', $order->id)
+                ->with('success', '注文ステータスに変更はありません。');
+        }
+
+        // ステータスを変更して保存
+        $order->status = OrderStatus::from($validated['status']);
+        $order->save();
+
+        return redirect()->route('admin.orders.show', $order->id)
+            ->with('success', '注文ステータスを更新しました。');
+    }
 }

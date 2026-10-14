@@ -31,12 +31,13 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
         Auth::login($user);
 
+        session()->flash('success', '会員登録ありがとうございます');
         $this->redirect(route('home', absolute: false), navigate: true);
     }
 }; ?>
 
 <div class="flex flex-col gap-6">
-    <x-auth-header title="Create an account" description="Enter your details below to create your account" />
+    <x-auth-header title="会員登録" description="会員情報を入力してください。" />
 
     <!-- Session Status -->
     <x-auth-session-status class="text-center" :status="session('status')" />
@@ -45,7 +46,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
         <!-- Name -->
         <div class="grid gap-2">
             <flux:input wire:model="name" id="name" label="{{ __('Name') }}" type="text" name="name" required
-                autofocus autocomplete="name" placeholder="Full name" />
+                autofocus autocomplete="name" placeholder="氏名を入力してください" />
         </div>
 
         <!-- Email Address -->
@@ -57,14 +58,14 @@ new #[Layout('components.layouts.auth')] class extends Component {
         <!-- Password -->
         <div class="grid gap-2">
             <flux:input wire:model="password" id="password" label="{{ __('Password') }}" type="password"
-                name="password" required autocomplete="new-password" placeholder="Password" />
+                name="password" required autocomplete="new-password" placeholder="パスワード" />
         </div>
 
         <!-- Confirm Password -->
         <div class="grid gap-2">
             <flux:input wire:model="password_confirmation" id="password_confirmation"
                 label="{{ __('Confirm password') }}" type="password" name="password_confirmation" required
-                autocomplete="new-password" placeholder="Confirm password" />
+                autocomplete="new-password" placeholder="パスワード（確認）" />
         </div>
 
         <div class="flex items-center justify-end">
@@ -75,7 +76,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
     </form>
 
     <div class="space-x-1 text-center text-sm text-zinc-600 dark:text-zinc-400">
-        Already have an account?
-        <x-text-link href="{{ route('login') }}">Log in</x-text-link>
+        すでにアカウントをお持ちの方は
+        <x-text-link href="{{ route('login') }}">ログイン</x-text-link>
     </div>
 </div>

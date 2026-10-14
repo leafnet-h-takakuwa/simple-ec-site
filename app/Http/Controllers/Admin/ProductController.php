@@ -17,7 +17,7 @@ class ProductController extends Controller
         $conditions = $request->validate([
             'name' => ['nullable', 'string', 'max:255'],
             'is_active' => ['nullable', 'in:0,1'],
-        ]);
+        ], [], ['name' => '商品名']);
 
         $query = Product::query();
 
@@ -64,7 +64,7 @@ class ProductController extends Controller
             'is_active' => ['required', 'boolean'],
             'description' => ['nullable', 'string'],
             'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
-        ]);
+        ], [], ['name' => '商品名']);
 
         $product = new Product();
         $product->name = $validated['name'];
@@ -106,7 +106,7 @@ class ProductController extends Controller
             'description' => ['nullable', 'string'],
             'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'remove_image' => ['nullable', 'boolean'],
-        ]);
+        ], [], ['name' => '商品名']);
 
         $product = Product::findOrFail($id);
 

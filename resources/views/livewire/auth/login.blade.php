@@ -74,7 +74,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
 }; ?>
 
 <div class="flex flex-col gap-6">
-    <x-auth-header title="Log in to your account" description="Enter your email and password below to log in" />
+    <x-auth-header title="ログイン" description="メールアドレスとパスワードを入力してください。" />
 
     <!-- Session Status -->
     <x-auth-session-status class="text-center" :status="session('status')" />
@@ -87,7 +87,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
         <!-- Password -->
         <div class="relative">
             <flux:input wire:model="password" label="{{ __('Password') }}" type="password" name="password" required
-                autocomplete="current-password" placeholder="Password" />
+                autocomplete="current-password" placeholder="パスワード" />
 
             @if (Route::has('password.request'))
                 <x-text-link class="absolute right-0 top-0" href="{{ route('password.request') }}">
@@ -105,7 +105,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
     </form>
 
     <div class="space-x-1 text-center text-sm text-zinc-600 dark:text-zinc-400">
-        Don't have an account?
-        <x-text-link href="{{ route('register') }}">Sign up</x-text-link>
+        アカウントをお持ちでない方は
+        <x-text-link href="{{ route('register') }}">会員登録</x-text-link>
     </div>
 </div>

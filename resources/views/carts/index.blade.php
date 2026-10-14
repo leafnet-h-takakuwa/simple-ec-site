@@ -202,12 +202,13 @@
             {{-- 操作ボタン --}}
             <div class="mt-5 flex flex-col-reverse gap-5 sm:flex-row sm:items-center sm:justify-between">
 
-                <a href="{{ route('products.index') }}" class="text-center text-sm hover:underline">
-                    ← お買い物を続ける
+                <a href="{{ route('products.index') }}"
+                    class="inline-flex items-center justify-center gap-2 text-sm hover:underline">
+                    <x-arrow direction="left" /> お買い物を続ける
                 </a>
 
                 <a href="{{ route('orders.create') }}" class="btn btn-primary w-full sm:w-auto sm:min-w-64">
-                    注文手続きへ進む →
+                    注文手続きへ進む <x-arrow direction="right" />
                 </a>
 
             </div>

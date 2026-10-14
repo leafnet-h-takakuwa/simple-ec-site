@@ -127,7 +127,7 @@
     <div class="mb-10">
 
         <a href="{{ route('products.index') }}" class="btn btn-outline btn-neutral">
-            ← 商品一覧へ戻る
+            <x-arrow direction="left" /> 商品一覧へ戻る
         </a>
 
     </div>

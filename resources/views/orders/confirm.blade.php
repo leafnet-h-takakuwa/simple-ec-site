@@ -147,15 +147,16 @@
         {{-- 操作ボタン --}}
         <div class="mt-8 flex flex-col-reverse gap-4 sm:flex-row sm:items-center sm:justify-between">
 
-            <a href="{{ route('orders.create') }}" class="btn btn-outline w-full sm:w-auto">
-                入力内容を修正する
+            <a href="{{ route('orders.create') }}"
+                class="text-center text-sm inline-flex items-center gap-2 hover:underline">
+                <x-arrow direction="left" /> 入力内容を修正する
             </a>
 
             <form id="order_form" action="{{ route('orders.store') }}" method="POST" class="w-full sm:w-auto">
                 @csrf
 
                 <button id="order_submit" type="submit" class="btn btn-primary w-full sm:min-w-64">
-                    注文を確定する →
+                    注文を確定する <x-arrow direction="right" />
                 </button>
             </form>
 

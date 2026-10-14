@@ -179,11 +179,12 @@
 
             {{-- 操作ボタン --}}
             <div class="mt-8 flex flex-col-reverse gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <a href="{{ route('carts.index') }}" class="text-center text-sm hover:underline">
-                    ← カートへ戻る
+                <a href="{{ route('carts.index') }}"
+                    class="text-center text-sm inline-flex items-center gap-2 hover:underline">
+                    <x-arrow direction="left" /> カートへ戻る
                 </a>
                 <button type="submit" class="btn btn-primary w-full sm:w-auto sm:min-w-64">
-                    注文内容を確認する →
+                    注文内容を確認する <x-arrow direction="right" />
                 </button>
             </div>
         </form>

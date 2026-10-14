@@ -60,21 +60,6 @@
     --color-accent-foreground: #ffffff;
 }
 
-@layer theme {
-    :root {
-        --color-accent: #00008b;
-        --color-accent-content: #00008b;
-        --color-accent-foreground: #ffffff;
-    }
-
-    :root.dark {
-        --color-accent: #818cf8;
-        --color-accent-content: #818cf8;
-        --color-accent-foreground: #111827;
-    }
-
-}
-
 @layer base {
 
     *,
@@ -100,6 +85,23 @@ select:focus[data-flux-control] {
     @apply outline-hidden ring-2 ring-accent ring-offset-2 ring-offset-accent-foreground;
 }
 
-/* \[:where(&)\]:size-4 {
+/* 商品詳細ボタンのダークモード対応 */
+@layer utilities {
+
+    /* OSがダークモードの場合 */
+    @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) .btn.btn-outline.btn-neutral {
+            --btn-color: #d4d4d8;
+        }
+    }
+
+    /* HTMLでダークモードを指定した場合 */
+    [data-theme="dark"] .btn.btn-outline.btn-neutral,
+    .dark .btn.btn-outline.btn-neutral {
+        --btn-color: #d4d4d8;
+    }
+}
+
+/* [:where(&)]:size-4 {
     @apply size-4;
 } */

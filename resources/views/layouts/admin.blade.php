@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ja" data-theme="light">
+<html lang="ja" data-theme="light" class="scheme-light">
 
 <head>
     <meta charset="UTF-8">
@@ -8,7 +8,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="min-h-screen bg-white text-slate-800">
+<body data-theme="light" class="min-h-screen bg-white text-slate-800">
 
     {{-- ヘッダー --}}
     <header class="relative z-50 border-b border-green-200 bg-green-50">

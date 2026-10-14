@@ -119,8 +119,7 @@
                         </p>
 
                         <span class="btn btn-outline btn-neutral w-full">
-                            商品詳細を見る
-                            <span aria-hidden="true">→</span>
+                            商品詳細
                         </span>
 
                     </div>

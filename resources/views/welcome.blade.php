@@ -25,29 +25,13 @@
 
                 <a href="{{ route('products.index') }}" class="btn btn-neutral">
                     商品一覧を見る
-                    <span aria-hidden="true">→</span>
                 </a>
 
             </div>
 
-            {{-- 仮メイン画像 --}}
+            {{-- メイン画像 --}}
             <div class="overflow-hidden rounded-lg bg-base-300">
-                <svg viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg" class="h-auto w-full" role="img"
-                    aria-label="メインビジュアルの仮画像">
-
-                    <rect width="600" height="400" fill="#e5e7eb" />
-
-                    <circle cx="300" cy="170" r="65" fill="none" stroke="#9ca3af" stroke-width="8" />
-
-                    <path d="M245 185 Q300 110 355 185" fill="none" stroke="#9ca3af" stroke-width="8" />
-
-                    <path d="M120 320 L245 210 L335 285 L415 225 L510 320" fill="none" stroke="#9ca3af" stroke-width="8"
-                        stroke-linecap="round" stroke-linejoin="round" />
-
-                    <text x="300" y="365" text-anchor="middle" fill="#6b7280" font-size="22">
-                        メインビジュアル
-                    </text>
-                </svg>
+                <img src="{{ asset('images/top.png') }}" alt="top" class="h-full w-full object-cover">
             </div>
 
         </div>
@@ -67,32 +51,18 @@
                 <a href="{{ route('products.index', ['category' => $category->value]) }}"
                     class="group overflow-hidden rounded-xl border border-base-300 bg-base-100 transition hover:shadow-md">
 
-                    {{-- 仮カテゴリ画像 --}}
-                    <svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg" class="w-full" role="img"
-                        aria-label="{{ $category->label() }}の仮画像" <rect width="400" height="260" fill="#e5e7eb" />
-
-                    <rect x="120" y="55" width="160" height="120" rx="12" fill="none" stroke="#9ca3af"
-                        stroke-width="7" />
-
-                    <circle cx="165" cy="95" r="15" fill="#9ca3af" />
-
-                    <path d="M130 160 L175 115 L210 145 L240 120 L270 160" fill="none" stroke="#9ca3af" stroke-width="7"
-                        stroke-linejoin="round" />
-
-                    <text x="200" y="220" text-anchor="middle" fill="#6b7280" font-size="18">
-                        {{ $category->label() }}
-                    </text>
-
-                    </svg>
+                    {{-- カテゴリ画像 --}}
+                    <div class="overflow-hidden">
+                        <img src="{{ asset('images/categories/' . $category->value . '.webp') }}"
+                            alt="{{ $category->label() }}"
+                            class="aspect-[400/260] w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            loading="lazy">
+                    </div>
 
                     <div class="flex items-center justify-between p-4">
                         <h3 class="font-bold">
                             {{ $category->label() }}
                         </h3>
-
-                        <span class="transition group-hover:translate-x-1">
-                            →
-                        </span>
                     </div>
 
                 </a>
@@ -227,11 +197,6 @@
                         ご購入の流れをご案内します。
                     </p>
                 </div>
-
-                <span class="transition group-hover:translate-x-1">
-                    →
-                </span>
-
             </a>
 
             {{-- 送料について --}}
@@ -254,11 +219,6 @@
                         配送方法・送料をご確認いただけます。
                     </p>
                 </div>
-
-                <span class="transition group-hover:translate-x-1">
-                    →
-                </span>
-
             </a>
 
         </div>

@@ -42,4 +42,11 @@ class Product extends Model
     {
         return $this->hasMany(OrderItem::class);
     }
+
+    // その商品が1か月以内に登録されたものかチェック
+    public function isNew(): bool
+    {
+        return $this->created_at !== null
+            && $this->created_at->gte(now()->subDays(30));
+    }
 }

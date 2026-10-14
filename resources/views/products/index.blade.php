@@ -80,13 +80,17 @@
                     class="group flex flex-col overflow-hidden rounded-xl border border-base-300 bg-base-100 transition hover:shadow-md">
 
                     {{-- 商品画像 --}}
-                    <div class="aspect-[4/3] w-full overflow-hidden bg-base-200">
+                    <div class="relative aspect-[4/3] w-full overflow-hidden bg-base-200">
 
                         @if ($product->image_path)
                             <img src="{{ Storage::url($product->image_path) }}" alt="{{ $product->name }}"
                                 class="h-full w-full object-cover">
                         @else
                             <x-no-image />
+                        @endif
+                        {{-- 新着リボン --}}
+                        @if ($product->isNew())
+                            <x-new-ribbon />
                         @endif
                     </div>
 

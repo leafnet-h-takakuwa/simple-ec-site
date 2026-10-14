@@ -3,7 +3,7 @@
 @section('content')
     {{-- カテゴリ名を取得 --}}
     @php
-        $category = \App\Enums\ProductCategory::from($product->category);
+        $category = $product->category;
     @endphp
 
     {{-- パンくずリスト --}}

@@ -51,9 +51,12 @@
                     ダッシュボード
                 </a>
 
-                <span class="text-slate-500">
+                <a href="{{ route('admin.products.index') }}" @class([
+                    'hover:underline',
+                    'font-semibold text-green-800' => request()->routeIs('admin.products.*'),
+                ])>
                     商品管理
-                </span>
+                </a>
 
                 <a href="{{ route('admin.orders.index') }}" @class([
                     'hover:underline',

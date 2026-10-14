@@ -1,7 +1,36 @@
 @import 'tailwindcss';
 @import '../../vendor/livewire/flux/dist/flux.css';
 
-@plugin "daisyui";
+@plugin "daisyui" {
+    themes: light --default, dark --prefersdark;
+}
+
+@plugin "daisyui/theme" {
+    name: "light";
+    default: true;
+    prefersdark: false;
+    color-scheme: light;
+
+    --color-primary: #00008b;
+    --color-primary-content: #ffffff;
+
+    --color-accent: #00008b;
+    --color-accent-content: #ffffff;
+}
+
+@plugin "daisyui/theme" {
+    name: "dark";
+    default: false;
+    prefersdark: true;
+    color-scheme: dark;
+
+    --color-primary: #818cf8;
+    --color-primary-content: #111827;
+
+    --color-accent: #818cf8;
+    --color-accent-content: #111827;
+}
+
 @plugin "@tailwindcss/typography";
 
 @source "../views";
@@ -26,17 +55,24 @@
     --color-zinc-900: #171717;
     --color-zinc-950: #0a0a0a;
 
-    --color-accent: var(--color-neutral-800);
-    --color-accent-content: var(--color-neutral-800);
-    --color-accent-foreground: var(--color-white);
+    --color-accent: #00008b;
+    --color-accent-content: #00008b;
+    --color-accent-foreground: #ffffff;
 }
 
 @layer theme {
-    .dark {
-        --color-accent: var(--color-white);
-        --color-accent-content: var(--color-white);
-        --color-accent-foreground: var(--color-neutral-800);
+    :root {
+        --color-accent: #00008b;
+        --color-accent-content: #00008b;
+        --color-accent-foreground: #ffffff;
     }
+
+    :root.dark {
+        --color-accent: #818cf8;
+        --color-accent-content: #818cf8;
+        --color-accent-foreground: #111827;
+    }
+
 }
 
 @layer base {

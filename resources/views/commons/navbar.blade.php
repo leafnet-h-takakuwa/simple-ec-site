@@ -4,7 +4,7 @@
         {{-- ロゴ --}}
         <div class="min-w-0 flex-1">
             <h1>
-                <a href="{{ route('home') }}" aria-label="ホーム">
+                <a href="{{ route('home') }}" aria-label="TOP">
                     <x-logo class="w-28 text-white sm:w-40" />
                 </a>
             </h1>
@@ -39,7 +39,7 @@
 
                 {{-- TOP --}}
                 <li>
-                    <a href="{{ route('home') }}" aria-label="ホーム" @class(['gap-2', 'menu-active' => request()->routeIs('home')])>
+                    <a href="{{ route('home') }}" aria-label="TOP" @class(['gap-2', 'menu-active' => request()->routeIs('home')])>
                         <svg xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0" fill="none"
                             viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
                             stroke-linejoin="round">
@@ -106,7 +106,7 @@
                             {{ Auth::user()->name }} 様
                         </span>
                     @else
-                        ログイン
+                        ログイン／会員登録
                     @endauth
 
                     <svg xmlns="http://www.w3.org/2000/svg" class="size-4 shrink-0" fill="none" viewBox="0 0 24 24"

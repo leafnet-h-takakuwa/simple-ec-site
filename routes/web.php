@@ -2,12 +2,11 @@
 
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
-use App\Models\Product;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\Admin\DashboardController;
-use App\Enums\ProductCategory;
 use App\Http\Middleware\EnsureUserIsAdmin;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
@@ -16,20 +15,8 @@ use App\Http\Controllers\Admin\ProductController as AdminProductController;
  * 認証不要ルート
  */
 // TOPページ
-Route::get('/', function () {
-    // TODO ひとまずの表示確認、あとでコントローラーへ
-    $products = Product::where('is_active', true)
-        ->latest()
-        ->take(3)
-        ->get();
-
-    $categories = ProductCategory::cases();
-
-    return view('welcome', [
-        'products' => $products,
-        'categories' => $categories,
-    ]);
-})->name('home');
+Route::get('/', [HomeController::class, 'index'])
+    ->name('home');
 
 // 商品一覧
 Route::get('/products', [ProductController::class, 'index'])

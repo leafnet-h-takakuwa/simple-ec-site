@@ -102,43 +102,80 @@
 
     </section>
 
-    {{-- おすすめ商品 --}}
+    {{-- 人気商品 --}}
     <section class="mb-12">
 
         <div class="mb-6 flex items-center justify-between border-b border-base-300 pb-3">
             <h2 class="text-2xl font-bold">
-                おすすめ商品
+                人気商品
             </h2>
         </div>
 
         <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
 
             @forelse ($products as $product)
-                <a href="#"
-                    class="group overflow-hidden rounded-xl border border-base-300 bg-base-100 transition hover:shadow-md">
+                <a href="{{ route('products.show', $product->id) }}"
+                    class="group relative overflow-hidden rounded-xl border border-base-300 bg-base-100 transition hover:shadow-md">
 
-                    {{-- 仮商品画像 --}}
-                    <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" class="w-full" role="img"
-                        aria-label="{{ $product->name }}の仮画像">
+                    {{-- ランキングバッジ --}}
+                    @php
+                        $rank = $loop->iteration;
 
-                        <rect width="400" height="300" fill="#e5e7eb" />
+                        $rankColor = match ($rank) {
+                            1 => '#D4A017',
+                            2 => '#94A3B8',
+                            3 => '#B87333',
+                            default => '#64748B',
+                        };
+                    @endphp
 
-                        <rect x="120" y="60" width="160" height="140" rx="12" fill="none" stroke="#9ca3af"
-                            stroke-width="7" />
+                    <div class="absolute top-0 left-4 z-10 w-14 drop-shadow-md">
+                        <svg viewBox="0 0 56 90" xmlns="http://www.w3.org/2000/svg" class="w-full" role="img"
+                            aria-label="{{ $rank }}位">
 
-                        <circle cx="165" cy="100" r="15" fill="#9ca3af" />
+                            {{-- リボン本体 --}}
+                            <path d="M0 0 H56 V90 L28 76 L0 90 Z" fill="{{ $rankColor }}" />
 
-                        <path d="M130 185 L175 135 L210 165 L240 140 L270 185" fill="none" stroke="#9ca3af"
-                            stroke-width="7" stroke-linejoin="round" />
+                            {{-- リボンの縁 --}}
+                            <path d="M4 0 V83 L28 71 L52 83 V0" fill="none" stroke="white" stroke-opacity="0.55"
+                                stroke-width="1.5" />
 
-                        <text x="200" y="245" text-anchor="middle" fill="#6b7280" font-size="18">
-                            商品画像
-                        </text>
+                            {{-- 王冠 --}}
+                            <g fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"
+                                stroke-linejoin="round">
 
-                    </svg>
+                                <path d="M12 19 L17 32 H39 L44 19 L34 26 L28 16 L22 26 Z" />
 
+                                <path d="M17 36 H39" />
+
+                            </g>
+
+                            {{-- 王冠の先端 --}}
+                            <g fill="white">
+                                <circle cx="12" cy="18" r="2" />
+                                <circle cx="28" cy="15" r="2" />
+                                <circle cx="44" cy="18" r="2" />
+                            </g>
+
+                            {{-- 順位 --}}
+                            <text x="28" y="59" text-anchor="middle" font-size="27" font-weight="bold" fill="white">
+                                {{ $rank }}
+                            </text>
+                        </svg>
+                    </div>
+
+                    {{-- 商品画像 --}}
+                    <div class="aspect-[4/3] overflow-hidden bg-base-200">
+                        @if ($product->image_path)
+                            <img src="{{ Storage::url($product->image_path) }}" alt="{{ $product->name }}"
+                                class="h-full w-full object-cover transition duration-300 group-hover:scale-105">
+                        @else
+                            <x-no-image />
+                        @endif
+                    </div>
+
+                    {{-- 商品情報 --}}
                     <div class="space-y-3 p-5">
-
                         <h3 class="font-bold group-hover:underline">
                             {{ $product->name }}
                         </h3>
@@ -149,17 +186,11 @@
 
                         <p class="text-xl font-bold">
                             ¥{{ number_format($product->price) }}
-                            <span class="text-xs font-normal">
-                                （税込）
-                            </span>
+                            <span class="text-xs font-normal">（税込）</span>
                         </p>
-
                     </div>
-
                 </a>
-
             @empty
-
                 <p class="col-span-full py-8 text-center text-base-content/60">
                     現在、商品を準備中です。
                 </p>

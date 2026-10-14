@@ -16,6 +16,30 @@ use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
+    public function index()
+    {
+        $orders = Order::where('user_id', Auth::id())
+            ->with('orderItems')
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
+            ->paginate(10);
+
+        return view('orders.index', [
+            'orders' => $orders,
+        ]);
+    }
+
+    public function show($id)
+    {
+        $order = Order::where('user_id', Auth::id())
+            ->with('orderItems')
+            ->findOrFail($id);
+
+        return view('orders.show', [
+            'order' => $order,
+        ]);
+    }
+
     public function create(Request $request)
     {
         // 管理者は注文不可

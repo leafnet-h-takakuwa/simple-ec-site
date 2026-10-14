@@ -66,19 +66,20 @@
                 </li>
 
                 {{-- カート --}}
-                <li>
-                    <a href="{{ route('carts.index') }}" class="gap-2" aria-label="カート">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-                            stroke-linejoin="round">
-                            <circle cx="9" cy="21" r="1" />
-                            <circle cx="20" cy="21" r="1" />
-                            <path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6" />
-                        </svg>
-                        <span class="hidden sm:inline">カート</span>
-                    </a>
-                </li>
-
+                @if (!(Auth::check() && Auth::user()->is_admin))
+                    <li>
+                        <a href="{{ route('carts.index') }}" class="gap-2" aria-label="カート">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <circle cx="9" cy="21" r="1" />
+                                <circle cx="20" cy="21" r="1" />
+                                <path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6" />
+                            </svg>
+                            <span class="hidden sm:inline">カート</span>
+                        </a>
+                    </li>
+                @endif
             </ul>
         </div>
 
@@ -105,22 +106,26 @@
                     class="menu dropdown-content z-50 mt-2 w-52 rounded-box bg-base-100 p-2 text-base-content shadow-lg">
 
                     @auth
-                        {{-- 注文履歴 --}}
-                        <li>
-                            <a href="#">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="size-5" fill="none" viewBox="0 0 24 24"
-                                    stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M8 3H5a2 2 0 0 0-2 2v16l4-2 5 2 5-2 4 2V5a2 2 0 0 0-2-2h-3" />
-                                    <path d="M8 3h8v4H8z" />
-                                    <path d="M8 12h8M8 16h5" />
-                                </svg>
-                                注文履歴
-                            </a>
-                        </li>
+                        @if (!(Auth::check() && Auth::user()->is_admin))
+                            {{-- 注文履歴 --}}
+                            <li>
+                                <a href="{{ route('orders.index') }}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="size-5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="M8 3H5a2 2 0 0 0-2 2v16l4-2 5 2 5-2 4 2V5a2 2 0 0 0-2-2h-3" />
+                                        <path d="M8 3h8v4H8z" />
+                                        <path d="M8 12h8M8 16h5" />
+                                    </svg>
+                                    注文履歴
+                                </a>
+                            </li>
 
-                        <li>
-                            <div class="divider my-1"></div>
-                        </li>
+
+                            <li>
+                                <div class="divider my-1"></div>
+                            </li>
+                        @endif
 
                         {{-- ログアウト --}}
                         <li>

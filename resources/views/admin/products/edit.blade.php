@@ -123,7 +123,7 @@
                     <img src="{{ Storage::url($product->image_path) }}" alt="{{ $product->name }}"
                         class="h-full w-full object-contain">
                 @else
-                    <span class="text-sm text-slate-400">No Image</span>
+                    <x-no-image />
                 @endif
             </div>
 

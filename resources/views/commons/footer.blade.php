@@ -73,12 +73,6 @@
                         </a>
                     </li>
 
-                    <li>
-                        <a href="#" class="link link-hover">
-                            サイトマップ
-                        </a>
-                    </li>
-
                 </ul>
 
             </section>

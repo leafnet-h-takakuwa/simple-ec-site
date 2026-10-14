@@ -40,9 +40,7 @@
                                     <img src="{{ asset('storage/' . $cart_item->product->image_path) }}"
                                         alt="{{ $cart_item->product->name }}" class="h-full w-full object-cover">
                                 @else
-                                    <div class="flex h-full items-center justify-center text-xs text-base-content/40">
-                                        No Image
-                                    </div>
+                                    <x-no-image />
                                 @endif
                             </div>
 

@@ -81,9 +81,7 @@
                                     <img src="{{ Storage::url($product->image_path) }}" alt="{{ $product->name }}"
                                         class="h-full w-full object-cover">
                                 @else
-                                    <span class="text-xs text-slate-400">
-                                        No Image
-                                    </span>
+                                    <x-no-image />
                                 @endif
                             </div>
                         </td>

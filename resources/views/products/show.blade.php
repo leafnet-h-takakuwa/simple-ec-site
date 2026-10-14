@@ -33,31 +33,15 @@
 
             {{-- 商品画像 --}}
             <div>
-
-                <div class="overflow-hidden rounded-xl border border-base-300 bg-base-200">
-
-                    {{-- 仮の商品画像 --}}
-                    <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" class="aspect-square w-full"
-                        role="img" aria-label="{{ $product->name }}の仮画像">
-
-                        <rect width="400" height="400" fill="#e5e7eb" />
-
-                        <rect x="100" y="95" width="200" height="170" rx="12" fill="none" stroke="#9ca3af"
-                            stroke-width="7" />
-
-                        <circle cx="155" cy="145" r="18" fill="#9ca3af" />
-
-                        <path d="M115 245 L170 180 L215 220 L255 190 L285 245" fill="none" stroke="#9ca3af"
-                            stroke-width="7" stroke-linejoin="round" />
-
-                        <text x="200" y="320" text-anchor="middle" fill="#6b7280" font-size="20">
-                            商品画像
-                        </text>
-
-                    </svg>
+                <div class="aspect-square w-full overflow-hidden rounded-xl border border-base-300 bg-base-200">
+                    @if ($product->image_path)
+                        <img src="{{ Storage::url($product->image_path) }}" alt="{{ $product->name }}"
+                            class="h-full w-full object-contain">
+                    @else
+                        <x-no-image />
+                    @endif
 
                 </div>
-
             </div>
 
             {{-- 商品情報・購入エリア --}}

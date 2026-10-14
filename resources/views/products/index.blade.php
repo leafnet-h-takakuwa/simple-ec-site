@@ -79,28 +79,15 @@
                 <a href="{{ route('products.show', ['product' => $product->id]) }}"
                     class="group flex flex-col overflow-hidden rounded-xl border border-base-300 bg-base-100 transition hover:shadow-md">
 
-                    {{-- 商品画像（仮SVG） --}}
-                    <div class="bg-base-200">
+                    {{-- 商品画像 --}}
+                    <div class="aspect-[4/3] w-full overflow-hidden bg-base-200">
 
-                        <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" class="aspect-[4/3] w-full"
-                            role="img" aria-label="{{ $product->name }}の仮画像">
-
-                            <rect width="400" height="300" fill="#e5e7eb" />
-
-                            <rect x="120" y="60" width="160" height="140" rx="12" fill="none"
-                                stroke="#9ca3af" stroke-width="7" />
-
-                            <circle cx="165" cy="100" r="15" fill="#9ca3af" />
-
-                            <path d="M130 185 L175 135 L210 165 L240 140 L270 185" fill="none" stroke="#9ca3af"
-                                stroke-width="7" stroke-linejoin="round" />
-
-                            <text x="200" y="245" text-anchor="middle" fill="#6b7280" font-size="18">
-                                商品画像
-                            </text>
-
-                        </svg>
-
+                        @if ($product->image_path)
+                            <img src="{{ Storage::url($product->image_path) }}" alt="{{ $product->name }}"
+                                class="h-full w-full object-cover">
+                        @else
+                            <x-no-image />
+                        @endif
                     </div>
 
                     {{-- 商品情報 --}}

@@ -109,10 +109,6 @@
             <h2 class="text-2xl font-bold">
                 おすすめ商品
             </h2>
-
-            <a href="#" class="link link-hover text-sm">
-                すべて見る →
-            </a>
         </div>
 
         <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">

@@ -23,12 +23,14 @@
 
             {{-- サイト名 --}}
             <div class="flex min-w-0 items-center gap-3">
-                <span class="truncate text-xl font-bold lg:text-3xl">
-                    髙桑商店
-                </span>
-                <span class="shrink-0 text-sm font-bold text-green-800">
-                    管理画面
-                </span>
+                <a href="{{ route('admin.dashboard') }}">
+                    <span class="truncate text-xl font-bold lg:text-3xl">
+                        髙桑商店
+                    </span>
+                    <span class="shrink-0 text-sm font-bold text-green-800">
+                        管理画面
+                    </span>
+                </a>
             </div>
 
             {{-- PC用ヘッダーメニュー --}}

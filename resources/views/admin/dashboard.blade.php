@@ -98,6 +98,17 @@
 
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div class="rounded-xl border border-slate-200 p-5">
+                <a href="{{ route('admin.orders.create') }}">
+                    <div class="flex items-center gap-2 font-bold text-green-800">
+                        注文登録 <x-arrow direction="right" />
+                    </div>
+                </a>
+                <p class="mt-2 text-sm text-slate-500">
+                    電話・FAXの注文登録
+                </p>
+            </div>
+
+            <div class="rounded-xl border border-slate-200 p-5">
                 <a href="{{ route('admin.products.index') }}">
                     <div class="flex items-center gap-2 font-bold text-green-800">
                         商品管理へ <x-arrow direction="right" />
@@ -105,17 +116,6 @@
                 </a>
                 <p class="mt-2 text-sm text-slate-500">
                     商品登録・編集・公開設定
-                </p>
-            </div>
-
-            <div class="rounded-xl border border-slate-200 p-5">
-                <a href="{{ route('admin.orders.index') }}">
-                    <div class="flex items-center gap-2 font-bold text-green-800">
-                        注文管理へ <x-arrow direction="right" />
-                    </div>
-                </a>
-                <p class="mt-2 text-sm text-slate-500">
-                    注文詳細・発送状況の更新
                 </p>
             </div>
         </div>

@@ -14,11 +14,17 @@
         <h1 class="text-2xl font-bold lg:text-3xl">
             注文詳細
         </h1>
-        <p class="mt-2 text-sm text-slate-500">
+    </div>
+    <div class="mt-2 flex flex-wrap items-center gap-3 text-sm text-slate-500">
+        <span>
             注文番号 #{{ sprintf('%08d', $order->id) }}
             ／
             {{ $order->created_at->format('Y/m/d H:i') }}
-        </p>
+        </span>
+
+        <span class="badge badge-ghost badge-sm">
+            {{ $order->order_source->label() }}
+        </span>
     </div>
 
     {{-- 注文状況 --}}

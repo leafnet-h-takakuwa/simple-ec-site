@@ -12,9 +12,6 @@
         <h1 class="mt-4 text-2xl font-bold lg:text-3xl">
             商品編集
         </h1>
-        <p class="mt-2 text-sm text-slate-500">
-            登録済みの商品情報を編集します。
-        </p>
     </div>
 
     {{-- 更新フォーム --}}

@@ -4,11 +4,11 @@
 
 @section('content')
     {{-- ページタイトル --}}
-    <div class="mb-8">
+    <div class="mb-8 flex flex-wrap items-center justify-between gap-4">
         <h1 class="text-2xl font-bold lg:text-3xl">注文一覧</h1>
-        <p class="mt-2 text-sm text-slate-500">
-            注文情報の検索・確認ができます。
-        </p>
+        <a href="{{ route('admin.orders.create') }}" class="btn btn-success">
+            <x-plus /> 注文を登録
+        </a>
     </div>
 
     {{-- 検索フォーム --}}
@@ -127,8 +127,16 @@
                             {{ $order->created_at->format('Y/m/d') }}
                         </td>
 
-                        <td class="font-semibold">
-                            #{{ sprintf('%08d', $order->id) }}
+                        <td>
+                            <div class="flex items-center gap-2 whitespace-nowrap">
+                                <span class="font-semibold">
+                                    #{{ sprintf('%08d', $order->id) }}
+                                </span>
+
+                                <span class="badge badge-outline badge-neutral badge-sm">
+                                    {{ $order->order_source->label() }}
+                                </span>
+                            </div>
                         </td>
 
                         <td>{{ $order->orderer_name }}</td>
@@ -159,10 +167,16 @@
         @foreach ($orders as $order)
             <article class="rounded-xl border border-slate-200 bg-white p-5">
 
-                <div class="flex items-center justify-between gap-3">
-                    <span class="font-bold">
-                        注文番号 #{{ sprintf('%08d', $order->id) }}
-                    </span>
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="font-bold">
+                            注文番号 #{{ sprintf('%08d', $order->id) }}
+                        </span>
+
+                        <span class="badge badge-outline badge-neutral badge-sm">
+                            {{ $order->order_source->label() }}
+                        </span>
+                    </div>
 
                     <span class="text-sm text-slate-500">
                         {{ $order->created_at->format('Y/m/d') }}

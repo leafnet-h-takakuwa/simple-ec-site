@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\OrderSource;
 use App\Enums\OrderStatus;
+use App\Enums\PaymentMethod;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Product;
@@ -90,6 +92,103 @@ class OrderController extends Controller
             'order' => $order,
             'statuses' => OrderStatus::cases(),
         ]);
+    }
+
+    public function create()
+    {
+        $products = Product::orderBy('name')
+            ->get(['id', 'name', 'price']);
+
+        return view('admin.orders.create', [
+            'products' => $products,
+            'orderSources' => OrderSource::cases(),
+            'paymentMethods' => PaymentMethod::cases(),
+        ]);
+    }
+
+    public function store(Request $request)
+    {
+        // 入力値のバリデーション
+        $validated = $request->validate([
+            'order_source' => ['required', Rule::enum(OrderSource::class)],
+            'payment_method' => ['required', Rule::enum(PaymentMethod::class)],
+
+            'orderer_name' => ['required', 'string', 'max:255'],
+            'orderer_postal_code' => ['required', 'string', 'max:20'],
+            'orderer_address' => ['required', 'string'],
+            'orderer_phone' => ['required', 'string', 'max:30'],
+            'orderer_email' => ['nullable', 'email', 'max:255'],
+
+            'shipping_name' => ['required', 'string', 'max:255'],
+            'shipping_postal_code' => ['required', 'string', 'max:20'],
+            'shipping_address' => ['required', 'string'],
+            'shipping_phone' => ['required', 'string', 'max:30'],
+
+            'items' => ['required', 'array', 'min:1'],
+            'items.*.product_id' => ['nullable', 'integer', 'exists:products,id'],
+            'items.*.product_name' => ['required', 'string', 'max:255'],
+            'items.*.price' => ['required', 'integer'],
+            'items.*.quantity' => ['required', 'integer', 'min:1'],
+        ]);
+
+        // 注文明細の小計・合計金額を計算
+        $items = collect($validated['items'])->map(function ($item) {
+            $item['subtotal'] = $item['price'] * $item['quantity'];
+
+            return $item;
+        });
+
+        $totalAmount = $items->sum('subtotal');
+
+        // 合計金額がマイナスになる注文は登録不可
+        if ($totalAmount < 0) {
+            throw ValidationException::withMessages([
+                'items' => '合計金額がマイナスになる注文は登録できません。',
+            ]);
+        }
+
+        // 注文と注文明細をまとめて登録
+        $order = DB::transaction(function () use ($validated, $items, $totalAmount) {
+
+            $order = Order::create([
+                'user_id' => null,
+                'order_source' => $validated['order_source'],
+
+                // 新規登録時は「受付」固定
+                'status' => OrderStatus::RECEIVED,
+
+                'total_amount' => $totalAmount,
+
+                'orderer_name' => $validated['orderer_name'],
+                'orderer_postal_code' => $validated['orderer_postal_code'],
+                'orderer_address' => $validated['orderer_address'],
+                'orderer_phone' => $validated['orderer_phone'],
+                'orderer_email' => $validated['orderer_email'] ?? null,
+
+                'shipping_name' => $validated['shipping_name'],
+                'shipping_postal_code' => $validated['shipping_postal_code'],
+                'shipping_address' => $validated['shipping_address'],
+                'shipping_phone' => $validated['shipping_phone'],
+
+                'payment_method' => $validated['payment_method'],
+            ]);
+
+            foreach ($items as $item) {
+                $order->orderItems()->create([
+                    'product_id' => $item['product_id'] ?? null,
+                    'product_name' => $item['product_name'],
+                    'price' => $item['price'],
+                    'quantity' => $item['quantity'],
+                    'subtotal' => $item['subtotal'],
+                ]);
+            }
+
+            return $order;
+        });
+
+        return redirect()
+            ->route('admin.orders.show', $order->id)
+            ->with('success', '注文を登録しました。');
     }
 
     public function editItems($id)

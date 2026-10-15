@@ -69,6 +69,10 @@ Route::middleware(['auth', EnsureUserIsAdmin::class])
         // 注文管理
         Route::get('/orders', [AdminOrderController::class, 'index'])
             ->name('orders.index');
+        Route::get('/orders/create', [AdminOrderController::class, 'create'])
+            ->name('orders.create');
+        Route::post('/orders', [AdminOrderController::class, 'store'])
+            ->name('orders.store');
         Route::get('/orders/{order}', [AdminOrderController::class, 'show'])
             ->name('orders.show');
         Route::get('/orders/{order}/items/edit', [AdminOrderController::class, 'editItems'])

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\OrderSource;
 use App\Enums\OrderStatus;
 use App\Enums\PaymentMethod;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -28,6 +29,7 @@ class Order extends Model
         'shipping_postal_code',
         'shipping_address',
         'shipping_phone',
+        'order_source',
     ];
 
     protected function casts(): array
@@ -36,6 +38,7 @@ class Order extends Model
             'status' => OrderStatus::class,
             'payment_method' => PaymentMethod::class,
             'total_amount' => 'integer',
+            'order_source' => OrderSource::class,
         ];
     }
 

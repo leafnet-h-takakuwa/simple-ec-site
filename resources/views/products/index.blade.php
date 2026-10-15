@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title', $category !== null ? \App\Enums\ProductCategory::from($category)->label() : (request('sort') === 'new'
-    ? '新商品' : '商品一覧'))
+    ? '商品一覧（新着順）' : '商品一覧'))
 
 @section('content')
     {{-- ページタイトル --}}

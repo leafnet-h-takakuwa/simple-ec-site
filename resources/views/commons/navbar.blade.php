@@ -152,10 +152,8 @@
                                     <svg xmlns="http://www.w3.org/2000/svg" class="size-5" fill="none"
                                         viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"
                                         stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                                        <circle cx="9" cy="7" r="4" />
-                                        <circle cx="19" cy="16" r="2" />
-                                        <path d="M19 12v2M19 18v2M15 16h2M21 16h2" />
+                                        <circle cx="12" cy="8" r="4" />
+                                        <path d="M4 21v-2a8 8 0 0 1 16 0v2" />
                                     </svg>
                                     会員情報
                                 </a>
@@ -187,11 +185,12 @@
                         {{-- ログイン --}}
                         <li>
                             <a href="{{ route('login') }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="size-5" fill="none"
+                                <svg xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0" fill="none"
                                     viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
                                     stroke-linejoin="round">
                                     <path d="m10 17 5-5-5-5" />
                                     <path d="M15 12H3" />
+                                    <path d="M12 3h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7" />
                                 </svg>
                                 ログイン
                             </a>
@@ -321,10 +320,8 @@
                                     <svg xmlns="http://www.w3.org/2000/svg" class="size-5" fill="none"
                                         viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"
                                         stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                                        <circle cx="9" cy="7" r="4" />
-                                        <circle cx="19" cy="16" r="2" />
-                                        <path d="M19 12v2M19 18v2M15 16h2M21 16h2" />
+                                        <circle cx="12" cy="8" r="4" />
+                                        <path d="M4 21v-2a8 8 0 0 1 16 0v2" />
                                     </svg>
                                     会員情報
                                 </a>

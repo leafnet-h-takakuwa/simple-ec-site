@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Middleware\EnsureUserIsAdmin;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
 
 /**
  * 認証不要ルート
@@ -107,6 +108,10 @@ Route::middleware(['auth', EnsureUserIsAdmin::class])
             ->name('products.update');
         Route::delete('/products/{product}', [AdminProductController::class, 'destroy'])
             ->name('products.destroy');
+
+        // 会員情報
+        Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
+        Route::get('/users/{user}', [AdminUserController::class, 'show'])->name('users.show');
     });
 
 require __DIR__ . '/auth.php';

@@ -44,21 +44,21 @@
                         </label>
                         <input type="text" id="orderer_postal_code" name="orderer_postal_code"
                             value="{{ old('orderer_postal_code', $order->orderer_postal_code) }}" placeholder="例：030-0000"
-                            required class="input w-full">
+                            maxlength="8" required class="input w-full">
                     </div>
 
                     <div>
                         <label for="orderer_address" class="mb-2 block text-sm font-semibold">
                             住所 <span class="text-red-600">*</span>
                         </label>
-                        <textarea id="orderer_address" name="orderer_address" rows="3" required class="textarea w-full">{{ old('orderer_address', $order->orderer_address) }}</textarea>
+                        <textarea id="orderer_address" name="orderer_address" maxlength="255" rows="3" required class="textarea w-full">{{ old('orderer_address', $order->orderer_address) }}</textarea>
                     </div>
 
                     <div>
                         <label for="orderer_phone" class="mb-2 block text-sm font-semibold">
                             電話番号 <span class="text-red-600">*</span>
                         </label>
-                        <input type="tel" id="orderer_phone" name="orderer_phone"
+                        <input type="tel" id="orderer_phone" name="orderer_phone" maxlength="20"
                             value="{{ old('orderer_phone', $order->orderer_phone) }}" required class="input w-full">
                     </div>
 
@@ -66,7 +66,7 @@
                         <label for="orderer_email" class="mb-2 block text-sm font-semibold">
                             メールアドレス（任意）
                         </label>
-                        <input type="email" id="orderer_email" name="orderer_email"
+                        <input type="email" id="orderer_email" name="orderer_email" maxlength="255"
                             value="{{ old('orderer_email', $order->orderer_email) }}" class="input w-full">
                     </div>
                 </div>
@@ -98,21 +98,21 @@
                         </label>
                         <input type="text" id="shipping_postal_code" name="shipping_postal_code"
                             value="{{ old('shipping_postal_code', $order->shipping_postal_code) }}" placeholder="例：030-0000"
-                            required class="input w-full">
+                            maxlength="8" required class="input w-full">
                     </div>
 
                     <div>
                         <label for="shipping_address" class="mb-2 block text-sm font-semibold">
                             住所 <span class="text-red-600">*</span>
                         </label>
-                        <textarea id="shipping_address" name="shipping_address" rows="3" required class="textarea w-full">{{ old('shipping_address', $order->shipping_address) }}</textarea>
+                        <textarea id="shipping_address" name="shipping_address" maxlength="255" rows="3" required class="textarea w-full">{{ old('shipping_address', $order->shipping_address) }}</textarea>
                     </div>
 
                     <div>
                         <label for="shipping_phone" class="mb-2 block text-sm font-semibold">
                             電話番号 <span class="text-red-600">*</span>
                         </label>
-                        <input type="tel" id="shipping_phone" name="shipping_phone"
+                        <input type="tel" id="shipping_phone" name="shipping_phone" maxlength="20"
                             value="{{ old('shipping_phone', $order->shipping_phone) }}" required class="input w-full">
                     </div>
                 </div>

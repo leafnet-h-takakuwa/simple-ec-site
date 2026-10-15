@@ -45,14 +45,14 @@ new #[Layout('components.layouts.auth', ['title' => '会員登録'])] class exte
     <form wire:submit="register" class="flex flex-col gap-6">
         <!-- Name -->
         <div class="grid gap-2">
-            <flux:input wire:model="name" id="name" label="{{ __('Name') }}" type="text" name="name" required
+            <flux:input wire:model="name" id="name" label="{{ __('Name') }}" type="text" name="name" maxlength="255" required
                 autofocus autocomplete="name" placeholder="氏名を入力してください" />
         </div>
 
         <!-- Email Address -->
         <div class="grid gap-2">
             <flux:input wire:model="email" id="email" label="{{ __('Email address') }}" type="email"
-                name="email" required autocomplete="email" placeholder="email@example.com" />
+                name="email" maxlength="255" required autocomplete="email" placeholder="email@example.com" />
         </div>
 
         <!-- Password -->

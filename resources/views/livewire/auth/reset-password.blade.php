@@ -34,7 +34,7 @@ new #[Layout('components.layouts.auth', ['title' => 'パスワード再設定'])
     {
         $this->validate([
             'token' => ['required'],
-            'email' => ['required', 'string', 'email'],
+            'email' => ['required', 'string', 'email', 'max:255'],
             'password' => ['required', 'string', 'confirmed', Rules\Password::defaults()],
         ]);
 
@@ -76,7 +76,7 @@ new #[Layout('components.layouts.auth', ['title' => 'パスワード再設定'])
     <form wire:submit="resetPassword" class="flex flex-col gap-6">
         <!-- Email Address -->
         <div class="grid gap-2">
-            <flux:input wire:model="email" id="email" label="{{ __('Email') }}" type="email" name="email"
+            <flux:input wire:model="email" id="email" label="{{ __('Email') }}" type="email" name="email" maxlength="255"
                 required autocomplete="email" />
         </div>
 

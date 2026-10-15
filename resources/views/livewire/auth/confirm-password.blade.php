@@ -5,7 +5,7 @@ use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 
-new #[Layout('components.layouts.auth')] class extends Component {
+new #[Layout('components.layouts.auth', ['title' => 'パスワード確認'])] class extends Component {
     public string $password = '';
 
     /**
@@ -35,8 +35,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
 }; ?>
 
 <div class="flex flex-col gap-6">
-    <x-auth-header title="パスワードの確認"
-        description="この操作にはパスワードの確認が必要です。続行するにはパスワードを入力してください。" />
+    <x-auth-header title="パスワードの確認" description="この操作にはパスワードの確認が必要です。続行するにはパスワードを入力してください。" />
 
     <!-- Session Status -->
     <x-auth-session-status class="text-center" :status="session('status')" />

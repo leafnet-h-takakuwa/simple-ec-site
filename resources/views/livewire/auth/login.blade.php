@@ -11,7 +11,7 @@ use Livewire\Attributes\Validate;
 use Livewire\Volt\Component;
 
 new #[Layout('components.layouts.auth', ['title' => 'ログイン'])] class extends Component {
-    #[Validate('required|string|email')]
+    #[Validate('required|string|email|max:255')]
     public string $email = '';
 
     #[Validate('required|string')]
@@ -85,7 +85,7 @@ new #[Layout('components.layouts.auth', ['title' => 'ログイン'])] class exte
 
     <form wire:submit="login" class="flex flex-col gap-6">
         <!-- Email Address -->
-        <flux:input wire:model="email" label="{{ __('Email address') }}" type="email" name="email" required autofocus
+        <flux:input wire:model="email" label="{{ __('Email address') }}" type="email" name="email" maxlength="255" required autofocus
             autocomplete="email" placeholder="email@example.com" />
 
         <!-- Password -->

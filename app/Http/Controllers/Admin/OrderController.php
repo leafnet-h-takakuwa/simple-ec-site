@@ -114,15 +114,15 @@ class OrderController extends Controller
             'payment_method' => ['required', Rule::enum(PaymentMethod::class)],
 
             'orderer_name' => ['required', 'string', 'max:255'],
-            'orderer_postal_code' => ['required', 'string', 'max:20'],
-            'orderer_address' => ['required', 'string'],
-            'orderer_phone' => ['required', 'string', 'max:30'],
+            'orderer_postal_code' => ['required', 'string', 'max:8'],
+            'orderer_address' => ['required', 'string', 'max:255'],
+            'orderer_phone' => ['required', 'string', 'max:20'],
             'orderer_email' => ['nullable', 'email', 'max:255'],
 
             'shipping_name' => ['required', 'string', 'max:255'],
-            'shipping_postal_code' => ['required', 'string', 'max:20'],
-            'shipping_address' => ['required', 'string'],
-            'shipping_phone' => ['required', 'string', 'max:30'],
+            'shipping_postal_code' => ['required', 'string', 'max:8'],
+            'shipping_address' => ['required', 'string', 'max:255'],
+            'shipping_phone' => ['required', 'string', 'max:20'],
 
             'items' => ['required', 'array', 'min:1'],
             'items.*.product_id' => ['nullable', 'integer', 'exists:products,id'],
@@ -351,15 +351,15 @@ class OrderController extends Controller
     {
         $validated = $request->validate([
             'orderer_name' => ['required', 'string', 'max:255'],
-            'orderer_postal_code' => ['required', 'string', 'max:20'],
-            'orderer_address' => ['required', 'string'],
-            'orderer_phone' => ['required', 'string', 'max:30'],
+            'orderer_postal_code' => ['required', 'string', 'max:8'],
+            'orderer_address' => ['required', 'string', 'max:255'],
+            'orderer_phone' => ['required', 'string', 'max:20'],
             'orderer_email' => ['nullable', 'email', 'max:255'],
 
             'shipping_name' => ['required', 'string', 'max:255'],
-            'shipping_postal_code' => ['required', 'string', 'max:20'],
-            'shipping_address' => ['required', 'string'],
-            'shipping_phone' => ['required', 'string', 'max:30'],
+            'shipping_postal_code' => ['required', 'string', 'max:8'],
+            'shipping_address' => ['required', 'string', 'max:255'],
+            'shipping_phone' => ['required', 'string', 'max:20'],
         ]);
 
         $order->update($validated);

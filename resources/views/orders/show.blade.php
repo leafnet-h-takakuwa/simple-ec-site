@@ -53,7 +53,16 @@
                     <tbody>
                         @foreach ($order->orderItems as $item)
                             <tr>
-                                <td>{{ $item->product_name }}</td>
+                                <td>
+                                    @if ($item->product_id)
+                                        <a href="{{ route('products.show', $item->product_id) }}"
+                                            class="text-primary hover:underline">
+                                            {{ $item->product_name }}
+                                        </a>
+                                    @else
+                                        {{ $item->product_name }}
+                                    @endif
+                                </td>
                                 <td class="text-right">
                                     {{ formatYen($item->price) }}
                                 </td>
@@ -71,7 +80,16 @@
             <div class="space-y-4 lg:hidden">
                 @foreach ($order->orderItems as $item)
                     <div class="border-b border-base-300 pb-4 last:border-b-0">
-                        <p class="font-semibold">{{ $item->product_name }}</p>
+                        <p class="font-semibold">
+                            @if ($item->product_id)
+                                <a href="{{ route('products.show', $item->product_id) }}"
+                                    class="text-primary hover:underline">
+                                    {{ $item->product_name }}
+                                </a>
+                            @else
+                                {{ $item->product_name }}
+                            @endif
+                        </p>
 
                         <div class="mt-2 flex justify-between text-sm text-base-content/70">
                             <span>

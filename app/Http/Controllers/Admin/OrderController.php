@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\OrderStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
@@ -96,8 +97,13 @@ class OrderController extends Controller
         // 注文情報と注文明細を取得
         $order = Order::with('orderItems')->findOrFail($id);
 
+        // 商品情報取得
+        $products = Product::orderBy('name')
+            ->get(['id', 'name', 'price']);
+
         return view('admin.orders.edit-items', [
             'order' => $order,
+            'products' => $products,
         ]);
     }
 
@@ -108,6 +114,7 @@ class OrderController extends Controller
         $validated = $request->validate([
             'items' => ['required', 'array', 'min:1'],
             'items.*.id' => ['nullable', 'integer', 'distinct'],
+            'items.*.product_id' => ['nullable', 'integer', Rule::exists('products', 'id')],
             'items.*.product_name' => ['required', 'string', 'max:255'],
             'items.*.price' => ['required', 'integer'],
             'items.*.quantity' => ['required', 'integer', 'min:1'],
@@ -151,7 +158,7 @@ class OrderController extends Controller
                 $totalAmount += $subtotal;
 
                 $data = [
-                    'product_id' => null,
+                    'product_id' => $item['product_id'] ?? null,
                     'product_name' => $item['product_name'],
                     'price' => $item['price'],
                     'quantity' => $item['quantity'],

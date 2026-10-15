@@ -38,40 +38,6 @@
 
     </section>
 
-    {{-- カテゴリから探す --}}
-    <section class="mb-12">
-
-        <h2 class="mb-6 border-b border-base-300 pb-3 text-2xl font-bold">
-            カテゴリから探す
-        </h2>
-
-        <div class="grid grid-cols-1 gap-5 sm:grid-cols-3">
-
-            @foreach ($categories as $category)
-                <a href="{{ route('products.index', ['category' => $category->value]) }}"
-                    class="group overflow-hidden rounded-xl border border-base-300 bg-base-100 transition hover:shadow-md">
-
-                    {{-- カテゴリ画像 --}}
-                    <div class="overflow-hidden">
-                        <img src="{{ asset('images/categories/' . $category->value . '.webp') }}"
-                            alt="{{ $category->label() }}"
-                            class="aspect-[400/260] w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                            loading="lazy">
-                    </div>
-
-                    <div class="flex items-center justify-between p-4">
-                        <h3 class="font-bold">
-                            {{ $category->label() }}
-                        </h3>
-                    </div>
-
-                </a>
-            @endforeach
-
-        </div>
-
-    </section>
-
     {{-- 人気商品 --}}
     <section class="mb-12">
 
@@ -83,7 +49,7 @@
 
         <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
 
-            @forelse ($products as $product)
+            @forelse ($productsTop3 as $product)
                 <a href="{{ route('products.show', $product->id) }}"
                     class="group relative overflow-hidden rounded-xl border border-base-300 bg-base-100 transition hover:shadow-md">
 
@@ -165,6 +131,99 @@
                     現在、商品を準備中です。
                 </p>
             @endforelse
+
+        </div>
+
+    </section>
+
+    {{-- 新商品 --}}
+    <section class="mb-12">
+
+        <div class="mb-6 flex items-center justify-between border-b border-base-300 pb-3">
+            <h2 class="text-2xl font-bold">
+                新商品
+            </h2>
+            <a href="{{ route('products.index', ['sort' => 'new']) }}" class="inline-flex items-center gap-2 text-sm ">
+                すべて見る <x-arrow direction="right" />
+            </a>
+        </div>
+
+        <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+
+            @forelse ($productsNew as $product)
+                <a href="{{ route('products.show', $product->id) }}"
+                    class="group relative overflow-hidden rounded-xl border border-base-300 bg-base-100 transition hover:shadow-md">
+
+                    {{-- 商品画像 --}}
+                    <div class="relativeaspect-[4/3] overflow-hidden bg-base-200">
+                        @if ($product->image_path)
+                            <img src="{{ Storage::url($product->image_path) }}" alt="{{ $product->name }}"
+                                class="h-full w-full object-cover transition duration-300 group-hover:scale-105">
+                        @else
+                            <x-no-image />
+                        @endif
+
+                        {{-- 新着リボン --}}
+                        @if ($product->isNew())
+                            <x-new-ribbon />
+                        @endif
+                    </div>
+
+                    {{-- 商品情報 --}}
+                    <div class="space-y-3 p-5">
+                        <h3 class="font-bold group-hover:underline">
+                            {{ $product->name }}
+                        </h3>
+
+                        <p class="text-sm text-base-content/60">
+                            内容量：{{ $product->volume }}
+                        </p>
+
+                        <p class="text-xl font-bold">
+                            {{ formatYen($product->price) }}
+                            <span class="text-xs font-normal">（税込）</span>
+                        </p>
+                    </div>
+                </a>
+            @empty
+                <p class="col-span-full py-8 text-center text-base-content/60">
+                    現在、商品を準備中です。
+                </p>
+            @endforelse
+
+        </div>
+
+    </section>
+
+    {{-- カテゴリから探す --}}
+    <section class="mb-12">
+
+        <h2 class="mb-6 border-b border-base-300 pb-3 text-2xl font-bold">
+            カテゴリから探す
+        </h2>
+
+        <div class="grid grid-cols-1 gap-5 sm:grid-cols-3">
+
+            @foreach ($categories as $category)
+                <a href="{{ route('products.index', ['category' => $category->value]) }}"
+                    class="group overflow-hidden rounded-xl border border-base-300 bg-base-100 transition hover:shadow-md">
+
+                    {{-- カテゴリ画像 --}}
+                    <div class="overflow-hidden">
+                        <img src="{{ asset('images/categories/' . $category->value . '.webp') }}"
+                            alt="{{ $category->label() }}"
+                            class="aspect-[400/260] w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            loading="lazy">
+                    </div>
+
+                    <div class="flex items-center justify-between p-4">
+                        <h3 class="font-bold">
+                            {{ $category->label() }}
+                        </h3>
+                    </div>
+
+                </a>
+            @endforeach
 
         </div>
 

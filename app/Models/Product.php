@@ -22,6 +22,7 @@ class Product extends Model
         'price',
         'image_path',
         'is_active',
+        'is_standard',
     ];
 
     protected function casts(): array
@@ -30,6 +31,7 @@ class Product extends Model
             'category' => ProductCategory::class,
             'price' => 'integer',
             'is_active' => 'boolean',
+            'is_standard' => 'boolean',
         ];
     }
 

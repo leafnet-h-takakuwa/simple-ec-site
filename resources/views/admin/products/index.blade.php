@@ -86,7 +86,12 @@
                             </div>
                         </td>
                         <td class="font-semibold">
-                            {{ $product->name }}
+                            <span>{{ $product->name }}</span>
+                            @if ($product->is_standard)
+                                <span class="ml-4 badge badge-outline badge-success badge-sm">
+                                    定番
+                                </span>
+                            @endif
                         </td>
                         <td>
                             {{ $product->category->label() }}

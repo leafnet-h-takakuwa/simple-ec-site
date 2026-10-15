@@ -62,6 +62,7 @@ class ProductController extends Controller
             'volume' => ['required', 'string', 'max:255'],
             'price' => ['required', 'integer', 'min:0'],
             'is_active' => ['required', 'boolean'],
+            'is_standard' => ['boolean'],
             'description' => ['nullable', 'string'],
             'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
         ], [], ['name' => '商品名']);
@@ -72,6 +73,7 @@ class ProductController extends Controller
         $product->volume = $validated['volume'];
         $product->price = $validated['price'];
         $product->is_active = $validated['is_active'];
+        $product->is_standard = $validated['is_standard'];
         $product->description = $validated['description'] ?? null;
 
         // 商品画像を保存
@@ -103,6 +105,7 @@ class ProductController extends Controller
             'volume' => ['required', 'string', 'max:255'],
             'price' => ['required', 'integer', 'min:0'],
             'is_active' => ['required', 'boolean'],
+            'is_standard' => ['boolean'],
             'description' => ['nullable', 'string'],
             'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'remove_image' => ['nullable', 'boolean'],
@@ -115,6 +118,7 @@ class ProductController extends Controller
         $product->volume = $validated['volume'];
         $product->price = $validated['price'];
         $product->is_active = $validated['is_active'];
+        $product->is_standard = $validated['is_standard'];
         $product->description = $validated['description'] ?? null;
 
         $old_image_path = $product->image_path;

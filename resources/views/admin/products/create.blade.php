@@ -93,6 +93,13 @@
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
+                <div>
+                    <label class="flex cursor-pointer items-center gap-2">
+                        <input type="checkbox" name="is_standard" value="1" class="checkbox checkbox-success"
+                            @checked(old('is_standard', $product->is_standard ?? false))>
+                        <span class="font-medium">定番商品</span>
+                    </label>
+                </div>
             </div>
         </section>
 

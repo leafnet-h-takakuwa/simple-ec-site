@@ -13,12 +13,18 @@ class ProductController extends Controller
     {
         $categories = ProductCategory::cases();
         $category = $request->query('category');
+        $sort = $request->query('sort');
 
         // 指定されたカテゴリが有効か確認
         if ($category !== null) {
             if (ProductCategory::tryFrom($category) === null) {
                 abort(404);
             }
+        }
+
+        // 指定された並び順が有効か確認
+        if ($sort !== null && $sort !== 'new') {
+            abort(404);
         }
 
         $query = Product::query()
@@ -29,6 +35,17 @@ class ProductController extends Controller
             $query->where('category', $category);
         }
 
+        // 並び順
+        if ($sort === 'new') {
+            $query->orderByDesc('created_at')
+                ->orderByDesc('id');
+        } else {
+            $query->withSum('orderItems', 'quantity')
+                ->orderByDesc('is_standard')
+                ->orderByRaw('order_items_sum_quantity DESC NULLS LAST')
+                ->orderByDesc('id');
+        }
+
         $products = $query->orderBy('id')
             ->paginate(12)
             ->withQueryString();
@@ -37,6 +54,7 @@ class ProductController extends Controller
             'products' => $products,
             'categories' => $categories,
             'category' => $category,
+            'sort' => $sort,
         ]);
     }
 

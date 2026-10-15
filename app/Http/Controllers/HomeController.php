@@ -9,9 +9,15 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $products = Product::where('is_active', true)
+        $productsTop3 = Product::where('is_active', true)
             ->withSum('orderItems', 'quantity')
             ->orderByRaw('order_items_sum_quantity DESC NULLS LAST')
+            ->orderByDesc('id')
+            ->take(3)
+            ->get();
+
+        $productsNew = Product::where('is_active', true)
+            ->orderByDesc('created_at')
             ->orderByDesc('id')
             ->take(3)
             ->get();
@@ -19,7 +25,8 @@ class HomeController extends Controller
         $categories = ProductCategory::cases();
 
         return view('welcome', [
-            'products' => $products,
+            'productsTop3' => $productsTop3,
+            'productsNew' => $productsNew,
             'categories' => $categories,
         ]);
     }

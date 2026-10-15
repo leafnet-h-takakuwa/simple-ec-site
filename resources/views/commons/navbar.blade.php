@@ -146,6 +146,21 @@
                                 </a>
                             </li>
 
+                            {{-- 会員情報 --}}
+                            <li>
+                                <a href="{{ route('profile.edit') }}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="size-5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                                        <circle cx="9" cy="7" r="4" />
+                                        <circle cx="19" cy="16" r="2" />
+                                        <path d="M19 12v2M19 18v2M15 16h2M21 16h2" />
+                                    </svg>
+                                    会員情報
+                                </a>
+                            </li>
+
                             <li>
                                 <div class="divider my-1"></div>
                             </li>
@@ -283,9 +298,10 @@
                         </a>
                     </li>
 
-                    {{-- 注文履歴 --}}
+
                     @auth
                         @if (!Auth::user()->is_admin)
+                            {{-- 注文履歴 --}}
                             <li>
                                 <a href="{{ route('orders.index') }}" @class(['gap-2', 'menu-active' => request()->routeIs('orders.*')])>
                                     <svg xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0" fill="none"
@@ -296,6 +312,21 @@
                                         <path d="M8 12h8M8 16h5" />
                                     </svg>
                                     注文履歴
+                                </a>
+                            </li>
+
+                            {{-- 会員情報 --}}
+                            <li>
+                                <a href="{{ route('profile.edit') }}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="size-5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                                        <circle cx="9" cy="7" r="4" />
+                                        <circle cx="19" cy="16" r="2" />
+                                        <path d="M19 12v2M19 18v2M15 16h2M21 16h2" />
+                                    </svg>
+                                    会員情報
                                 </a>
                             </li>
                         @endif

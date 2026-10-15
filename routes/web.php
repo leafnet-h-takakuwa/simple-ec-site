@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -50,10 +51,14 @@ Route::get('/orders/complete', [OrderController::class, 'complete'])
  */
 Route::middleware(['auth'])->group(function () {
 
+    // 注文履歴
     Route::get('/orders', [OrderController::class, 'index'])
         ->name('orders.index');
     Route::get('/orders/{id}', [OrderController::class, 'show'])
         ->name('orders.show');
+    // 会員情報
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
 
 /**

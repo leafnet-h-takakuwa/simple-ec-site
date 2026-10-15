@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'TOP')
+
 @section('content')
     {{-- メインビジュアル --}}
     <section class="mb-12 overflow-hidden rounded-xl bg-base-200">

@@ -1,12 +1,12 @@
 @extends('layouts.admin')
 
-@section('title', '商品一覧')
+@section('title', '商品管理')
 
 @section('content')
     {{-- タイトル --}}
     <div class="mb-8 flex flex-wrap items-center justify-between gap-4">
         <h1 class="text-2xl font-bold lg:text-3xl">
-            商品一覧
+            商品管理
         </h1>
 
         <a href="{{ route('admin.products.create') }}" class="btn btn-success">

@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'お客様情報の編集')
+@section('title', 'お客様情報編集')
 
 @section('content')
     {{-- 注文詳細へ戻る --}}

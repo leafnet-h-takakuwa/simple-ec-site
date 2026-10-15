@@ -5,7 +5,13 @@
     <meta charset="UTF-8">
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}?v=3">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', '管理画面') | 髙桑商店</title>
+    <title>
+        @hasSection('title')
+            @yield('title') | {{ config('app.name') }} 管理画面
+        @else
+            {{ config('app.name') }} 管理画面
+        @endif
+    </title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 

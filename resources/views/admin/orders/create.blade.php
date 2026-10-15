@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', '注文の新規登録')
+@section('title', '注文登録')
 
 @section('content')
     {{-- 一覧へ戻る --}}

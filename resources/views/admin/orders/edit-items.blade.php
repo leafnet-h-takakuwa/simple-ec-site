@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', '注文明細の編集')
+@section('title', '注文明細編集')
 
 @section('content')
     <a href="{{ route('admin.orders.show', $order->id) }}"

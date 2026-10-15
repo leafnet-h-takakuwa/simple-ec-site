@@ -1,11 +1,11 @@
 @extends('layouts.admin')
 
-@section('title', '注文一覧')
+@section('title', '注文管理')
 
 @section('content')
     {{-- ページタイトル --}}
     <div class="mb-8 flex flex-wrap items-center justify-between gap-4">
-        <h1 class="text-2xl font-bold lg:text-3xl">注文一覧</h1>
+        <h1 class="text-2xl font-bold lg:text-3xl">注文管理</h1>
         <a href="{{ route('admin.orders.create') }}" class="btn btn-success">
             <x-plus /> 注文を登録
         </a>

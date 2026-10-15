@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'ご注文完了')
+
 @section('content')
     <div class="mx-auto max-w-4xl px-4 py-10">
 

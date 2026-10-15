@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', $product->name)
+
 @section('content')
     {{-- カテゴリ名を取得 --}}
     @php

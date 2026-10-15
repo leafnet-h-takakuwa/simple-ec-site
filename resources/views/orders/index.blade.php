@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', '注文履歴')
+
 @section('content')
     <div class="mx-auto max-w-6xl px-4 py-8">
         <h1 class="mb-2 text-2xl font-bold">注文履歴</h1>

@@ -40,7 +40,11 @@ new #[Layout('components.layouts.auth')] class extends Component {
         Session::regenerate();
 
         session()->flash('success', 'ログインしました');
-        $this->redirectIntended(default: route('home', absolute: false), navigate: true);
+
+        // 管理者は管理画面TOP、一般ユーザーは店舗TOPへ
+        $redirectTo = Auth::user()->is_admin ? route('admin.dashboard', absolute: false) : route('home', absolute: false);
+
+        $this->redirectIntended(default: $redirectTo, navigate: true);
     }
 
     /**

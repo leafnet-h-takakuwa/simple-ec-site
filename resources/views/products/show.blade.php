@@ -64,8 +64,7 @@
 
                 {{-- 価格 --}}
                 <p class="mb-7 text-3xl font-bold">
-                    {{ number_format($product->price) }}円
-
+                    {{ formatYen($product->price) }}
                     <span class="text-sm font-normal text-base-content/70">
                         （税込）
                     </span>

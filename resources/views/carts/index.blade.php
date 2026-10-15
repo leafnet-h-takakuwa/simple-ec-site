@@ -72,7 +72,7 @@
 
                                     <p class="mt-3 text-sm sm:text-base">
                                         <span class="hidden lg:inline">単価：</span>
-                                        {{ number_format($product->price) }}円
+                                        {{ formatYen($product->price) }}
                                     </p>
                                 </div>
                             </div>
@@ -114,7 +114,7 @@
                                         </span>
 
                                         <p class="text-lg font-bold sm:text-xl">
-                                            {{ number_format($subtotal) }}円
+                                            {{ formatYen($subtotal) }}
                                         </p>
                                     </div>
                                 </div>
@@ -189,7 +189,7 @@
                     </h2>
 
                     <p class="text-2xl font-bold sm:text-3xl">
-                        {{ number_format($total) }}円
+                        {{ formatYen($total) }}
                     </p>
                 </div>
 

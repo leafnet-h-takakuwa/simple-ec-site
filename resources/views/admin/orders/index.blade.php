@@ -134,7 +134,7 @@
                         <td>{{ $order->orderer_name }}</td>
 
                         <td class="whitespace-nowrap text-right font-semibold">
-                            ¥{{ number_format($order->total_amount) }}
+                            {{ formatYen($order->total_amount) }}
                         </td>
 
                         <td>
@@ -178,7 +178,7 @@
 
                 <div class="mt-4 flex items-center justify-between gap-3">
                     <span class="text-lg font-bold">
-                        ¥{{ number_format($order->total_amount) }}
+                        {{ formatYen($order->total_amount) }}
                     </span>
 
                     <span class="badge badge-outline">

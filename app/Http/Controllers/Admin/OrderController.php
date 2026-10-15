@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class OrderController extends Controller
 {
@@ -87,6 +89,108 @@ class OrderController extends Controller
             'order' => $order,
             'statuses' => OrderStatus::cases(),
         ]);
+    }
+
+    public function editItems($id)
+    {
+        // 注文情報と注文明細を取得
+        $order = Order::with('orderItems')->findOrFail($id);
+
+        return view('admin.orders.edit-items', [
+            'order' => $order,
+        ]);
+    }
+
+
+    public function updateItems(Request $request, $id)
+    {
+        // 入力値の検証
+        $validated = $request->validate([
+            'items' => ['required', 'array', 'min:1'],
+            'items.*.id' => ['nullable', 'integer', 'distinct'],
+            'items.*.product_name' => ['required', 'string', 'max:255'],
+            'items.*.price' => ['required', 'integer'],
+            'items.*.quantity' => ['required', 'integer', 'min:1'],
+        ]);
+
+        // 注文情報を取得
+        $order = Order::findOrFail($id);
+
+        DB::transaction(function () use ($order, $validated) {
+            // 同じ注文への同時更新を防ぐ
+            $order = Order::whereKey($order->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            // 現在の注文明細を取得
+            $existingItems = $order->orderItems()
+                ->lockForUpdate()
+                ->get()
+                ->keyBy('id');
+
+            // フォームから送信された既存明細ID
+            $submittedIds = collect($validated['items'])
+                ->pluck('id')
+                ->filter(fn($id) => $id !== null)
+                ->map(fn($id) => (int) $id);
+
+            // 別の注文の明細IDが含まれていないか確認
+            if ($submittedIds->diff($existingItems->keys())->isNotEmpty()) {
+                throw ValidationException::withMessages([
+                    'items' => '更新対象の注文明細が正しくありません。',
+                ]);
+            }
+
+            $totalAmount = 0;
+
+            foreach ($validated['items'] as $item) {
+                // 小計をサーバー側で計算
+                $subtotal = $item['price'] * $item['quantity'];
+
+                // 合計金額を加算
+                $totalAmount += $subtotal;
+
+                $data = [
+                    'product_id' => null,
+                    'product_name' => $item['product_name'],
+                    'price' => $item['price'],
+                    'quantity' => $item['quantity'],
+                    'subtotal' => $subtotal,
+                ];
+
+                if (!empty($item['id'])) {
+                    // 既存明細を更新
+                    $existingItems->get((int) $item['id'])->update($data);
+                } else {
+                    // 新規明細を追加
+                    $order->orderItems()->create($data);
+                }
+            }
+
+            if ($totalAmount < 0) {
+                throw ValidationException::withMessages([
+                    'items' => '注文合計金額がマイナスになるような変更はできません。',
+                ]);
+            }
+
+            // 画面から削除された既存明細を削除
+            $deleteIds = $existingItems->keys()->diff($submittedIds);
+
+            if ($deleteIds->isNotEmpty()) {
+                $order->orderItems()
+                    ->whereIn('id', $deleteIds)
+                    ->delete();
+            }
+
+            // 注文合計を更新
+            $order->total_amount = $totalAmount;
+            $order->save();
+        });
+
+
+        return redirect()
+            ->route('admin.orders.show', $order->id)
+            ->with('success', '注文明細を更新しました。');
     }
 
     public function updateStatus(Request $request, $id)

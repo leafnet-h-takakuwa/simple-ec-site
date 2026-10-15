@@ -51,13 +51,13 @@
                             </p>
 
                             <p class="mt-1 text-sm text-base-content/60">
-                                {{ number_format($item->price) }}円
+                                {{ formatYen($item->price) }}
                                 × {{ $item->quantity }}点
                             </p>
                         </div>
 
                         <p class="shrink-0 font-medium">
-                            {{ number_format($item->subtotal) }}円
+                            {{ formatYen($item->subtotal) }}
                         </p>
                     </div>
                 @endforeach
@@ -67,7 +67,7 @@
                 <span class="font-bold">合計金額</span>
 
                 <span class="text-2xl font-bold">
-                    {{ number_format($order->total_amount) }}円
+                    {{ formatYen($order->total_amount) }}
                 </span>
             </div>
         </section>

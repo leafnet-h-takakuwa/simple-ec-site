@@ -44,7 +44,7 @@
                                     @endif
                                 </td>
                                 <td class="text-right font-semibold">
-                                    ¥{{ number_format($order->total_amount) }}
+                                    {{ formatYen($order->total_amount) }}
                                 </td>
                                 <td>
                                     <span class="badge badge-outline">
@@ -92,7 +92,7 @@
                         <div class="mb-5 flex items-center justify-between border-t border-base-300 pt-4">
                             <span class="text-sm">合計金額</span>
                             <span class="text-lg font-bold">
-                                ¥{{ number_format($order->total_amount) }}
+                                {{ formatYen($order->total_amount) }}
                             </span>
                         </div>
 

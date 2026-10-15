@@ -6,8 +6,9 @@
     <div class="mx-auto max-w-5xl px-4 py-8">
 
         {{-- 一覧へ戻る --}}
-        <a href="{{ route('orders.index') }}" class="mb-6 inline-block text-sm text-primary hover:underline">
-            ← 注文履歴へ戻る
+        <a href="{{ route('orders.index') }}"
+            class="mb-6 inline-flex items-center gap-2 text-sm text-primary hover:underline">
+            <x-arrow direction="left" /> 注文履歴へ戻る
         </a>
 
         {{-- ページタイトル --}}
@@ -54,11 +55,11 @@
                             <tr>
                                 <td>{{ $item->product_name }}</td>
                                 <td class="text-right">
-                                    ¥{{ number_format($item->price) }}
+                                    {{ formatYen($item->price) }}
                                 </td>
                                 <td class="text-right">{{ $item->quantity }}</td>
                                 <td class="text-right font-semibold">
-                                    ¥{{ number_format($item->subtotal) }}
+                                    {{ formatYen($item->subtotal) }}
                                 </td>
                             </tr>
                         @endforeach
@@ -74,11 +75,11 @@
 
                         <div class="mt-2 flex justify-between text-sm text-base-content/70">
                             <span>
-                                ¥{{ number_format($item->price) }}
+                                {{ formatYen($item->price) }}
                                 × {{ $item->quantity }}
                             </span>
                             <span class="font-semibold text-base-content">
-                                ¥{{ number_format($item->subtotal) }}
+                                {{ formatYen($item->subtotal) }}
                             </span>
                         </div>
                     </div>
@@ -88,7 +89,7 @@
             {{-- 合計金額 --}}
             <div class="mt-5 flex justify-between border-t border-base-300 pt-5 text-lg font-bold">
                 <span>合計金額</span>
-                <span>¥{{ number_format($order->total_amount) }}</span>
+                <span>{{ formatYen($order->total_amount) }}</span>
             </div>
         </section>
 

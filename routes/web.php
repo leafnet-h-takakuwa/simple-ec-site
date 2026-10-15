@@ -63,14 +63,22 @@ Route::middleware(['auth', EnsureUserIsAdmin::class])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
+        // ダッシュボード
         Route::get('/', [DashboardController::class, 'index'])
             ->name('dashboard');
+        // 注文管理
         Route::get('/orders', [AdminOrderController::class, 'index'])
             ->name('orders.index');
         Route::get('/orders/{order}', [AdminOrderController::class, 'show'])
             ->name('orders.show');
+        Route::get('/orders/{order}/items/edit', [AdminOrderController::class, 'editItems'])
+            ->name('orders.items.edit');
+        Route::put('/orders/{order}/items', [AdminOrderController::class, 'updateItems'])
+            ->name('orders.items.update');
         Route::patch('/orders/{order}/status', [AdminOrderController::class, 'updateStatus'])
             ->name('orders.updateStatus');
+
+        // 商品管理
         Route::get('/products', [AdminProductController::class, 'index'])
             ->name('products.index');
         Route::get('/products/create', [AdminProductController::class, 'create'])

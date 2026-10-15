@@ -116,7 +116,7 @@
                         </div>
 
                         <p class="text-xl font-bold">
-                            ¥{{ number_format($product->price) }}
+                            {{ formatYen($product->price) }}
                             <span class="text-xs font-normal">
                                 （税込）
                             </span>

@@ -50,14 +50,14 @@
                                     {{ $cart_item->product->name }}
                                 </p>
                                 <p class="mt-1 text-sm text-base-content/60">
-                                    {{ number_format($cart_item->product->price) }}円
+                                    {{ formatYen($cart_item->product->price) }}
                                     × {{ $cart_item->quantity }}
                                 </p>
                             </div>
 
                             {{-- 小計 --}}
                             <p class="shrink-0 text-right font-semibold">
-                                {{ number_format($cart_item->product->price * $cart_item->quantity) }}円
+                                {{ formatYen($cart_item->product->price * $cart_item->quantity) }}
                             </p>
                         </div>
                     @endforeach
@@ -67,7 +67,7 @@
                 <div class="mt-3 flex items-center justify-end gap-6 border-t border-base-300 pt-5">
                     <span class="font-bold">商品代金合計</span>
                     <span class="text-xl font-bold">
-                        {{ number_format($total_amount) }}円
+                        {{ formatYen($total_amount) }}
                     </span>
                 </div>
             </section>

@@ -4,8 +4,9 @@
 
 @section('content')
     <div class="mb-8">
-        <a href="{{ route('admin.products.index') }}" class="text-sm text-green-800 hover:underline">
-            ← 商品一覧へ戻る
+        <a href="{{ route('admin.products.index') }}"
+            class="inline-flex items-center gap-2 text-sm text-green-800 hover:underline">
+            <x-arrow direction="left" /> 商品一覧へ戻る
         </a>
 
         <h1 class="mt-4 text-2xl font-bold lg:text-3xl">

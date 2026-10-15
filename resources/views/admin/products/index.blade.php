@@ -10,7 +10,7 @@
         </h1>
 
         <a href="{{ route('admin.products.create') }}" class="btn btn-success">
-            ＋ 商品を登録
+            <x-plus /> 商品を登録
         </a>
     </div>
 
@@ -92,7 +92,7 @@
                             {{ $product->category->label() }}
                         </td>
                         <td class="text-right">
-                            ¥{{ number_format($product->price) }}
+                            {{ formatYen($product->price) }}
                         </td>
                         <td>
                             @if ($product->is_active)
@@ -149,7 +149,7 @@
                         </p>
 
                         <p class="mt-2 font-bold">
-                            ¥{{ number_format($product->price) }}
+                            {{ formatYen($product->price) }}
                         </p>
 
                         <div class="mt-2">

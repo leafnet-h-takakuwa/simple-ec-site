@@ -102,9 +102,22 @@
             <details class="dropdown dropdown-end">
                 <summary class="btn btn-ghost btn-sm gap-1 px-2">
                     @auth
-                        <span class="max-w-40 truncate">
-                            {{ Auth::user()->name }} 様
-                        </span>
+                        @if (Auth::user()->is_admin)
+                            <span
+                                class="inline-flex items-center gap-1.5 rounded-md border border-amber-400/40 bg-amber-500/10 px-2.5 py-1 text-xs font-bold text-amber-700 dark:text-amber-200">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor" stroke-width="1.8">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M12 3 4.5 6v5.25c0 5.25 3.45 8.55 7.5 9.75 4.05-1.2 7.5-4.5 7.5-9.75V6L12 3Z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="m9 12 2 2 4-4" />
+                                </svg>
+                                管理者モード
+                            </span>
+                        @else
+                            <span class="max-w-40 truncate">
+                                {{ Auth::user()->name }} 様
+                            </span>
+                        @endif
                     @else
                         ログイン／会員登録
                     @endauth
@@ -123,8 +136,8 @@
                             <li>
                                 <a href="{{ route('orders.index') }}">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="size-5" fill="none"
-                                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-                                        stroke-linejoin="round">
+                                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"
+                                        stroke-linecap="round" stroke-linejoin="round">
                                         <path d="M8 3H5a2 2 0 0 0-2 2v16l4-2 5 2 5-2 4 2V5a2 2 0 0 0-2-2h-3" />
                                         <path d="M8 3h8v4H8z" />
                                         <path d="M8 12h8M8 16h5" />
@@ -202,7 +215,20 @@
 
                     @auth
                         <li class="menu-title">
-                            <span class="truncate">{{ Auth::user()->name }} 様</span>
+                            @if (Auth::user()->is_admin)
+                                <span
+                                    class="inline-flex items-center gap-1.5 rounded-md border border-amber-400/40 bg-amber-500/10 px-2.5 py-1 text-xs font-bold text-amber-700 dark:text-amber-200">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M12 3 4.5 6v5.25c0 5.25 3.45 8.55 7.5 9.75 4.05-1.2 7.5-4.5 7.5-9.75V6L12 3Z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="m9 12 2 2 4-4" />
+                                    </svg>
+                                    管理者モード
+                                </span>
+                            @else
+                                <span class="truncate">{{ Auth::user()->name }} 様</span>
+                            @endif
                         </li>
                     @endauth
 

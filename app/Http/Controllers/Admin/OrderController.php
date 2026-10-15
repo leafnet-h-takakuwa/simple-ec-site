@@ -339,4 +339,48 @@ class OrderController extends Controller
             'success' => true,
         ]);
     }
+
+    public function editCustomer(Order $order)
+    {
+        return view('admin.orders.edit-customer', [
+            'order' => $order,
+        ]);
+    }
+
+    public function updateCustomer(Request $request, Order $order)
+    {
+        $validated = $request->validate([
+            'orderer_name' => ['required', 'string', 'max:255'],
+            'orderer_postal_code' => ['required', 'string', 'max:20'],
+            'orderer_address' => ['required', 'string'],
+            'orderer_phone' => ['required', 'string', 'max:30'],
+            'orderer_email' => ['nullable', 'email', 'max:255'],
+
+            'shipping_name' => ['required', 'string', 'max:255'],
+            'shipping_postal_code' => ['required', 'string', 'max:20'],
+            'shipping_address' => ['required', 'string'],
+            'shipping_phone' => ['required', 'string', 'max:30'],
+        ]);
+
+        $order->update($validated);
+
+        return redirect()
+            ->route('admin.orders.show', $order)
+            ->with('success', 'お客様情報を更新しました。');
+    }
+
+    public function updatePayment(Request $request, Order $order)
+    {
+        $validated = $request->validate([
+            'payment_method' => ['required', Rule::enum(PaymentMethod::class)],
+        ]);
+
+        $order->update([
+            'payment_method' => $validated['payment_method'],
+        ]);
+
+        return redirect()
+            ->route('admin.orders.show', $order)
+            ->with('success', 'お支払い方法を変更しました。');
+    }
 }

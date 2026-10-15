@@ -139,65 +139,88 @@
         </div>
     </section>
 
-    {{-- 注文者情報・お届け先 --}}
-    <div class="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <section class="rounded-xl border border-slate-200 bg-white p-5 lg:p-7">
-            <h2 class="mb-5 text-lg font-bold">注文者情報</h2>
+    {{-- お客様情報 --}}
+    <section class="mb-8 rounded-xl border border-slate-200 bg-white p-5 lg:p-7">
 
-            <dl class="space-y-4 text-sm">
-                <div>
-                    <dt class="text-slate-500">氏名</dt>
-                    <dd class="mt-1 font-semibold">{{ $order->orderer_name }}</dd>
-                </div>
-                <div>
-                    <dt class="text-slate-500">郵便番号</dt>
-                    <dd class="mt-1">〒{{ $order->orderer_postal_code }}</dd>
-                </div>
-                <div>
-                    <dt class="text-slate-500">住所</dt>
-                    <dd class="mt-1 whitespace-pre-line">{{ $order->orderer_address }}</dd>
-                </div>
-                <div>
-                    <dt class="text-slate-500">電話番号</dt>
-                    <dd class="mt-1">{{ $order->orderer_phone }}</dd>
-                </div>
-                <div>
-                    <dt class="text-slate-500">メールアドレス</dt>
-                    <dd class="mt-1 break-all">{{ $order->orderer_email ?? '未登録' }}</dd>
-                </div>
-            </dl>
-        </section>
+        {{-- 見出し・編集ボタン --}}
+        <div class="mb-5 flex items-center justify-between gap-3">
+            <h2 class="text-lg font-bold">お客様情報</h2>
 
-        <section class="rounded-xl border border-slate-200 bg-white p-5 lg:p-7">
-            <h2 class="mb-5 text-lg font-bold">お届け先情報</h2>
+            <a href="{{ route('admin.orders.customer.edit', $order) }}" class="btn btn-outline btn-neutral btn-sm">
+                お客様情報を編集
+            </a>
+        </div>
 
-            <dl class="space-y-4 text-sm">
-                <div>
-                    <dt class="text-slate-500">氏名</dt>
-                    <dd class="mt-1 font-semibold">{{ $order->shipping_name }}</dd>
-                </div>
-                <div>
-                    <dt class="text-slate-500">郵便番号</dt>
-                    <dd class="mt-1">〒{{ $order->shipping_postal_code }}</dd>
-                </div>
-                <div>
-                    <dt class="text-slate-500">住所</dt>
-                    <dd class="mt-1 whitespace-pre-line">{{ $order->shipping_address }}</dd>
-                </div>
-                <div>
-                    <dt class="text-slate-500">電話番号</dt>
-                    <dd class="mt-1">{{ $order->shipping_phone }}</dd>
-                </div>
-            </dl>
-        </section>
-    </div>
+        {{-- 注文者情報・お届け先情報 --}}
+        <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+
+            {{-- 注文者情報 --}}
+            <div class="rounded-xl border border-slate-200 bg-slate-30 p-5">
+                <h3 class="mb-5 font-bold">注文者情報</h3>
+
+                <dl class="space-y-4 text-sm">
+                    <div>
+                        <dt class="text-slate-500">氏名</dt>
+                        <dd class="mt-1 font-semibold">{{ $order->orderer_name }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-slate-500">郵便番号</dt>
+                        <dd class="mt-1">〒{{ $order->orderer_postal_code }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-slate-500">住所</dt>
+                        <dd class="mt-1 whitespace-pre-line">{{ $order->orderer_address }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-slate-500">電話番号</dt>
+                        <dd class="mt-1">{{ $order->orderer_phone }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-slate-500">メールアドレス</dt>
+                        <dd class="mt-1 break-all">{{ $order->orderer_email ?? '未登録' }}</dd>
+                    </div>
+                </dl>
+            </div>
+
+            {{-- お届け先情報 --}}
+            <div class="rounded-xl border border-slate-200 bg-slate-30 p-5">
+                <h3 class="mb-5 font-bold">お届け先情報</h3>
+
+                <dl class="space-y-4 text-sm">
+                    <div>
+                        <dt class="text-slate-500">氏名</dt>
+                        <dd class="mt-1 font-semibold">{{ $order->shipping_name }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-slate-500">郵便番号</dt>
+                        <dd class="mt-1">〒{{ $order->shipping_postal_code }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-slate-500">住所</dt>
+                        <dd class="mt-1 whitespace-pre-line">{{ $order->shipping_address }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-slate-500">電話番号</dt>
+                        <dd class="mt-1">{{ $order->shipping_phone }}</dd>
+                    </div>
+                </dl>
+            </div>
+
+        </div>
+    </section>
 
     {{-- お支払い --}}
     <section class="mb-8 rounded-xl border border-slate-200 bg-white p-5 lg:p-7">
-        <h2 class="mb-4 text-lg font-bold">お支払い方法</h2>
-        <p class="font-semibold">
-            {{ $order->payment_method->label() }}
-        </p>
+        <div class="mb-4 flex items-center justify-between gap-3">
+            <h2 class="text-lg font-bold">お支払い方法</h2>
+
+            <button type="button" class="btn btn-outline btn-neutral btn-sm"
+                onclick="document.getElementById('payment_modal').showModal()">
+                変更
+            </button>
+        </div>
+
+        <p class="font-semibold">{{ $order->payment_method->label() }}</p>
     </section>
 
     {{-- メモ --}}
@@ -251,6 +274,51 @@
                 </div>
             </form>
         </div>
+    </dialog>
+
+    {{-- 支払い方法変更モーダル --}}
+    <dialog id="payment_modal" class="modal">
+        <div class="modal-box">
+            <h3 class="text-lg font-bold">お支払い方法の変更</h3>
+
+            <p class="mt-2 text-sm text-slate-500">
+                変更するお支払い方法を選択してください。
+            </p>
+
+            <form method="POST" action="{{ route('admin.orders.payment.update', $order) }}">
+                @csrf
+                @method('PATCH')
+
+                <div class="mt-6">
+                    <label for="payment_method" class="mb-2 block text-sm font-semibold">
+                        お支払い方法
+                    </label>
+
+                    <select id="payment_method" name="payment_method" class="select w-full" required>
+                        @foreach (\App\Enums\PaymentMethod::cases() as $method)
+                            <option value="{{ $method->value }}" @selected(old('payment_method', $order->payment_method->value) === $method->value)>
+                                {{ $method->label() }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="modal-action">
+                    <button type="button" class="btn btn-outline btn-neutral"
+                        onclick="document.getElementById('payment_modal').close()">
+                        キャンセル
+                    </button>
+
+                    <button type="submit" class="btn btn-success">
+                        変更を保存
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <form method="dialog" class="modal-backdrop">
+            <button>閉じる</button>
+        </form>
     </dialog>
 
     <script>

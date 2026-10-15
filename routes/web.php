@@ -83,7 +83,12 @@ Route::middleware(['auth', EnsureUserIsAdmin::class])
             ->name('orders.updateStatus');
         Route::patch('/orders/{order}/memo', [AdminOrderController::class, 'updateMemo'])
             ->name('orders.updateMemo');
-
+        Route::get('/orders/{order}/customer/edit', [AdminOrderController::class, 'editCustomer'])
+            ->name('orders.customer.edit');
+        Route::put('/orders/{order}/customer', [AdminOrderController::class, 'updateCustomer'])
+            ->name('orders.customer.update');
+        Route::patch('/orders/{order}/payment', [AdminOrderController::class, 'updatePayment'])
+            ->name('orders.payment.update');
         // 商品管理
         Route::get('/products', [AdminProductController::class, 'index'])
             ->name('products.index');

@@ -81,6 +81,8 @@ Route::middleware(['auth', EnsureUserIsAdmin::class])
             ->name('orders.items.update');
         Route::patch('/orders/{order}/status', [AdminOrderController::class, 'updateStatus'])
             ->name('orders.updateStatus');
+        Route::patch('/orders/{order}/memo', [AdminOrderController::class, 'updateMemo'])
+            ->name('orders.updateMemo');
 
         // 商品管理
         Route::get('/products', [AdminProductController::class, 'index'])

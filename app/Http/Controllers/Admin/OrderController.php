@@ -129,6 +129,7 @@ class OrderController extends Controller
             'items.*.product_name' => ['required', 'string', 'max:255'],
             'items.*.price' => ['required', 'integer'],
             'items.*.quantity' => ['required', 'integer', 'min:1'],
+            'memo' => ['nullable', 'string'],
         ]);
 
         // 注文明細の小計・合計金額を計算
@@ -171,6 +172,8 @@ class OrderController extends Controller
                 'shipping_phone' => $validated['shipping_phone'],
 
                 'payment_method' => $validated['payment_method'],
+
+                'memo' => $validated['memo'] ?? null,
             ]);
 
             foreach ($items as $item) {
@@ -320,5 +323,20 @@ class OrderController extends Controller
 
         return redirect()->route('admin.orders.show', $order->id)
             ->with('success', '注文ステータスを更新しました。');
+    }
+
+    public function updateMemo(Request $request, Order $order)
+    {
+        $validated = $request->validate([
+            'memo' => ['nullable', 'string'],
+        ]);
+
+        $order->update([
+            'memo' => $validated['memo'] ?? null,
+        ]);
+
+        return response()->json([
+            'success' => true,
+        ]);
     }
 }

@@ -30,6 +30,7 @@ class Order extends Model
         'shipping_address',
         'shipping_phone',
         'order_source',
+        'memo',
     ];
 
     protected function casts(): array

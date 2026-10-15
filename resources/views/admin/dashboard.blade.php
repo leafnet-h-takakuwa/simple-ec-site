@@ -99,8 +99,8 @@
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div class="rounded-xl border border-slate-200 p-5">
                 <a href="{{ route('admin.products.index') }}">
-                    <div class="font-bold text-green-800">
-                        商品管理へ →
+                    <div class="flex items-center gap-2 font-bold text-green-800">
+                        商品管理へ <x-arrow direction="right" />
                     </div>
                 </a>
                 <p class="mt-2 text-sm text-slate-500">
@@ -110,8 +110,8 @@
 
             <div class="rounded-xl border border-slate-200 p-5">
                 <a href="{{ route('admin.orders.index') }}">
-                    <div class="font-bold text-green-800">
-                        注文管理へ →
+                    <div class="flex items-center gap-2 font-bold text-green-800">
+                        注文管理へ <x-arrow direction="right" />
                     </div>
                 </a>
                 <p class="mt-2 text-sm text-slate-500">

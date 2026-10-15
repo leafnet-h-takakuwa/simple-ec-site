@@ -16,17 +16,6 @@
         </h1>
     </div>
 
-    {{-- バリデーションエラー --}}
-    @if ($errors->any())
-        <div class="alert alert-error mb-6">
-            <ul class="list-inside list-disc">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
     <form method="POST" action="{{ route('admin.orders.store') }}">
         @csrf
 
@@ -244,6 +233,19 @@
                         </option>
                     @endforeach
                 </select>
+            </div>
+        </section>
+
+        {{-- メモ --}}
+        <section class="mb-8 rounded-xl border border-slate-200 bg-white p-5 lg:p-7">
+            <div>
+                <label for="memo" class="mb-2 block font-semibold">
+                    管理メモ
+                </label>
+                <textarea id="memo" name="memo" rows="4" class="textarea w-full" placeholder="注文に関する連絡事項など">{{ old('memo') }}</textarea>
+                <p class="mt-1 text-sm text-slate-500">
+                    このメモは管理者のみ確認できます。
+                </p>
             </div>
         </section>
 

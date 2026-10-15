@@ -200,6 +200,20 @@
         </p>
     </section>
 
+    {{-- メモ --}}
+    <section class="mb-8 rounded-xl border border-slate-200 bg-white p-5 lg:p-7">
+        <div class="mb-3 flex items-center justify-between gap-3">
+            <h2 class="text-lg font-bold">管理メモ</h2>
+            <span id="memo-status" class="text-xs text-slate-500"></span>
+        </div>
+
+        <textarea id="memo" name="memo" rows="4" class="textarea w-full" placeholder="注文に関する連絡事項など">{{ $order->memo }}</textarea>
+
+        <p class="mt-1 text-sm text-slate-500">
+            このメモは管理者のみ確認できます。
+        </p>
+    </section>
+
     {{-- ステータス更新モーダル --}}
     <dialog id="status_modal" class="modal">
         <div class="modal-box">
@@ -240,6 +254,50 @@
     </dialog>
 
     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const memo = document.getElementById('memo');
+            const status = document.getElementById('memo-status');
+
+            let savedValue = memo.value;
+
+            memo.addEventListener('blur', async () => {
+                if (memo.value === savedValue) return;
+
+                const valueToSave = memo.value;
+
+                status.textContent = '保存中...';
+                status.className = 'text-xs text-slate-500';
+
+                try {
+                    const response = await fetch(
+                        @json(route('admin.orders.updateMemo', $order)), {
+                            method: 'PATCH',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': @json(csrf_token()),
+                            },
+                            body: JSON.stringify({
+                                memo: valueToSave,
+                            }),
+                        }
+                    );
+
+                    if (!response.ok) {
+                        throw new Error('保存に失敗しました');
+                    }
+
+                    savedValue = valueToSave;
+                    status.textContent = '保存しました';
+                    status.className = 'text-xs text-green-700';
+
+                } catch (error) {
+                    status.textContent = '保存に失敗しました';
+                    status.className = 'text-xs text-red-600';
+                }
+            });
+        });
+
         function openStatusModal() {
             const select = document.getElementById('status');
             const selectedOption = select.options[select.selectedIndex];

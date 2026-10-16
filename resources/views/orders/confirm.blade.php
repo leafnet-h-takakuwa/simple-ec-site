@@ -165,13 +165,21 @@
                 @endif
             </section>
 
+            {{-- ご注文に関するご要望 --}}
+            <section class="rounded-lg border border-base-300 bg-base-100 p-5 sm:p-7">
+                <h2 class="mb-5 border-b border-base-200 pb-4 text-lg font-bold">
+                    ご注文に関するご要望
+                </h2>
+
+                <p class="whitespace-pre-wrap break-words text-sm">{{ $order['customer_note'] ?: '特になし' }}</p>
+            </section>
         </div>
 
         {{-- 送料・手数料の確認 --}}
         <div class="mt-6 rounded-lg border border-base-300 bg-base-100 p-5 sm:p-6">
             <label class="flex cursor-pointer items-start gap-3">
                 <input type="checkbox" name="fee_agreement" value="1" form="order_form" required
-                    class="checkbox checkbox-primary mt-0.5">
+                    class="checkbox checkbox-primary mb-0">
 
                 <span class="text-sm leading-relaxed">
                     送料

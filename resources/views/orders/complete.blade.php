@@ -132,6 +132,15 @@
             @endif
         </section>
 
+        {{-- ご注文に関するご要望 --}}
+        <section class="mb-6 rounded-lg border border-base-300 bg-base-100 p-5 sm:p-7">
+            <h2 class="mb-5 border-b border-base-200 pb-4 text-lg font-bold">
+                ご注文に関するご要望
+            </h2>
+
+            <p class="whitespace-pre-wrap break-words text-sm">{{ $order->customer_note ?: '特になし' }}</p>
+        </section>
+
         {{-- 注文内容の保存案内 --}}
         <div class="mb-8 rounded-lg bg-base-200/50 p-4 text-sm text-base-content/70">
             <p>

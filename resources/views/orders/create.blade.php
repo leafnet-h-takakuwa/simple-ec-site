@@ -177,6 +177,27 @@
                         </div>
                     </div>
                 </section>
+
+                {{-- ご注文に関するご要望 --}}
+                <section class="rounded-lg border border-base-300 bg-base-100 p-5 sm:p-7">
+                    <h2 class="mb-4 text-lg font-bold">ご注文に関するご要望</h2>
+
+                    <label for="customer_note" class="mb-2 block text-sm font-medium">
+                        備考 <span class="text-base-content/60">（任意）</span>
+                    </label>
+
+                    <textarea id="customer_note" name="customer_note" class="textarea w-full" rows="4" maxlength="1000"
+                        placeholder="">{{ old('customer_note', $order['customer_note'] ?? '') }}</textarea>
+
+                    <p class="mt-2 text-sm text-base-content/60">
+                        包装・梱包方法、お届け日時などのご希望がございましたらご記入ください。
+                        ご希望に添えない場合もございますので、あらかじめご了承ください。
+                    </p>
+
+                    @error('customer_note')
+                        <p class="mt-2 text-sm text-error">{{ $message }}</p>
+                    @enderror
+                </section>
             </div>
 
             {{-- 操作ボタン --}}

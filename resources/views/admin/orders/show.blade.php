@@ -150,6 +150,19 @@
         </div>
     </section>
 
+    {{-- お客様からのご要望 --}}
+    <section class="mb-8 rounded-xl border border-slate-200 bg-white p-5 lg:p-7">
+        <h2 class="mb-5 text-lg font-bold">お客様からのご要望</h2>
+
+        @if (filled($order->customer_note))
+            <p class="rounded-lg bg-amber-50 px-4 py-2 break-words text-sm leading-relaxed text-slate-800">
+                <span class="whitespace-pre-line">{{ $order->customer_note }}</span>
+            </p>
+        @else
+            <p class="text-sm text-slate-500">特になし</p>
+        @endif
+    </section>
+
     {{-- お支払い・ご請求金額 --}}
     <section class="mb-8 rounded-xl border border-slate-200 bg-white p-5 lg:p-7">
 

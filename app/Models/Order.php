@@ -33,6 +33,7 @@ class Order extends Model
         'memo',
         'shipping_fee',
         'cod_fee',
+        'customer_note',
     ];
 
     protected function casts(): array

@@ -197,6 +197,19 @@
             </div>
         </section>
 
+        {{-- ご注文に関するご要望 --}}
+        <section class="mb-8 rounded-xl border border-base-300 bg-base-100 p-5 lg:p-7">
+            <h2 class="mb-5 text-lg font-bold">ご注文に関するご要望</h2>
+
+            @if (filled($order->customer_note))
+                <p class="rounded-lg bg-base-200 px-4 py-2 break-words text-sm leading-relaxed">
+                    <span class="whitespace-pre-line">{{ $order->customer_note }}</span>
+                </p>
+            @else
+                <p class="text-sm text-base-content/60">特になし</p>
+            @endif
+        </section>
+
         {{-- 注文者情報・お届け先 --}}
         <div class="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
 

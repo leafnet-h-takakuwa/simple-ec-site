@@ -114,6 +114,7 @@ class OrderController extends Controller
             'shipping_postal_code' => ['required_if:shipping_same,0', 'nullable', 'string', 'max:8'],
             'shipping_address' => ['required_if:shipping_same,0', 'nullable', 'string', 'max:255'],
             'shipping_phone' => ['required_if:shipping_same,0', 'nullable', 'string', 'max:20'],
+            'customer_note' => ['nullable', 'string', 'max:1000'],
         ]);
 
         // 注文者と配送先が同じ場合は注文者情報をコピー
@@ -336,6 +337,7 @@ class OrderController extends Controller
                     'shipping_postal_code' => $order_data['shipping_postal_code'],
                     'shipping_address' => $order_data['shipping_address'],
                     'shipping_phone' => $order_data['shipping_phone'],
+                    'customer_note' => $order_data['customer_note'] ?? null,
                 ]);
 
                 // 注文明細登録

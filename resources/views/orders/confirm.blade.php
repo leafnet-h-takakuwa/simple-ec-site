@@ -132,7 +132,7 @@
                     お支払い方法：{{ $payment_method->label() }}
                 </p>
 
-                @if ($payment_method === \App\Enums\PaymentMethod::BankTransfer)
+                @if ($payment_method === \App\Enums\PaymentMethod::BANK_TRANSFER)
                     <div class="mt-3 space-y-1 text-sm text-base-content/70">
                         <p>※ 振込手数料はお客様のご負担となります。</p>
                         <p>※ ご依頼主様からのご入金確認後に商品を発送いたします。</p>

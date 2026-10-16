@@ -4,20 +4,20 @@ namespace App\Enums;
 
 enum OrderSource: string
 {
-    case Web = 'web';
-    case Phone = 'phone';
-    case Fax = 'fax';
-    case Store = 'store';
-    case Other = 'other';
+    case WEB = 'web';
+    case PHONE = 'phone';
+    case FAX = 'fax';
+    case STORE = 'store';
+    case OTHER = 'other';
 
     public function label(): string
     {
         return match ($this) {
-            self::Web => 'WEB',
-            self::Phone => '電話',
-            self::Fax => 'FAX',
-            self::Store => '店頭',
-            self::Other => 'その他',
+            self::WEB => 'WEB',
+            self::PHONE => '電話',
+            self::FAX => 'FAX',
+            self::STORE => '店頭',
+            self::OTHER => 'その他',
         };
     }
 }

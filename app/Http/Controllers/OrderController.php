@@ -123,9 +123,9 @@ class OrderController extends Controller
             $validated['shipping_address'] = $validated['orderer_address'];
             $validated['shipping_phone'] = $validated['orderer_phone'];
 
-            $payment_method = PaymentMethod::CashOnDelivery;
+            $payment_method = PaymentMethod::CASH_ON_DELIVERY;
         } else {
-            $payment_method = PaymentMethod::BankTransfer;
+            $payment_method = PaymentMethod::BANK_TRANSFER;
         }
 
         // 合計金額を計算
@@ -314,9 +314,7 @@ class OrderController extends Controller
                 // 注文ヘッダー登録
                 $order = Order::create([
                     'user_id' => Auth::id(),
-                    'status' => $order_data['payment_method'] === PaymentMethod::BankTransfer->value
-                        ? OrderStatus::AWAITING_PAYMENT
-                        : OrderStatus::RECEIVED,
+                    'status' => OrderStatus::RECEIVED,
                     'payment_method' => $order_data['payment_method'],
                     'total_amount' => $total_amount,
                     'orderer_name' => $order_data['orderer_name'],

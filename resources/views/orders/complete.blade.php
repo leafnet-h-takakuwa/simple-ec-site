@@ -84,7 +84,7 @@
                 {{ $order->payment_method->label() }}
             </p>
 
-            @if ($order->payment_method === \App\Enums\PaymentMethod::BankTransfer)
+            @if ($order->payment_method === \App\Enums\PaymentMethod::BANK_TRANSFER)
                 <div class="mt-4 space-y-2 text-sm leading-7 text-base-content/70">
                     <p>
                         お振込先は、ご入力いただいたメールアドレスへ

@@ -227,6 +227,13 @@ class OrderController extends Controller
             abort(403);
         }
 
+        // 送料・手数料への同意を確認
+        $request->validate([
+            'fee_agreement' => ['accepted'],
+        ], [
+            'fee_agreement.accepted' => '送料・手数料についての同意が必要です。',
+        ]);
+
         // 確認画面で保存した注文情報を取得
         $order_data = $request->session()->get('order');
 
@@ -316,6 +323,9 @@ class OrderController extends Controller
                     'user_id' => Auth::id(),
                     'status' => OrderStatus::RECEIVED,
                     'payment_method' => $order_data['payment_method'],
+                    'cod_fee' => $order_data['payment_method'] === PaymentMethod::BANK_TRANSFER->value
+                        ? 0
+                        : null,
                     'total_amount' => $total_amount,
                     'orderer_name' => $order_data['orderer_name'],
                     'orderer_postal_code' => $order_data['orderer_postal_code'],

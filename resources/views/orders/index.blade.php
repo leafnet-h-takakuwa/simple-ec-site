@@ -27,7 +27,8 @@
                             <th>注文日</th>
                             <th>注文番号</th>
                             <th>注文内容</th>
-                            <th class="text-right">合計金額</th>
+                            <th class="text-right">商品合計</th>
+                            <th class="text-right">支払総額</th>
                             <th>注文状況</th>
                             <th></th>
                         </tr>
@@ -45,8 +46,17 @@
                                         @endif
                                     @endif
                                 </td>
-                                <td class="text-right font-semibold">
+                                <td class="text-right">
                                     {{ formatYen($order->total_amount) }}
+                                </td>
+                                <td class="text-right font-semibold">
+                                    @if (
+                                        $order->shipping_fee !== null &&
+                                            ($order->payment_method !== \App\Enums\PaymentMethod::CASH_ON_DELIVERY || $order->cod_fee !== null))
+                                        {{ formatYen($order->total_amount + $order->shipping_fee + ($order->cod_fee ?? 0)) }}
+                                    @else
+                                        未確定
+                                    @endif
                                 </td>
                                 <td>
                                     <span class="badge badge-outline">
@@ -91,16 +101,32 @@
                             </p>
                         </div>
 
-                        <div class="mb-5 flex items-center justify-between border-t border-base-300 pt-4">
-                            <span class="text-sm">合計金額</span>
-                            <span class="text-lg font-bold">
-                                {{ formatYen($order->total_amount) }}
-                            </span>
-                        </div>
+                        <div class="mb-5 space-y-3 border-t border-base-300 pt-4">
 
-                        <span class="btn btn-outline btn-sm w-full btn-disabled">
-                            注文詳細を見る
-                        </span>
+                            <div class="flex items-center justify-between gap-4">
+                                <span class="text-sm">商品合計</span>
+                                <span>
+                                    {{ formatYen($order->total_amount) }}
+                                </span>
+                            </div>
+
+                            <div class="flex items-center justify-between gap-4">
+                                <span class="text-sm font-bold">支払総額</span>
+                                <span class="text-lg font-bold">
+                                    @if (
+                                        $order->shipping_fee !== null &&
+                                            ($order->payment_method !== \App\Enums\PaymentMethod::CASH_ON_DELIVERY || $order->cod_fee !== null))
+                                        {{ formatYen($order->total_amount + $order->shipping_fee + ($order->cod_fee ?? 0)) }}
+                                    @else
+                                        未確定
+                                    @endif
+                                </span>
+                            </div>
+
+                            <a href="{{ route('orders.show', $order->id) }}" class="btn btn-outline btn-sm w-full">
+                                注文詳細を見る
+                            </a>
+                        </div>
                     </div>
                 @endforeach
             </div>

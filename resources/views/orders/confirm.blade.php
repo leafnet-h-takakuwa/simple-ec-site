@@ -65,12 +65,37 @@
                     @endforeach
                 </div>
 
-                {{-- 合計金額 --}}
-                <div class="mt-3 flex items-center justify-end gap-6 border-t border-base-300 pt-5">
-                    <span class="font-bold">商品代金合計</span>
-                    <span class="text-xl font-bold">
-                        {{ formatYen($total_amount) }}
-                    </span>
+                {{-- 金額内訳 --}}
+                <div class="mt-3 space-y-4 border-t border-base-300 pt-5">
+
+                    <div class="flex items-center justify-between gap-4">
+                        <span class="font-bold">商品代金合計</span>
+                        <span class="text-xl font-bold">
+                            {{ formatYen($total_amount) }}
+                        </span>
+                    </div>
+
+                    <div class="flex items-center justify-between gap-4 text-sm">
+                        <span class="text-base-content/70">送料</span>
+                        <span class="font-semibold">未確定</span>
+                    </div>
+
+                    @if ($payment_method === \App\Enums\PaymentMethod::CASH_ON_DELIVERY)
+                        <div class="flex items-center justify-between gap-4 text-sm">
+                            <span class="text-base-content/70">代引手数料</span>
+                            <span class="font-semibold">未確定</span>
+                        </div>
+                    @endif
+
+
+                    <p class="border-t border-base-200 pt-4 text-sm text-base-content/70">
+                        @if ($payment_method === \App\Enums\PaymentMethod::CASH_ON_DELIVERY)
+                            ※ 送料・手数料を含むお支払い総額は、ご注文受付後にご案内します。
+                        @else
+                            ※ 送料を含むお支払い総額は、ご注文受付後にご案内します。
+                        @endif
+                    </p>
+
                 </div>
             </section>
 
@@ -138,12 +163,24 @@
                         <p>※ ご依頼主様からのご入金確認後に商品を発送いたします。</p>
                     </div>
                 @endif
-
-                <p class="mt-3 text-sm text-base-content/60">
-                    ※ 送料・代引手数料は今回の試作では計算対象外。
-                </p>
             </section>
 
+        </div>
+
+        {{-- 送料・手数料の確認 --}}
+        <div class="mt-6 rounded-lg border border-base-300 bg-base-100 p-5 sm:p-6">
+            <label class="flex cursor-pointer items-start gap-3">
+                <input type="checkbox" name="fee_agreement" value="1" form="order_form" required
+                    class="checkbox checkbox-primary mt-0.5">
+
+                <span class="text-sm leading-relaxed">
+                    送料
+                    @if ($payment_method === \App\Enums\PaymentMethod::CASH_ON_DELIVERY)
+                        ・代引手数料
+                    @endif
+                    が商品代金に別途加算されること、および最終的なお支払い総額が注文受付後に確定することを了承します。
+                </span>
+            </label>
         </div>
 
         {{-- 操作ボタン --}}
@@ -167,13 +204,17 @@
     </div>
 
     <script>
-        // 気休めのダブルクリック抑制
         document.addEventListener('DOMContentLoaded', function() {
-            const form = document.getElementById('order-form');
-            const button = document.getElementById('order-submit');
+            const form = document.getElementById('order_form');
+            const button = document.getElementById('order_submit');
+            const agreement = document.querySelector('input[name="fee_agreement"]');
 
             let submitting = false;
 
+            agreement.addEventListener('change', updateButton);
+            updateButton();
+
+            // 二重送信を防止
             form.addEventListener('submit', function(event) {
                 if (submitting) {
                     event.preventDefault();

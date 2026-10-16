@@ -104,10 +104,54 @@
                 @endforeach
             </div>
 
-            {{-- 合計金額 --}}
-            <div class="mt-5 flex justify-between border-t border-base-300 pt-5 text-lg font-bold">
-                <span>合計金額</span>
-                <span>{{ formatYen($order->total_amount) }}</span>
+            {{-- 金額内訳 --}}
+            <div class="mt-5 space-y-4 border-t border-base-300 pt-5">
+
+                {{-- 商品合計 --}}
+                <div class="flex items-center justify-between gap-4">
+                    <span>商品合計</span>
+                    <span>{{ formatYen($order->total_amount) }}</span>
+                </div>
+
+                {{-- 送料 --}}
+                <div class="flex items-center justify-between gap-4">
+                    <span>送料</span>
+                    <span>
+                        {{ $order->shipping_fee !== null ? formatYen($order->shipping_fee) : '未確定' }}
+                    </span>
+                </div>
+
+                {{-- 代引手数料 --}}
+                @if ($order->payment_method === \App\Enums\PaymentMethod::CASH_ON_DELIVERY)
+                    <div class="flex items-center justify-between gap-4">
+                        <span>代引手数料</span>
+                        <span>
+                            {{ $order->cod_fee !== null ? formatYen($order->cod_fee) : '未確定' }}
+                        </span>
+                    </div>
+                @endif
+
+                {{-- 支払総額 --}}
+                <div class="flex items-center justify-between gap-4 border-t border-base-300 pt-5 text-lg font-bold">
+                    <span>支払総額</span>
+                    <span>
+                        @if (
+                            $order->shipping_fee !== null &&
+                                ($order->payment_method !== \App\Enums\PaymentMethod::CASH_ON_DELIVERY || $order->cod_fee !== null))
+                            {{ formatYen($order->total_amount + $order->shipping_fee + ($order->cod_fee ?? 0)) }}
+                        @else
+                            未確定
+                        @endif
+                    </span>
+                </div>
+                @if (
+                    $order->status !== \App\Enums\OrderStatus::CANCELLED &&
+                        ($order->shipping_fee === null ||
+                            ($order->payment_method === \App\Enums\PaymentMethod::CASH_ON_DELIVERY && $order->cod_fee === null)))
+                    <p class="text-sm text-base-content/60">
+                        ※ 送料・手数料を含むお支払い総額は、ご注文受付後にご案内します。
+                    </p>
+                @endif
             </div>
         </section>
 
@@ -174,12 +218,5 @@
                 {{ $order->payment_method->label() }}
             </p>
         </section>
-
-        {{-- 一覧へ戻る --}}
-        <div class="mt-8">
-            <a href="{{ route('orders.index') }}" class="btn btn-outline">
-                注文履歴へ戻る
-            </a>
-        </div>
     </div>
 @endsection

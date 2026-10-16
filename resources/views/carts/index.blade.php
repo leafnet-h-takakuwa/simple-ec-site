@@ -193,9 +193,10 @@
                     </p>
                 </div>
 
-                <p class="mt-4 text-xs text-base-content/60 sm:text-sm">
-                    ※ 送料・代引手数料はこの試作版の計算対象外です。
-                </p>
+                <div class="mt-4 space-y-1 text-sm text-base-content/70">
+                    <p>※ 送料は別途かかります。金額はご注文受付後にご案内します。</p>
+                    <p>※ 代金引換をご利用の場合は、別途代引手数料がかかります。</p>
+                </div>
 
             </div>
 

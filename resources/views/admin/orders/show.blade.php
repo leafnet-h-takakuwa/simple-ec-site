@@ -212,19 +212,16 @@
                     </div>
                 @endif
 
-                {{-- 総額 --}}
+                {{-- 合計 --}}
                 <div class="flex items-center justify-between gap-4 border-t border-slate-200 pt-5">
-                    <dt class="font-bold">
-                        {{ $feesConfirmed ? 'お支払い総額' : '現在の合計' }}
-                    </dt>
-
+                    <dt class="font-bold">合計</dt>
                     <dd class="shrink-0 text-right text-xl font-bold sm:text-2xl">
                         {{ formatYen($grandTotal) }}
                     </dd>
                 </div>
             </dl>
 
-            @if (!$feesConfirmed)
+            @if (!$feesConfirmed && $order->status !== \App\Enums\OrderStatus::CANCELLED)
                 <p class="mt-4 text-sm text-amber-700">
                     @if ($order->payment_method === \App\Enums\PaymentMethod::CASH_ON_DELIVERY)
                         ※送料・手数料が未確定です。最終金額は確定後に表示されます。

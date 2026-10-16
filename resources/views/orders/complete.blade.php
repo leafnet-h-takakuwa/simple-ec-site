@@ -65,12 +65,40 @@
                 @endforeach
             </div>
 
-            <div class="mt-4 flex items-center justify-between border-t border-base-200 pt-5">
-                <span class="font-bold">合計金額</span>
+            {{-- 金額内訳 --}}
+            <div class="mt-4 space-y-4 border-t border-base-200 pt-5">
 
-                <span class="text-2xl font-bold">
-                    {{ formatYen($order->total_amount) }}
-                </span>
+                <div class="flex items-center justify-between gap-4">
+                    <span class="font-bold">商品代金合計</span>
+                    <span class="text-xl font-bold">
+                        {{ formatYen($order->total_amount) }}
+                    </span>
+                </div>
+
+                <div class="flex items-center justify-between gap-4 text-sm">
+                    <span class="text-base-content/70">送料</span>
+                    <span class="font-semibold">
+                        {{ $order->shipping_fee !== null ? formatYen($order->shipping_fee) : '未確定' }}
+                    </span>
+                </div>
+
+                @if ($order->payment_method === \App\Enums\PaymentMethod::CASH_ON_DELIVERY)
+                    <div class="flex items-center justify-between gap-4 text-sm">
+                        <span class="text-base-content/70">代引手数料</span>
+                        <span class="font-semibold">
+                            {{ $order->cod_fee !== null ? formatYen($order->cod_fee) : '未確定' }}
+                        </span>
+                    </div>
+                @endif
+
+                <p class="border-t border-base-200 pt-4 text-sm text-base-content/70">
+                    @if ($order->payment_method === \App\Enums\PaymentMethod::CASH_ON_DELIVERY)
+                        ※ 送料・手数料を含むお支払い総額は、ご注文受付後にご案内します。
+                    @else
+                        ※ 送料を含むお支払い総額は、ご注文受付後にご案内します。
+                    @endif
+                </p>
+
             </div>
         </section>
 

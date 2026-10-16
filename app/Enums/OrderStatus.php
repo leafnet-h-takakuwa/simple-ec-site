@@ -28,6 +28,7 @@ enum OrderStatus: string
             self::RECEIVED => match ($paymentMethod) {
                 PaymentMethod::BANK_TRANSFER => self::AWAITING_PAYMENT,
                 PaymentMethod::CASH_ON_DELIVERY => self::PREPARING,
+                PaymentMethod::PAY_AT_STORE => self::PREPARING,
             },
             self::AWAITING_PAYMENT => self::PREPARING,
             self::PREPARING => self::SHIPPED,

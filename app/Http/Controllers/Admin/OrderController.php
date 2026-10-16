@@ -489,7 +489,7 @@ class OrderController extends Controller
             'cod_fee' => ['nullable', 'integer', 'min:0'],
         ]);
 
-        if ($order->payment_method === PaymentMethod::BANK_TRANSFER) {
+        if ($order->payment_method !== PaymentMethod::CASH_ON_DELIVERY) {
             $validated['cod_fee'] = 0;
         }
 

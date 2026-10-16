@@ -95,6 +95,8 @@ Route::middleware(['auth', EnsureUserIsAdmin::class])
             ->name('orders.customer.update');
         Route::patch('/orders/{order}/payment', [AdminOrderController::class, 'updatePayment'])
             ->name('orders.payment.update');
+        Route::patch('/orders/{order}/fees', [AdminOrderController::class, 'updateFees'])
+            ->name('orders.fees.update');
         // 商品管理
         Route::get('/products', [AdminProductController::class, 'index'])
             ->name('products.index');

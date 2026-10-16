@@ -31,32 +31,41 @@
     <section class="mb-8 rounded-xl border border-slate-200 bg-white p-5 lg:p-7">
         <h2 class="mb-5 text-lg font-bold">注文状況</h2>
 
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-end">
-            <div class="flex-1">
+        @php
+            $nextStatus = $order->status->next($order->payment_method);
+        @endphp
+
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
                 <p class="mb-2 text-sm text-slate-500">現在のステータス</p>
+
                 <span class="badge badge-outline badge-lg">
                     {{ $order->status->label() }}
                 </span>
             </div>
 
-            <div class="flex-1">
-                <label for="status" class="mb-2 block text-sm font-semibold">
-                    変更先
-                </label>
+            @if ($nextStatus)
+                <button type="button" class="btn btn-success"
+                    onclick="document.getElementById('status_modal').showModal()">
 
-                <select id="status" class="select w-full">
-                    @foreach ($statuses as $status)
-                        <option value="{{ $status->value }}" @selected($order->status === $status)>
-                            {{ $status->label() }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-
-            <button type="button" class="btn btn-success" onclick="openStatusModal()">
-                ステータスを更新
-            </button>
+                    @if ($order->status === \App\Enums\OrderStatus::AWAITING_PAYMENT)
+                        入金を確認して発送準備へ
+                    @else
+                        {{ $nextStatus->label() }}に進める
+                    @endif
+                </button>
+            @endif
         </div>
+
+        @if ($order->status === \App\Enums\OrderStatus::RECEIVED && ($order->shipping_fee === null || $order->cod_fee === null))
+            <p class="mt-4 text-sm text-amber-700">
+                @if ($order->payment_method === \App\Enums\PaymentMethod::CASH_ON_DELIVERY)
+                    ※送料・代引手数料を確定すると、次のステータスへ進められます。
+                @else
+                    ※送料を確定すると、次のステータスへ進められます。
+                @endif
+            </p>
+        @endif
     </section>
 
     {{-- 注文商品 --}}
@@ -64,9 +73,11 @@
         <div class="mb-5 flex items-center justify-between">
             <h2 class="text-lg font-bold">注文商品</h2>
 
-            <a href="{{ route('admin.orders.items.edit', $order) }}" class="btn btn-outline btn-neutral btn-sm">
-                明細を編集
-            </a>
+            @if ($order->isEditable())
+                <a href="{{ route('admin.orders.items.edit', $order) }}" class="btn btn-outline btn-neutral btn-sm">
+                    明細を編集
+                </a>
+            @endif
         </div>
 
         {{-- PC：テーブル --}}
@@ -134,8 +145,94 @@
         </div>
 
         <div class="mt-5 flex justify-between border-t border-slate-200 pt-5 text-lg font-bold">
-            <span>合計金額</span>
+            <span>商品金額</span>
             <span>{{ formatYen($order->total_amount) }}</span>
+        </div>
+    </section>
+
+    {{-- お支払い・ご請求金額 --}}
+    <section class="mb-8 rounded-xl border border-slate-200 bg-white p-5 lg:p-7">
+
+        <h2 class="mb-5 text-lg font-bold">お支払い・ご請求金額</h2>
+
+        {{-- お支払い方法 --}}
+        <div class="flex flex-col gap-3 rounded-lg bg-slate-50 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <p class="mb-1 text-sm text-slate-500">お支払い方法</p>
+                <p class="font-semibold">{{ $order->payment_method->label() }}</p>
+            </div>
+
+            @if ($order->status === \App\Enums\OrderStatus::RECEIVED)
+                <button type="button" class="btn btn-outline btn-neutral btn-sm self-start sm:self-auto"
+                    onclick="document.getElementById('payment_modal').showModal()">
+                    お支払い方法を変更
+                </button>
+            @endif
+        </div>
+
+        {{-- 金額内訳 --}}
+        @php
+            $isCod = $order->payment_method === \App\Enums\PaymentMethod::CASH_ON_DELIVERY;
+            $feesConfirmed = $order->shipping_fee !== null && (!$isCod || $order->cod_fee !== null);
+            $grandTotal = $order->total_amount + ($order->shipping_fee ?? 0) + ($isCod ? $order->cod_fee ?? 0 : 0);
+        @endphp
+        <div class="mt-6">
+            <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
+                <h3 class="font-bold">金額内訳</h3>
+
+                @if ($order->isEditable())
+                    <button type="button" class="btn btn-outline btn-neutral btn-sm"
+                        onclick="document.getElementById('fees_modal').showModal()">
+                        送料・手数料を編集
+                    </button>
+                @endif
+            </div>
+
+            <dl class="space-y-4">
+                <div class="flex items-center justify-between gap-4">
+                    <dt class="text-slate-600">商品合計</dt>
+                    <dd class="shrink-0 text-right font-semibold">
+                        {{ formatYen($order->total_amount) }}
+                    </dd>
+                </div>
+
+                <div class="flex items-center justify-between gap-4">
+                    <dt class="text-slate-600">送料</dt>
+                    <dd class="shrink-0 text-right font-semibold">
+                        {{ $order->shipping_fee !== null ? formatYen($order->shipping_fee) : '未入力' }}
+                    </dd>
+                </div>
+
+                @if ($order->payment_method === \App\Enums\PaymentMethod::CASH_ON_DELIVERY)
+                    <div class="flex items-center justify-between gap-4">
+                        <dt class="text-slate-600">代引手数料</dt>
+                        <dd class="shrink-0 text-right font-semibold">
+                            {{ $order->cod_fee !== null ? formatYen($order->cod_fee) : '未入力' }}
+                        </dd>
+                    </div>
+                @endif
+
+                {{-- 総額 --}}
+                <div class="flex items-center justify-between gap-4 border-t border-slate-200 pt-5">
+                    <dt class="font-bold">
+                        {{ $feesConfirmed ? 'お支払い総額' : '現在の合計' }}
+                    </dt>
+
+                    <dd class="shrink-0 text-right text-xl font-bold sm:text-2xl">
+                        {{ formatYen($grandTotal) }}
+                    </dd>
+                </div>
+            </dl>
+
+            @if (!$feesConfirmed)
+                <p class="mt-4 text-sm text-amber-700">
+                    @if ($order->payment_method === \App\Enums\PaymentMethod::CASH_ON_DELIVERY)
+                        ※送料・手数料が未確定です。最終金額は確定後に表示されます。
+                    @else
+                        ※送料が未確定です。最終金額は確定後に表示されます。
+                    @endif
+                </p>
+            @endif
         </div>
     </section>
 
@@ -146,9 +243,11 @@
         <div class="mb-5 flex items-center justify-between gap-3">
             <h2 class="text-lg font-bold">お客様情報</h2>
 
-            <a href="{{ route('admin.orders.customer.edit', $order) }}" class="btn btn-outline btn-neutral btn-sm">
-                お客様情報を編集
-            </a>
+            @if ($order->isEditable())
+                <a href="{{ route('admin.orders.customer.edit', $order) }}" class="btn btn-outline btn-neutral btn-sm">
+                    お客様情報を編集
+                </a>
+            @endif
         </div>
 
         {{-- 注文者情報・お届け先情報 --}}
@@ -209,20 +308,6 @@
         </div>
     </section>
 
-    {{-- お支払い --}}
-    <section class="mb-8 rounded-xl border border-slate-200 bg-white p-5 lg:p-7">
-        <div class="mb-4 flex items-center justify-between gap-3">
-            <h2 class="text-lg font-bold">お支払い方法</h2>
-
-            <button type="button" class="btn btn-outline btn-neutral btn-sm"
-                onclick="document.getElementById('payment_modal').showModal()">
-                変更
-            </button>
-        </div>
-
-        <p class="font-semibold">{{ $order->payment_method->label() }}</p>
-    </section>
-
     {{-- メモ --}}
     <section class="mb-8 rounded-xl border border-slate-200 bg-white p-5 lg:p-7">
         <div class="mb-3 flex items-center justify-between gap-3">
@@ -237,43 +322,147 @@
         </p>
     </section>
 
-    {{-- ステータス更新モーダル --}}
-    <dialog id="status_modal" class="modal">
-        <div class="modal-box">
-            <h3 class="text-lg font-bold">注文ステータスの更新</h3>
+    {{-- 注文キャンセル --}}
+    @if (!in_array($order->status, [\App\Enums\OrderStatus::SHIPPED, \App\Enums\OrderStatus::CANCELLED], true))
+        <section class="mt-12 border-t border-slate-200 pt-6">
+            <h2 class="mb-2 font-bold">注文のキャンセル</h2>
 
-            <p class="mt-4">
-                注文番号
-                <strong>#{{ sprintf('%08d', $order->id) }}</strong>
-                のステータスを変更します。
+            <p class="mb-4 text-sm text-slate-500">
+                キャンセルすると、この注文の編集やステータス変更はできなくなります。
             </p>
 
-            <div class="mt-4 rounded-lg bg-slate-50 p-4">
-                <p class="text-sm text-slate-500">変更内容</p>
-                <p class="mt-2 font-semibold">
-                    {{ $order->status->label() }}
-                    →
-                    <span id="new_status_label"></span>
+            <button type="button" class="btn btn-outline btn-error"
+                onclick="document.getElementById('cancel_modal').showModal()">
+                この注文をキャンセル
+            </button>
+        </section>
+    @endif
+
+    {{-- ステータス更新モーダル --}}
+    @if ($nextStatus)
+        <dialog id="status_modal" class="modal">
+            <div class="modal-box">
+                <h3 class="text-lg font-bold">注文ステータスの更新</h3>
+
+                <p class="mt-4">
+                    注文番号
+                    <strong>#{{ sprintf('%08d', $order->id) }}</strong>
+                    のステータスを進めます。
                 </p>
+
+                <div class="mt-4 rounded-lg bg-slate-50 p-4">
+                    <p class="text-sm text-slate-500">変更内容</p>
+
+                    <p class="mt-2 font-semibold">
+                        {{ $order->status->label() }}
+                        →
+                        {{ $nextStatus->label() }}
+                    </p>
+                </div>
+
+                @if ($order->status === \App\Enums\OrderStatus::AWAITING_PAYMENT)
+                    <p class="mt-4 text-sm text-amber-700">
+                        入金を確認してから更新してください。
+                    </p>
+                @endif
+
+                <form method="POST" action="{{ route('admin.orders.updateStatus', $order->id) }}">
+                    @csrf
+                    @method('PATCH')
+
+                    <input type="hidden" name="status" value="{{ $nextStatus->value }}">
+
+                    <div class="modal-action">
+                        <button type="button" class="btn btn-outline btn-neutral"
+                            onclick="document.getElementById('status_modal').close()">
+                            戻る
+                        </button>
+
+                        <button type="submit" class="btn btn-success">
+                            ステータスを進める
+                        </button>
+                    </div>
+                </form>
             </div>
 
-            <form method="POST" action="{{ route('admin.orders.updateStatus', $order->id) }}">
+            <form method="dialog" class="modal-backdrop">
+                <button>閉じる</button>
+            </form>
+        </dialog>
+    @endif
+
+    {{-- 送料・代引手数料編集モーダル --}}
+    @if ($errors->has('shipping_fee') || $errors->has('cod_fee'))
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                document.getElementById('fees_modal').showModal();
+            });
+        </script>
+    @endif
+    <dialog id="fees_modal" class="modal">
+        <div class="modal-box">
+            <h3 class="text-lg font-bold">送料・代引手数料の編集</h3>
+
+            <p class="mt-2 text-sm text-slate-500">
+                @if ($order->payment_method === \App\Enums\PaymentMethod::CASH_ON_DELIVERY)
+                    送料・代引手数料を入力してください。未確定の場合は空欄にできます。
+                @else
+                    送料を入力してください。未確定の場合は空欄にできます。
+                @endif
+            </p>
+
+            <x-admin.order-edit-warning :order="$order" />
+
+            <form method="POST" action="{{ route('admin.orders.fees.update', $order) }}">
                 @csrf
                 @method('PATCH')
 
-                <input type="hidden" name="status" id="modal_status">
+                <div class="mt-6 space-y-5">
+                    <div>
+                        <label for="shipping_fee" class="mb-2 block text-sm font-semibold">
+                            送料（税込）
+                        </label>
+
+                        <input type="number" id="shipping_fee" name="shipping_fee" class="input w-full" min="0"
+                            step="1" value="{{ old('shipping_fee', $order->shipping_fee) }}" placeholder="未入力">
+
+                        @error('shipping_fee')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    @if ($order->payment_method === \App\Enums\PaymentMethod::CASH_ON_DELIVERY)
+                        <div>
+                            <label for="cod_fee" class="mb-2 block text-sm font-semibold">
+                                代引手数料（税込）
+                            </label>
+
+                            <input type="number" id="cod_fee" name="cod_fee" class="input w-full" min="0"
+                                step="1" value="{{ old('cod_fee', $order->cod_fee) }}" placeholder="未入力">
+
+                            @error('cod_fee')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    @endif
+                </div>
 
                 <div class="modal-action">
-                    <button type="button" class="btn" onclick="document.getElementById('status_modal').close()">
+                    <button type="button" class="btn btn-outline btn-neutral"
+                        onclick="document.getElementById('fees_modal').close()">
                         キャンセル
                     </button>
 
                     <button type="submit" class="btn btn-success">
-                        更新する
+                        変更を保存
                     </button>
                 </div>
             </form>
         </div>
+
+        <form method="dialog" class="modal-backdrop">
+            <button>閉じる</button>
+        </form>
     </dialog>
 
     {{-- 支払い方法変更モーダル --}}
@@ -321,6 +510,49 @@
         </form>
     </dialog>
 
+    {{-- キャンセル確認モーダル --}}
+    @if (!in_array($order->status, [\App\Enums\OrderStatus::SHIPPED, \App\Enums\OrderStatus::CANCELLED], true))
+        <dialog id="cancel_modal" class="modal">
+            <div class="modal-box">
+                <h3 class="text-lg font-bold text-red-700">
+                    注文をキャンセルしますか？
+                </h3>
+
+                <p class="mt-4">
+                    注文番号
+                    <strong>#{{ sprintf('%08d', $order->id) }}</strong>
+                    をキャンセルします。
+                </p>
+
+                <p class="mt-3 text-sm text-red-700">
+                    キャンセル後は、注文内容やステータスを変更できません。
+                </p>
+
+                <form method="POST" action="{{ route('admin.orders.updateStatus', $order->id) }}">
+                    @csrf
+                    @method('PATCH')
+
+                    <input type="hidden" name="status" value="{{ \App\Enums\OrderStatus::CANCELLED->value }}">
+
+                    <div class="modal-action">
+                        <button type="button" class="btn btn-outline btn-neutral"
+                            onclick="document.getElementById('cancel_modal').close()">
+                            戻る
+                        </button>
+
+                        <button type="submit" class="btn btn-error">
+                            注文をキャンセルする
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <form method="dialog" class="modal-backdrop">
+                <button>閉じる</button>
+            </form>
+        </dialog>
+    @endif
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const memo = document.getElementById('memo');
@@ -365,15 +597,5 @@
                 }
             });
         });
-
-        function openStatusModal() {
-            const select = document.getElementById('status');
-            const selectedOption = select.options[select.selectedIndex];
-
-            document.getElementById('modal_status').value = select.value;
-            document.getElementById('new_status_label').textContent = selectedOption.text;
-
-            document.getElementById('status_modal').showModal();
-        }
     </script>
 @endsection

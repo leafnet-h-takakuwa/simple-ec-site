@@ -19,6 +19,8 @@
         </p>
     </div>
 
+    <x-admin.order-edit-warning :order="$order" />
+
     <form method="POST" action="{{ route('admin.orders.items.update', $order->id) }}">
         @csrf
         @method('PUT')

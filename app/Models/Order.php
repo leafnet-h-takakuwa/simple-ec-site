@@ -31,6 +31,8 @@ class Order extends Model
         'shipping_phone',
         'order_source',
         'memo',
+        'shipping_fee',
+        'cod_fee',
     ];
 
     protected function casts(): array
@@ -40,6 +42,8 @@ class Order extends Model
             'payment_method' => PaymentMethod::class,
             'total_amount' => 'integer',
             'order_source' => OrderSource::class,
+            'shipping_fee' => 'integer',
+            'cod_fee' => 'integer',
         ];
     }
 
@@ -53,5 +57,23 @@ class Order extends Model
     public function orderItems(): HasMany
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    // 管理画面：編集できるステータスを定義
+    public function isEditable(): bool
+    {
+        return !in_array($this->status, [
+            OrderStatus::SHIPPED,
+            OrderStatus::CANCELLED,
+        ], true);
+    }
+
+    // 管理画面：編集できるが警告が必要なステータスを定義
+    public function needsEditWarning(): bool
+    {
+        return in_array($this->status, [
+            OrderStatus::AWAITING_PAYMENT,
+            OrderStatus::PREPARING,
+        ], true);
     }
 }

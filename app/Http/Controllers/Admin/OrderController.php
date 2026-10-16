@@ -199,6 +199,14 @@ class OrderController extends Controller
         // 注文情報と注文明細を取得
         $order = Order::with('orderItems')->findOrFail($id);
 
+        if (!$order->isEditable()) {
+            return redirect()
+                ->route('admin.orders.show', $order)
+                ->withErrors([
+                    'error' => '発送済み・キャンセル済みの注文は編集できません。',
+                ]);
+        }
+
         // 商品情報取得
         $products = Product::orderBy('name')
             ->get(['id', 'name', 'price']);
@@ -208,7 +216,6 @@ class OrderController extends Controller
             'products' => $products,
         ]);
     }
-
 
     public function updateItems(Request $request, $id)
     {
@@ -230,6 +237,13 @@ class OrderController extends Controller
             $order = Order::whereKey($order->id)
                 ->lockForUpdate()
                 ->firstOrFail();
+
+            // 編集可否を確認
+            if (!$order->isEditable()) {
+                throw ValidationException::withMessages([
+                    'error' => '発送済み・キャンセル済みの注文は編集できません。',
+                ]);
+            }
 
             // 現在の注文明細を取得
             $existingItems = $order->orderItems()
@@ -308,20 +322,55 @@ class OrderController extends Controller
             'status' => ['required', Rule::enum(OrderStatus::class)],
         ]);
 
-        // 注文情報を取得
         $order = Order::findOrFail($id);
+        $newStatus = OrderStatus::from($validated['status']);
 
-        // 変更がない場合
-        if ($order->status->value === $validated['status']) {
-            return redirect()->route('admin.orders.show', $order->id)
-                ->with('success', '注文ステータスに変更はありません。');
+        // 発送済み・キャンセル済みは変更不可
+        if (in_array($order->status, [
+            OrderStatus::SHIPPED,
+            OrderStatus::CANCELLED,
+        ], true)) {
+            return back()->withErrors([
+                'error' => '発送済み・キャンセル済みの注文は変更できません。',
+            ]);
         }
 
-        // ステータスを変更して保存
-        $order->status = OrderStatus::from($validated['status']);
+        // 次のステータスを取得
+        $nextStatus = $order->status->next($order->payment_method);
+
+        // キャンセル、または次のステータスへの変更のみ許可
+        if (
+            $newStatus !== OrderStatus::CANCELLED
+            && $newStatus !== $nextStatus
+        ) {
+            return back()->withErrors([
+                'error' => '指定されたステータスには変更できません。',
+            ]);
+        }
+
+        // 受付から先へ進む場合は金額の確定が必要
+        if (
+            $order->status === OrderStatus::RECEIVED
+            && $newStatus !== OrderStatus::CANCELLED
+        ) {
+            if (
+                $order->shipping_fee === null
+                || (
+                    $order->payment_method === PaymentMethod::CASH_ON_DELIVERY
+                    && $order->cod_fee === null
+                )
+            ) {
+                return back()->withErrors([
+                    'error' => '送料・手数料を確定してからステータスを変更してください。',
+                ]);
+            }
+        }
+
+        $order->status = $newStatus;
         $order->save();
 
-        return redirect()->route('admin.orders.show', $order->id)
+        return redirect()
+            ->route('admin.orders.show', $order)
             ->with('success', '注文ステータスを更新しました。');
     }
 
@@ -342,6 +391,14 @@ class OrderController extends Controller
 
     public function editCustomer(Order $order)
     {
+        if (!$order->isEditable()) {
+            return redirect()
+                ->route('admin.orders.show', $order)
+                ->withErrors([
+                    'error' => '発送済み・キャンセル済みの注文は編集できません。',
+                ]);
+        }
+
         return view('admin.orders.edit-customer', [
             'order' => $order,
         ]);
@@ -349,6 +406,14 @@ class OrderController extends Controller
 
     public function updateCustomer(Request $request, Order $order)
     {
+        if (!$order->isEditable()) {
+            return redirect()
+                ->route('admin.orders.show', $order)
+                ->withErrors([
+                    'error' => '発送済み・キャンセル済みの注文は編集できません。',
+                ]);
+        }
+
         $validated = $request->validate([
             'orderer_name' => ['required', 'string', 'max:255'],
             'orderer_postal_code' => ['required', 'string', 'max:8'],
@@ -375,12 +440,50 @@ class OrderController extends Controller
             'payment_method' => ['required', Rule::enum(PaymentMethod::class)],
         ]);
 
-        $order->update([
-            'payment_method' => $validated['payment_method'],
-        ]);
+        if ($order->status !== OrderStatus::RECEIVED) {
+            return back()->withErrors([
+                'error' => '支払い方法は受付中の注文のみ変更できます。',
+            ]);
+        }
+
+        $newPaymentMethod = PaymentMethod::from($validated['payment_method']);
+
+        // 支払い方法が変わった場合のみ、代引手数料を更新
+        if ($order->payment_method !== $newPaymentMethod) {
+            $order->cod_fee = $newPaymentMethod === PaymentMethod::CASH_ON_DELIVERY
+                ? null
+                : 0;
+        }
+
+        $order->payment_method = $newPaymentMethod;
+        $order->save();
 
         return redirect()
             ->route('admin.orders.show', $order)
             ->with('success', 'お支払い方法を変更しました。');
+    }
+
+    public function updateFees(Request $request, Order $order)
+    {
+        if (!$order->isEditable()) {
+            return back()->withErrors([
+                'error' => '発送済み・キャンセル済みの注文は編集できません。',
+            ]);
+        }
+
+        $validated = $request->validate([
+            'shipping_fee' => ['nullable', 'integer', 'min:0'],
+            'cod_fee' => ['nullable', 'integer', 'min:0'],
+        ]);
+
+        if ($order->payment_method === PaymentMethod::BANK_TRANSFER) {
+            $validated['cod_fee'] = 0;
+        }
+
+        $order->update($validated);
+
+        return redirect()
+            ->route('admin.orders.show', $order)
+            ->with('success', '送料・代引手数料を更新しました。');
     }
 }

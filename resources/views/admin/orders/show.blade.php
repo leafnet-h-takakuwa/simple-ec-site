@@ -233,6 +233,58 @@
         </div>
     </section>
 
+    {{-- 配送・送り状情報 --}}
+    <section class="mb-8 rounded-xl border border-slate-200 bg-white p-5 lg:p-7">
+        <div class="mb-5 flex items-center justify-between gap-3">
+            <h2 class="text-lg font-bold">配送・送り状情報</h2>
+
+            @if ($order->status !== \App\Enums\OrderStatus::CANCELLED)
+                <button type="button" class="btn btn-outline btn-neutral btn-sm"
+                    onclick="document.getElementById('shippings_modal').showModal()">
+                    送り状情報を編集
+                </button>
+            @endif
+        </div>
+
+        <div class="mb-4 flex items-center justify-between gap-4">
+            <span class="text-sm text-slate-500">配送会社</span>
+            <span class="font-semibold">ヤマト運輸</span>
+        </div>
+
+        @forelse ($order->orderShippings as $shipping)
+            <div class="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 py-4">
+                <div>
+                    <p class="mb-1 text-sm text-slate-500">
+                        個口 {{ $loop->iteration }}
+                    </p>
+
+                    <p class="font-semibold">
+                        {{ $shipping->tracking_number ?? '送り状番号未登録' }}
+                    </p>
+                </div>
+
+                @if ($shipping->tracking_number)
+                    <a href="{{ 'https://jizen.kuronekoyamato.co.jp/jizen/servlet/crjz.b.NQ0010?id=' . urlencode($shipping->tracking_number) }}"
+                        target="_blank" rel="noopener noreferrer"
+                        class="inline-flex items-center gap-1 text-sm text-green-700 hover:underline">
+                        配送状況を確認
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" aria-hidden="true">
+                            <path d="M15 3h6v6" />
+                            <path d="M10 14 21 3" />
+                            <path d="M21 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6" />
+                        </svg>
+                    </a>
+                @endif
+            </div>
+        @empty
+            <p class="text-sm text-slate-500">
+                配送情報はまだ登録されていません。
+            </p>
+        @endforelse
+    </section>
+
     {{-- お客様情報 --}}
     <section class="mb-8 rounded-xl border border-slate-200 bg-white p-5 lg:p-7">
 
@@ -507,6 +559,62 @@
         </form>
     </dialog>
 
+    {{-- 送り状情報編集モーダル --}}
+    <dialog id="shippings_modal" class="modal">
+        <div class="modal-box">
+            <h3 class="text-lg font-bold">送り状情報の編集</h3>
+
+            <p class="mt-2 text-sm text-slate-500">
+                個口ごとに送り状番号を登録してください。未発行の場合は空欄にできます。
+            </p>
+
+            <form method="POST" action="{{ route('admin.orders.shippings.update', $order) }}">
+                @csrf
+                @method('PATCH')
+
+                <div id="shipping-fields" class="mt-6 space-y-4">
+                    @foreach ($order->orderShippings as $shipping)
+                        <div class="shipping-row rounded-lg border border-slate-200 p-4">
+                            <input type="hidden" name="shippings[{{ $loop->index }}][id]"
+                                value="{{ $shipping->id }}">
+
+                            <div class="mb-2 flex items-center justify-between">
+                                <label class="text-sm font-semibold">送り状番号</label>
+                                <button type="button" class="remove-item btn btn-outline btn-error btn-sm"
+                                    onclick="this.closest('.shipping-row').remove()">
+                                    削除
+                                </button>
+                            </div>
+
+                            <input type="text" name="shippings[{{ $loop->index }}][tracking_number]"
+                                value="{{ $shipping->tracking_number }}" class="input w-full" maxlength="20"
+                                placeholder="送り状番号">
+                        </div>
+                    @endforeach
+                </div>
+
+                <button type="button" id="add-shipping" class="btn btn-outline btn-neutral btn-sm mt-4">
+                    <x-plus /> 個口を追加
+                </button>
+
+                <div class="modal-action">
+                    <button type="button" class="btn btn-outline btn-neutral"
+                        onclick="document.getElementById('shippings_modal').close()">
+                        キャンセル
+                    </button>
+
+                    <button type="submit" class="btn btn-success">
+                        変更を保存
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <form method="dialog" class="modal-backdrop">
+            <button>閉じる</button>
+        </form>
+    </dialog>
+
     {{-- キャンセル確認モーダル --}}
     @if (!in_array($order->status, [\App\Enums\OrderStatus::SHIPPED, \App\Enums\OrderStatus::CANCELLED], true))
         <dialog id="cancel_modal" class="modal">
@@ -551,6 +659,7 @@
     @endif
 
     <script>
+        // メモ更新
         document.addEventListener('DOMContentLoaded', () => {
             const memo = document.getElementById('memo');
             const status = document.getElementById('memo-status');
@@ -592,6 +701,38 @@
                     status.textContent = '保存に失敗しました';
                     status.className = 'text-xs text-red-600';
                 }
+            });
+        });
+
+        // 配送情報
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('shipping-fields');
+            const addButton = document.getElementById('add-shipping');
+
+            let nextIndex = {{ $order->orderShippings->count() }};
+
+            addButton.addEventListener('click', () => {
+                const row = document.createElement('div');
+                row.className = 'shipping-row rounded-lg border border-slate-200 p-4';
+
+                row.innerHTML = `
+                <div class="mb-2 flex items-center justify-between">
+                    <label class="text-sm font-semibold">送り状番号</label>
+                    <button type="button" class="btn btn-ghost btn-error btn-xs"
+                        onclick="this.closest('.shipping-row').remove()">
+                        削除
+                    </button>
+                </div>
+
+                <input type="text"
+                    name="shippings[${nextIndex}][tracking_number]"
+                    class="input w-full"
+                    maxlength="20"
+                    placeholder="送り状番号">
+            `;
+
+                container.appendChild(row);
+                nextIndex++;
             });
         });
     </script>

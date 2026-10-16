@@ -32,7 +32,7 @@ class OrderController extends Controller
     public function show($id)
     {
         $order = Order::where('user_id', Auth::id())
-            ->with('orderItems')
+            ->with(['orderItems', 'orderShippings'])
             ->findOrFail($id);
 
         return view('orders.show', [

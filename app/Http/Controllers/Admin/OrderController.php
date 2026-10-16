@@ -86,7 +86,7 @@ class OrderController extends Controller
 
     public function show($id)
     {
-        $order = Order::with('orderItems')->findOrFail($id);
+        $order = Order::with(['orderItems', 'orderShippings'])->findOrFail($id);
 
         return view('admin.orders.show', [
             'order' => $order,
@@ -366,6 +366,19 @@ class OrderController extends Controller
             }
         }
 
+        if ($newStatus === OrderStatus::SHIPPED) {
+            $shippings = $order->orderShippings;
+
+            if (
+                $shippings->isEmpty()
+                || $shippings->contains(fn($shipping) => blank($shipping->tracking_number))
+            ) {
+                return back()->withErrors([
+                    'error' => 'すべての個口に送り状番号を登録してから発送済みに変更してください。',
+                ]);
+            }
+        }
+
         $order->status = $newStatus;
         $order->save();
 
@@ -485,5 +498,71 @@ class OrderController extends Controller
         return redirect()
             ->route('admin.orders.show', $order)
             ->with('success', '送料・代引手数料を更新しました。');
+    }
+
+    public function updateShippings(Request $request, Order $order)
+    {
+        $validated = $request->validate([
+            'shippings' => ['nullable', 'array'],
+            'shippings.*.id' => ['nullable', 'integer', 'distinct'],
+            'shippings.*.tracking_number' => ['nullable', 'string', 'max:20'],
+        ]);
+
+        DB::transaction(function () use ($order, $validated) {
+            $order = Order::whereKey($order->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            // キャンセル済みは編集不可。発送済みは番号訂正を許可
+            if ($order->status === OrderStatus::CANCELLED) {
+                throw ValidationException::withMessages([
+                    'shippings' => 'キャンセル済みの注文は送り状情報を編集できません。',
+                ]);
+            }
+
+            $existingShippings = $order->orderShippings()
+                ->lockForUpdate()
+                ->get()
+                ->keyBy('id');
+
+            $shippings = $validated['shippings'] ?? [];
+
+            $submittedIds = collect($shippings)
+                ->pluck('id')
+                ->filter(fn($id) => $id !== null)
+                ->map(fn($id) => (int) $id);
+
+            // 別の注文に属する配送IDを指定されていないか確認
+            if ($submittedIds->diff($existingShippings->keys())->isNotEmpty()) {
+                throw ValidationException::withMessages([
+                    'shippings' => '更新対象の送り状情報が正しくありません。',
+                ]);
+            }
+
+            foreach ($shippings as $shipping) {
+                $data = [
+                    'tracking_number' => $shipping['tracking_number'] ?? null,
+                ];
+
+                if (!empty($shipping['id'])) {
+                    $existingShippings->get((int) $shipping['id'])->update($data);
+                } else {
+                    $order->orderShippings()->create($data);
+                }
+            }
+
+            // 画面から削除された配送レコードを削除
+            $deleteIds = $existingShippings->keys()->diff($submittedIds);
+
+            if ($deleteIds->isNotEmpty()) {
+                $order->orderShippings()
+                    ->whereIn('id', $deleteIds)
+                    ->delete();
+            }
+        });
+
+        return redirect()
+            ->route('admin.orders.show', $order)
+            ->with('success', '送り状情報を更新しました。');
     }
 }

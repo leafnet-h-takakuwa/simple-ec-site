@@ -35,6 +35,48 @@
             </div>
         </section>
 
+        {{-- 配送情報（発送済みの場合のみ表示） --}}
+        @if ($order->status === \App\Enums\OrderStatus::SHIPPED)
+            <section class="mb-8 rounded-xl border border-base-300 bg-base-100 p-5 lg:p-7">
+                <h2 class="mb-5 text-lg font-bold">配送情報</h2>
+
+                <div class="mb-4 flex items-center justify-between gap-4">
+                    <span class="text-sm text-base-content/60">配送会社</span>
+                    <span class="font-semibold">ヤマト運輸</span>
+                </div>
+
+                @foreach ($order->orderShippings as $shipping)
+                    <div class="flex flex-wrap items-center justify-between gap-3 border-t border-base-300 py-4">
+                        <div>
+                            <p class="mb-1 text-sm text-base-content/60">
+                                個口 {{ $loop->iteration }}
+                            </p>
+
+                            <p class="font-semibold">
+                                {{ $shipping->tracking_number }}
+                            </p>
+                        </div>
+
+                        @if ($shipping->tracking_number)
+                            <a href="{{ 'https://jizen.kuronekoyamato.co.jp/jizen/servlet/crjz.b.NQ0010?id=' . urlencode($shipping->tracking_number) }}"
+                                target="_blank" rel="noopener noreferrer"
+                                class="inline-flex items-center gap-1.5 text-sm text-primary hover:underline">
+                                配送状況を確認
+
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M15 3h6v6" />
+                                    <path d="M10 14 21 3" />
+                                    <path d="M21 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6" />
+                                </svg>
+                            </a>
+                        @endif
+                    </div>
+                @endforeach
+            </section>
+        @endif
+
         {{-- 注文商品 --}}
         <section class="mb-8 rounded-xl border border-base-300 bg-base-100 p-5 lg:p-7">
             <h2 class="mb-5 text-lg font-bold">ご注文商品</h2>

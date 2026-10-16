@@ -59,6 +59,12 @@ class Order extends Model
         return $this->hasMany(OrderItem::class);
     }
 
+    // 配送情報
+    public function orderShippings(): HasMany
+    {
+        return $this->hasMany(OrderShipping::class)->orderBy('id');
+    }
+
     // 管理画面：編集できるステータスを定義
     public function isEditable(): bool
     {

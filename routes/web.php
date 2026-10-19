@@ -81,6 +81,8 @@ Route::middleware(['auth', EnsureUserIsAdmin::class])
             ->name('orders.store');
         Route::get('/orders/{order}', [AdminOrderController::class, 'show'])
             ->name('orders.show');
+        Route::get('/orders/{order}/delivery-slip', [AdminOrderController::class, 'deliverySlip'])
+            ->name('orders.deliverySlip');
         Route::get('/orders/{order}/items/edit', [AdminOrderController::class, 'editItems'])
             ->name('orders.items.edit');
         Route::put('/orders/{order}/items', [AdminOrderController::class, 'updateItems'])

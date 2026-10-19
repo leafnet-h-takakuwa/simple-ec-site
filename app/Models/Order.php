@@ -89,4 +89,32 @@ class Order extends Model
             OrderStatus::PREPARING,
         ], true);
     }
+
+    // 納品書が発行可能かチェック
+    public function canIssueDeliverySlip(): bool
+    {
+        // 発行可能な注文ステータス
+        if (!in_array($this->status, [
+            OrderStatus::AWAITING_PAYMENT,
+            OrderStatus::PREPARING,
+            OrderStatus::SHIPPED,
+        ], true)) {
+            return false;
+        }
+
+        // 送料が未確定
+        if ($this->shipping_fee === null) {
+            return false;
+        }
+
+        // 代引の場合、代引手数料も確定している必要がある
+        if (
+            $this->payment_method === PaymentMethod::CASH_ON_DELIVERY
+            && $this->cod_fee === null
+        ) {
+            return false;
+        }
+
+        return true;
+    }
 }

@@ -117,7 +117,7 @@
                     @forelse ($orders as $order)
                         <tr>
                             <td class="font-semibold">
-                                #{{ $order->id }}
+                                #{{ sprintf('%08d', $order->id) }}
                             </td>
                             <td>
                                 {{ $order->created_at->format('Y/m/d H:i') }}
@@ -148,7 +148,7 @@
                 <div class="rounded-xl border border-slate-200 bg-white p-4">
                     <div class="flex flex-wrap items-center justify-between gap-3">
                         <p class="font-semibold">
-                            注文 #{{ $order->id }}
+                            注文 #{{ sprintf('%08d', $order->id) }}
                         </p>
 
                         <p class="text-xs text-slate-500">

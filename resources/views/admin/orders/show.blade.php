@@ -10,11 +10,19 @@
     </a>
 
     {{-- ページタイトル --}}
-    <div class="mb-8">
+    <div class="mb-3 flex flex-wrap items-center justify-between gap-4">
         <h1 class="text-2xl font-bold lg:text-3xl">
             注文詳細
         </h1>
+
+        @if ($order->canIssueDeliverySlip())
+            <a href="{{ route('admin.orders.deliverySlip', $order) }}" target="_blank" rel="noopener noreferrer"
+                class="btn btn-neutral btn-sm">
+                納品書を発行
+            </a>
+        @endif
     </div>
+
     <div class="mt-2 flex flex-wrap items-center gap-3 text-sm text-slate-500">
         <span>
             注文番号 #{{ sprintf('%08d', $order->id) }}

@@ -11,6 +11,7 @@ use App\Models\Product;
 use App\Support\ContactRules;
 use App\Support\InputLimits;
 use App\Services\TaxCalculator;
+use App\Services\DeliverySlipPdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -626,6 +627,21 @@ class OrderController extends Controller
         return redirect()
             ->route('admin.orders.show', $order)
             ->with('success', '送り状情報を更新しました。');
+    }
+
+    // 納品書PDF作成
+    public function deliverySlip(Order $order, DeliverySlipPdf $deliverySlipPdf)
+    {
+        abort_unless($order->canIssueDeliverySlip(), 403);
+
+        $pdf = $deliverySlipPdf->generate($order);
+
+        $fileName = '納品書_' . str_pad((string) $order->id, 8, '0', STR_PAD_LEFT) . '.pdf';
+
+        return response($pdf, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => "inline; filename=\"delivery-slip-{$order->id}.pdf\"; filename*=UTF-8''" . rawurlencode($fileName),
+        ]);
     }
 
     // 税額集計(トランザクション内から呼ぶこと)

@@ -45,7 +45,7 @@
                             </label>
 
                             <input type="text" id="orderer_name" name="orderer_name"
-                                value="{{ old('orderer_name', $order['orderer_name'] ?? auth()->user()->name) }}"
+                                value="{{ old('orderer_name', $order['orderer_name'] ?? auth()->user()?->name) }}"
                                 class="input w-full" maxlength="255" required>
                         </div>
 
@@ -56,7 +56,7 @@
                             </label>
 
                             <input type="text" id="orderer_postal_code" name="orderer_postal_code"
-                                value="{{ old('orderer_postal_code', $order['orderer_postal_code'] ?? auth()->user()->postal_code) }}"
+                                value="{{ old('orderer_postal_code', $order['orderer_postal_code'] ?? auth()->user()?->postal_code) }}"
                                 class="input w-full sm:max-w-xs" placeholder="123-4567" maxlength="8" required>
                         </div>
 
@@ -67,7 +67,7 @@
                             </label>
 
                             <input type="text" id="orderer_address" name="orderer_address"
-                                value="{{ old('orderer_address', $order['orderer_address'] ?? auth()->user()->address) }}"
+                                value="{{ old('orderer_address', $order['orderer_address'] ?? auth()->user()?->address) }}"
                                 class="input w-full" maxlength="255" required>
                         </div>
 
@@ -77,7 +77,7 @@
                                 電話番号 <span class="text-error">＊</span>
                             </label>
                             <input type="tel" id="orderer_phone" name="orderer_phone"
-                                value="{{ old('orderer_phone', $order['orderer_phone'] ?? auth()->user()->phone) }}"
+                                value="{{ old('orderer_phone', $order['orderer_phone'] ?? auth()->user()?->phone) }}"
                                 class="input w-full sm:max-w-sm" placeholder="090-1234-5678" maxlength="20" required>
                         </div>
 
@@ -89,7 +89,7 @@
                             </label>
 
                             <input type="email" id="orderer_email" name="orderer_email"
-                                value="{{ old('orderer_email', $order['orderer_email'] ?? auth()->user()->email) }}"
+                                value="{{ old('orderer_email', $order['orderer_email'] ?? auth()->user()?->email) }}"
                                 class="input w-full" maxlength="255" placeholder="example@example.com" required>
                         </div>
                     </div>

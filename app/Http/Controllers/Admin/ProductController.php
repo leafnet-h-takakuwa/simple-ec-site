@@ -73,7 +73,7 @@ class ProductController extends Controller
         $product->volume = $validated['volume'];
         $product->price = $validated['price'];
         $product->is_active = $validated['is_active'];
-        $product->is_standard = $validated['is_standard'];
+        $product->is_standard = $validated['is_standard'] ?? false;
         $product->description = $validated['description'] ?? null;
 
         // 商品画像を保存
@@ -118,7 +118,7 @@ class ProductController extends Controller
         $product->volume = $validated['volume'];
         $product->price = $validated['price'];
         $product->is_active = $validated['is_active'];
-        $product->is_standard = $validated['is_standard'];
+        $product->is_standard = $validated['is_standard'] ?? false;
         $product->description = $validated['description'] ?? null;
 
         $old_image_path = $product->image_path;

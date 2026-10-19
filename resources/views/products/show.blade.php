@@ -78,13 +78,28 @@
                 {{-- 購入操作 --}}
                 @if (Auth::check() && Auth::user()->is_admin)
                     {{-- 管理者には購入操作を表示しない --}}
-                    <div class="rounded-lg bg-base-200 p-4">
+                    <div class="rounded-lg border border-warning/40 bg-warning/10 p-4">
 
-                        <p class="text-sm text-base-content/70">
-                            管理者として閲覧中です。
-                            商品の購入操作はできません。
+                        <p class="mb-3 flex items-center gap-2 text-sm font-bold text-warning">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z
+                                   M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-1.8 1.8-.06-.06
+                                   A1.7 1.7 0 0 0 16.06 18.4a1.7 1.7 0 0 0-1.56 1.1V20h-5
+                                   v-.5a1.7 1.7 0 0 0-1.56-1.1 1.7 1.7 0 0 0-1.88.34l-.06.06
+                                   -1.8-1.8.06-.06A1.7 1.7 0 0 0 4.6 15.06 1.7 1.7 0 0 0 3.5 13.5H3v-3h.5
+                                   A1.7 1.7 0 0 0 4.6 8.94a1.7 1.7 0 0 0-.34-1.88L4.2 7l1.8-1.8.06.06
+                                   A1.7 1.7 0 0 0 7.94 5.6 1.7 1.7 0 0 0 9.5 4.5V4h5v.5
+                                   a1.7 1.7 0 0 0 1.56 1.1 1.7 1.7 0 0 0 1.88-.34L18 5.2 19.8 7l-.06.06
+                                   A1.7 1.7 0 0 0 19.4 8.94a1.7 1.7 0 0 0 1.1 1.56h.5v3h-.5
+                                   A1.7 1.7 0 0 0 19.4 15Z" />
+                            </svg>
+                            管理者用メニュー
                         </p>
 
+                        <a href="{{ route('admin.products.edit', $product) }}" class="btn btn-warning w-full">
+                            商品を編集
+                        </a>
                     </div>
                 @else
                     <form action="{{ route('carts.store') }}" method="POST">

@@ -47,7 +47,10 @@
                     @if ($product->isNew())
                         <x-new-ribbon />
                     @endif
-
+                    {{-- 定番リボン --}}
+                    @if ($product->is_standard)
+                        <x-standard-ribbon />
+                    @endif
                 </div>
             </div>
 

@@ -80,7 +80,7 @@
                                     商品名
                                 </label>
                                 <input type="text" data-field="product_name" value="{{ $item['product_name'] ?? '' }}"
-                                    maxlength="255" required class="input w-full">
+                                    maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}" required class="input w-full">
                             </div>
 
                             <div class="lg:col-span-3">
@@ -133,7 +133,7 @@
                             氏名 <span class="text-red-600">*</span>
                         </label>
                         <input type="text" id="orderer_name" name="orderer_name" value="{{ old('orderer_name') }}"
-                            maxlength="255" required class="input w-full">
+                            maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}" required class="input w-full">
                     </div>
 
                     <div>
@@ -141,7 +141,7 @@
                             郵便番号 <span class="text-red-600">*</span>
                         </label>
                         <input type="text" id="orderer_postal_code" name="orderer_postal_code"
-                            value="{{ old('orderer_postal_code') }}" placeholder="例：030-0000" maxlength="8" required
+                            value="{{ old('orderer_postal_code') }}" placeholder="例：030-0000" maxlength="{{ \App\Support\InputLimits::POSTAL_CODE }}" required
                             class="input w-full">
                     </div>
 
@@ -149,14 +149,14 @@
                         <label for="orderer_address" class="mb-2 block text-sm font-semibold">
                             住所 <span class="text-red-600">*</span>
                         </label>
-                        <textarea id="orderer_address" name="orderer_address" maxlength="255" rows="3" required class="textarea w-full">{{ old('orderer_address') }}</textarea>
+                        <textarea id="orderer_address" name="orderer_address" maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}" rows="3" required class="textarea w-full">{{ old('orderer_address') }}</textarea>
                     </div>
 
                     <div>
                         <label for="orderer_phone" class="mb-2 block text-sm font-semibold">
                             電話番号 <span class="text-red-600">*</span>
                         </label>
-                        <input type="tel" id="orderer_phone" name="orderer_phone" maxlength="20" value="{{ old('orderer_phone') }}"
+                        <input type="tel" id="orderer_phone" name="orderer_phone" maxlength="{{ \App\Support\InputLimits::PHONE }}" value="{{ old('orderer_phone') }}"
                             required class="input w-full">
                     </div>
 
@@ -164,7 +164,7 @@
                         <label for="orderer_email" class="mb-2 block text-sm font-semibold">
                             メールアドレス（任意）
                         </label>
-                        <input type="email" id="orderer_email" name="orderer_email" maxlength="255"
+                        <input type="email" id="orderer_email" name="orderer_email" maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}"
                             value="{{ old('orderer_email') }}" class="input w-full">
                     </div>
                 </div>
@@ -186,7 +186,7 @@
                             氏名 <span class="text-red-600">*</span>
                         </label>
                         <input type="text" id="shipping_name" name="shipping_name"
-                            value="{{ old('shipping_name') }}" maxlength="255" required class="input w-full">
+                            value="{{ old('shipping_name') }}" maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}" required class="input w-full">
                     </div>
 
                     <div>
@@ -194,7 +194,7 @@
                             郵便番号 <span class="text-red-600">*</span>
                         </label>
                         <input type="text" id="shipping_postal_code" name="shipping_postal_code"
-                            value="{{ old('shipping_postal_code') }}" placeholder="例：030-0000" maxlength="8" required
+                            value="{{ old('shipping_postal_code') }}" placeholder="例：030-0000" maxlength="{{ \App\Support\InputLimits::POSTAL_CODE }}" required
                             class="input w-full">
                     </div>
 
@@ -202,14 +202,14 @@
                         <label for="shipping_address" class="mb-2 block text-sm font-semibold">
                             住所 <span class="text-red-600">*</span>
                         </label>
-                        <textarea id="shipping_address" name="shipping_address" maxlength="255" rows="3" required class="textarea w-full">{{ old('shipping_address') }}</textarea>
+                        <textarea id="shipping_address" name="shipping_address" maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}" rows="3" required class="textarea w-full">{{ old('shipping_address') }}</textarea>
                     </div>
 
                     <div>
                         <label for="shipping_phone" class="mb-2 block text-sm font-semibold">
                             電話番号 <span class="text-red-600">*</span>
                         </label>
-                        <input type="tel" id="shipping_phone" name="shipping_phone" maxlength="20"
+                        <input type="tel" id="shipping_phone" name="shipping_phone" maxlength="{{ \App\Support\InputLimits::PHONE }}"
                             value="{{ old('shipping_phone') }}" required class="input w-full">
                     </div>
                 </div>
@@ -283,7 +283,7 @@
             <div class="grid grid-cols-1 gap-4 lg:grid-cols-12">
                 <div class="lg:col-span-6">
                     <label class="mb-2 block text-sm font-semibold">商品名</label>
-                    <input type="text" data-field="product_name" maxlength="255" required class="input w-full">
+                    <input type="text" data-field="product_name" maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}" required class="input w-full">
                 </div>
 
                 <div class="lg:col-span-3">
@@ -349,186 +349,6 @@
         </form>
     </dialog>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const container = document.getElementById('items-container');
-            const template = document.getElementById('item-template');
-            const formatter = new Intl.NumberFormat('ja-JP');
-
-            const modal = document.getElementById('product-select-modal');
-            const productSelect = document.getElementById('product-select');
-            const confirmProduct = document.getElementById('confirm-product');
-
-            let targetItem = null;
-
-            const formatYen = (amount) => {
-                return `${amount < 0 ? '-' : ''}¥${formatter.format(Math.abs(amount))}`;
-            };
-
-            // 商品連携ボタンの表示を切り替える
-            function updateLinkButton(item) {
-                const productId = item.querySelector('[data-field="product_id"]').value;
-                const button = item.querySelector('.select-product');
-
-                if (productId) {
-                    button.textContent = '商品連携済';
-                    button.classList.remove('btn-outline', 'btn-neutral');
-                    button.classList.add('btn-success');
-                } else {
-                    button.textContent = '商品を選択';
-                    button.classList.remove('btn-success');
-                    button.classList.add('btn-outline', 'btn-neutral');
-                }
-            }
-
-            // 商品マスタとの連携を解除
-            function unlinkProduct(item) {
-                item.querySelector('[data-field="product_id"]').value = '';
-                updateLinkButton(item);
-            }
-
-            // 商品連携時の値を記録
-            function rememberProductValues(item) {
-                item.dataset.linkedName =
-                    item.querySelector('[data-field="product_name"]').value;
-
-                item.dataset.linkedPrice =
-                    item.querySelector('[data-field="price"]').value;
-            }
-
-            // 商品番号・入力名・金額を更新
-            function refresh() {
-                let total = 0;
-
-                container.querySelectorAll('.order-item').forEach((item, index) => {
-                    item.querySelector('.item-title').textContent = `商品 ${index + 1}`;
-
-                    item.querySelectorAll('[data-field]').forEach(input => {
-                        input.name = `items[${index}][${input.dataset.field}]`;
-                    });
-
-                    const price = Number(item.querySelector('.item-price').value) || 0;
-                    const quantity = Number(item.querySelector('.item-quantity').value) || 0;
-                    const subtotal = price * quantity;
-
-                    item.querySelector('.item-subtotal').textContent = formatYen(subtotal);
-                    total += subtotal;
-
-                    updateLinkButton(item);
-                });
-
-                document.getElementById('total-amount').textContent = formatYen(total);
-            }
-
-            // 商品追加
-            document.getElementById('add-item').addEventListener('click', () => {
-                container.appendChild(template.content.cloneNode(true));
-                refresh();
-            });
-
-            // 商品削除・商品選択
-            container.addEventListener('click', event => {
-                const removeButton = event.target.closest('.remove-item');
-
-                if (removeButton) {
-                    if (container.querySelectorAll('.order-item').length <= 1) {
-                        alert('注文明細は最低1件必要です。');
-                        return;
-                    }
-
-                    removeButton.closest('.order-item').remove();
-                    refresh();
-                    return;
-                }
-
-                const selectButton = event.target.closest('.select-product');
-
-                if (selectButton) {
-                    targetItem = selectButton.closest('.order-item');
-
-                    const productId = targetItem.querySelector(
-                        '[data-field="product_id"]'
-                    ).value;
-
-                    productSelect.value = productId || '';
-                    modal.showModal();
-                }
-            });
-
-            // モーダルで商品を確定
-            confirmProduct.addEventListener('click', () => {
-                if (!targetItem || !productSelect.value) {
-                    alert('商品を選択してください。');
-                    return;
-                }
-
-                const option = productSelect.selectedOptions[0];
-
-                targetItem.querySelector('[data-field="product_id"]').value =
-                    option.value;
-
-                targetItem.querySelector('[data-field="product_name"]').value =
-                    option.dataset.name;
-
-                targetItem.querySelector('[data-field="price"]').value =
-                    option.dataset.price;
-
-                rememberProductValues(targetItem);
-                updateLinkButton(targetItem);
-                refresh();
-
-                modal.close();
-                targetItem = null;
-            });
-
-            modal.addEventListener('close', () => {
-                targetItem = null;
-            });
-
-            // 入力中も金額を更新
-            container.addEventListener('input', refresh);
-
-            // 商品名・単価の変更が確定したら商品連携を解除
-            container.addEventListener('change', event => {
-                const input = event.target;
-                const item = input.closest('.order-item');
-
-                if (!item) return;
-
-                const productId = item.querySelector('[data-field="product_id"]').value;
-                if (!productId) return;
-
-                if (input.dataset.field === 'product_name') {
-                    if (input.value !== item.dataset.linkedName) {
-                        unlinkProduct(item);
-                    }
-                }
-
-                if (input.dataset.field === 'price') {
-                    if (Number(input.value) !== Number(item.dataset.linkedPrice)) {
-                        unlinkProduct(item);
-                    }
-                }
-            });
-
-            // バリデーションエラー後の商品連携状態を復元
-            container.querySelectorAll('.order-item').forEach(item => {
-                if (item.querySelector('[data-field="product_id"]').value) {
-                    rememberProductValues(item);
-                }
-            });
-
-            // 注文者情報をお届け先にコピー
-            document.getElementById('copy-orderer').addEventListener('click', () => {
-                const fields = ['name', 'postal_code', 'address', 'phone'];
-
-                fields.forEach(field => {
-                    document.getElementById(`shipping_${field}`).value =
-                        document.getElementById(`orderer_${field}`).value;
-                });
-            });
-
-            refresh();
-        });
-    </script>
+    @include('admin.orders.partials.item-editor-script')
+    @include('admin.orders.partials.copy-orderer-script')
 @endsection

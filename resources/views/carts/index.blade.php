@@ -39,7 +39,7 @@
                 @foreach ($cart_items as $item)
                     @php
                         $product = $item->product;
-                        $subtotal = $product->price * $item->quantity;
+                        $subtotal = $item->subtotal();
                     @endphp
 
                     <div class="rounded-lg border border-base-300 bg-base-100 p-4 sm:p-5">
@@ -173,13 +173,7 @@
             </div>
 
             {{-- 商品代金合計 --}}
-            @php
-                $total = 0;
 
-                foreach ($cart_items as $item) {
-                    $total += $item->product->price * $item->quantity;
-                }
-            @endphp
 
             <div class="mt-6 rounded-lg border border-base-300 bg-base-200/50 p-5 sm:p-7">
 

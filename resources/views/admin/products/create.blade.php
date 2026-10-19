@@ -26,7 +26,7 @@
                     <label for="name" class="mb-2 block font-semibold">
                         商品名 <span class="text-red-600">*</span>
                     </label>
-                    <input type="text" name="name" id="name" value="{{ old('name') }}" maxlength="255"
+                    <input type="text" name="name" id="name" value="{{ old('name') }}" maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}"
                         class="input w-full" required>
                     @error('name')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -54,7 +54,7 @@
                     <label for="volume" class="mb-2 block font-semibold">
                         内容量 <span class="text-red-600">*</span>
                     </label>
-                    <input type="text" name="volume" id="volume" value="{{ old('volume') }}" maxlength="255"
+                    <input type="text" name="volume" id="volume" value="{{ old('volume') }}" maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}"
                         placeholder="例：500g" class="input w-full" required>
                     @error('volume')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -131,7 +131,7 @@
                 class="file-input w-full">
 
             <p class="mt-2 text-sm text-slate-500">
-                JPEG・PNG・WebP形式、最大5MB。画像の登録は任意です。
+                JPEG・PNG・WebP形式、最大{{ config('shop.products.image_max_kb') }}KB。画像の登録は任意です。
             </p>
 
             @error('image')

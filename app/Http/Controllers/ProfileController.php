@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\InputLimits;
 use Illuminate\Http\Request;
 
 class ProfileController extends Controller
@@ -16,11 +17,11 @@ class ProfileController extends Controller
     public function update(Request $request)
     {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $request->user()->id],
-            'postal_code' => ['nullable', 'string', 'max:8'],
-            'address' => ['nullable', 'string', 'max:255'],
-            'phone' => ['nullable', 'string', 'max:20'],
+            'name' => ['required', 'string', 'max:' . InputLimits::SHORT_TEXT],
+            'email' => ['required', 'email', 'max:' . InputLimits::SHORT_TEXT, 'unique:users,email,' . $request->user()->id],
+            'postal_code' => ['nullable', 'string', 'max:' . InputLimits::POSTAL_CODE],
+            'address' => ['nullable', 'string', 'max:' . InputLimits::SHORT_TEXT],
+            'phone' => ['nullable', 'string', 'max:' . InputLimits::PHONE],
         ]);
 
         $request->user()->update($validated);

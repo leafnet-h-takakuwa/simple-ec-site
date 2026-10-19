@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use App\Models\Product;
-use Illuminate\Http\Request;
 use App\Enums\ProductCategory;
-use Illuminate\Validation\Rule;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\ProductRequest;
+use App\Models\Product;
+use App\Support\InputLimits;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
@@ -15,7 +16,7 @@ class ProductController extends Controller
     {
         // 検索条件を取得・検証
         $conditions = $request->validate([
-            'name' => ['nullable', 'string', 'max:255'],
+            'name' => ['nullable', 'string', 'max:' . InputLimits::SHORT_TEXT],
             'is_active' => ['nullable', 'in:0,1'],
         ], [], ['name' => '商品名']);
 
@@ -35,10 +36,10 @@ class ProductController extends Controller
             $query->where('is_active', $conditions['is_active']);
         }
 
-        // 新しい順に10件ずつ取得
+        // 新しい順に設定件数ずつ取得
         $products = $query->orderByDesc('created_at')
             ->orderByDesc('id')
-            ->paginate(10)
+            ->paginate(config('shop.pagination.admin_products'))
             ->withQueryString();
 
         return view('admin.products.index', [
@@ -54,27 +55,10 @@ class ProductController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(ProductRequest $request)
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'category' => ['required', Rule::enum(ProductCategory::class)],
-            'volume' => ['required', 'string', 'max:255'],
-            'price' => ['required', 'integer', 'min:0'],
-            'is_active' => ['required', 'boolean'],
-            'is_standard' => ['boolean'],
-            'description' => ['nullable', 'string'],
-            'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
-        ], [], ['name' => '商品名']);
-
         $product = new Product();
-        $product->name = $validated['name'];
-        $product->category = ProductCategory::from($validated['category']);
-        $product->volume = $validated['volume'];
-        $product->price = $validated['price'];
-        $product->is_active = $validated['is_active'];
-        $product->is_standard = $validated['is_standard'] ?? false;
-        $product->description = $validated['description'] ?? null;
+        $product->fill($request->productAttributes());
 
         // 商品画像を保存
         if ($request->hasFile('image')) {
@@ -97,29 +81,11 @@ class ProductController extends Controller
         ]);
     }
 
-    public function update(Request $request, $id)
+    public function update(ProductRequest $request, $id)
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'category' => ['required', Rule::enum(ProductCategory::class)],
-            'volume' => ['required', 'string', 'max:255'],
-            'price' => ['required', 'integer', 'min:0'],
-            'is_active' => ['required', 'boolean'],
-            'is_standard' => ['boolean'],
-            'description' => ['nullable', 'string'],
-            'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
-            'remove_image' => ['nullable', 'boolean'],
-        ], [], ['name' => '商品名']);
-
         $product = Product::findOrFail($id);
 
-        $product->name = $validated['name'];
-        $product->category = ProductCategory::from($validated['category']);
-        $product->volume = $validated['volume'];
-        $product->price = $validated['price'];
-        $product->is_active = $validated['is_active'];
-        $product->is_standard = $validated['is_standard'] ?? false;
-        $product->description = $validated['description'] ?? null;
+        $product->fill($request->productAttributes());
 
         $old_image_path = $product->image_path;
         $new_image_path = null;

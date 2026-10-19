@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Enums\ProductCategory;
 use Database\Factories\ProductFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Enums\ProductCategory;
 
 class Product extends Model
 {
@@ -45,10 +46,27 @@ class Product extends Model
         return $this->hasMany(OrderItem::class);
     }
 
-    // その商品が1か月以内に登録されたものかチェック
+    public function scopeActive(Builder $query): Builder
+    {
+        return $query->where('is_active', true);
+    }
+
+    public function scopePopular(Builder $query): Builder
+    {
+        return $query->withSum('orderItems', 'quantity')
+            ->orderByRaw('order_items_sum_quantity DESC NULLS LAST')
+            ->orderByDesc('id');
+    }
+
+    public function scopeNewest(Builder $query): Builder
+    {
+        return $query->orderByDesc('created_at')->orderByDesc('id');
+    }
+
+    // 設定した日数以内に登録された商品かチェック
     public function isNew(): bool
     {
         return $this->created_at !== null
-            && $this->created_at->gte(now()->subDays(30));
+            && $this->created_at->gte(now()->subDays(config('shop.products.new_days')));
     }
 }

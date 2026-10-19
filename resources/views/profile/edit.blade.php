@@ -25,7 +25,7 @@
                         氏名 <span class="text-red-600">*</span>
                     </label>
                     <input type="text" id="name" name="name" value="{{ old('name', $user->name) }}"
-                        maxlength="255" required class="input w-full">
+                        maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}" required class="input w-full">
                 </div>
 
                 {{-- メールアドレス --}}
@@ -34,7 +34,7 @@
                         メールアドレス <span class="text-red-600">*</span>
                     </label>
                     <input type="email" id="email" name="email" value="{{ old('email', $user->email) }}"
-                        maxlength="255" required class="input w-full">
+                        maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}" required class="input w-full">
                 </div>
 
                 {{-- 郵便番号 --}}
@@ -43,7 +43,7 @@
                         郵便番号
                     </label>
                     <input type="text" id="postal_code" name="postal_code"
-                        value="{{ old('postal_code', $user->postal_code) }}" placeholder="例：030-0000" maxlength="8"
+                        value="{{ old('postal_code', $user->postal_code) }}" placeholder="例：030-0000" maxlength="{{ \App\Support\InputLimits::POSTAL_CODE }}"
                         class="input w-full">
                 </div>
 
@@ -52,7 +52,7 @@
                     <label for="address" class="mb-2 block text-sm font-semibold">
                         住所
                     </label>
-                    <textarea id="address" name="address" rows="3" class="textarea w-full">{{ old('address', $user->address) }}</textarea>
+                    <textarea id="address" name="address" rows="3" maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}" class="textarea w-full">{{ old('address', $user->address) }}</textarea>
                 </div>
 
                 {{-- 電話番号 --}}
@@ -61,7 +61,7 @@
                         電話番号
                     </label>
                     <input type="tel" id="phone" name="phone" value="{{ old('phone', $user->phone) }}"
-                        maxlength="20" class="input w-full">
+                        maxlength="{{ \App\Support\InputLimits::PHONE }}" class="input w-full">
                 </div>
 
             </div>

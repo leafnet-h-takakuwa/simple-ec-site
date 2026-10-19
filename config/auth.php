@@ -2,6 +2,11 @@
 
 return [
 
+    'login_max_attempts' => 5,
+    'login_decay_seconds' => 60,
+    'verification_max_attempts' => 6,
+    'verification_decay_minutes' => 1,
+
     /*
     |--------------------------------------------------------------------------
     | Authentication Defaults

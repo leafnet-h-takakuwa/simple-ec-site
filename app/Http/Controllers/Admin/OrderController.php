@@ -8,9 +8,11 @@ use App\Enums\PaymentMethod;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Product;
+use App\Support\ContactRules;
+use App\Support\InputLimits;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class OrderController extends Controller
@@ -20,7 +22,7 @@ class OrderController extends Controller
         // 検索条件を取得・検証
         $conditions = $request->validate([
             'order_id' => ['nullable', 'integer', 'min:1'],
-            'orderer_name' => ['nullable', 'string', 'max:255'],
+            'orderer_name' => ['nullable', 'string', 'max:' . InputLimits::SHORT_TEXT],
             'date_from' => ['nullable', 'date_format:Y-m-d'],
             'date_to' => ['nullable', 'date_format:Y-m-d', 'after_or_equal:date_from'],
             'status' => [
@@ -61,20 +63,16 @@ class OrderController extends Controller
         // ステータス
         if (!empty($conditions['status'])) {
             if ($conditions['status'] === 'active') {
-                $query->whereIn('status', [
-                    OrderStatus::RECEIVED->value,
-                    OrderStatus::AWAITING_PAYMENT->value,
-                    OrderStatus::PREPARING->value,
-                ]);
+                $query->whereIn('status', OrderStatus::activeValues());
             } else {
                 $query->where('status', $conditions['status']);
             }
         }
 
-        // 新しい順に10件ずつ取得
+        // 新しい順に設定件数ずつ取得
         $orders = $query->orderByDesc('created_at')
             ->orderByDesc('id')
-            ->paginate(10)
+            ->paginate(config('shop.pagination.admin_orders'))
             ->withQueryString();
 
         return view('admin.orders.index', [
@@ -113,20 +111,14 @@ class OrderController extends Controller
             'order_source' => ['required', Rule::enum(OrderSource::class)],
             'payment_method' => ['required', Rule::enum(PaymentMethod::class)],
 
-            'orderer_name' => ['required', 'string', 'max:255'],
-            'orderer_postal_code' => ['required', 'string', 'max:8'],
-            'orderer_address' => ['required', 'string', 'max:255'],
-            'orderer_phone' => ['required', 'string', 'max:20'],
-            'orderer_email' => ['nullable', 'email', 'max:255'],
+            ...ContactRules::forPrefix('orderer_'),
+            'orderer_email' => ['nullable', 'email', 'max:' . InputLimits::SHORT_TEXT],
 
-            'shipping_name' => ['required', 'string', 'max:255'],
-            'shipping_postal_code' => ['required', 'string', 'max:8'],
-            'shipping_address' => ['required', 'string', 'max:255'],
-            'shipping_phone' => ['required', 'string', 'max:20'],
+            ...ContactRules::forPrefix('shipping_'),
 
             'items' => ['required', 'array', 'min:1'],
             'items.*.product_id' => ['nullable', 'integer', 'exists:products,id'],
-            'items.*.product_name' => ['required', 'string', 'max:255'],
+            'items.*.product_name' => ['required', 'string', 'max:' . InputLimits::SHORT_TEXT],
             'items.*.price' => ['required', 'integer'],
             'items.*.quantity' => ['required', 'integer', 'min:1'],
             'memo' => ['nullable', 'string'],
@@ -224,7 +216,7 @@ class OrderController extends Controller
             'items' => ['required', 'array', 'min:1'],
             'items.*.id' => ['nullable', 'integer', 'distinct'],
             'items.*.product_id' => ['nullable', 'integer', Rule::exists('products', 'id')],
-            'items.*.product_name' => ['required', 'string', 'max:255'],
+            'items.*.product_name' => ['required', 'string', 'max:' . InputLimits::SHORT_TEXT],
             'items.*.price' => ['required', 'integer'],
             'items.*.quantity' => ['required', 'integer', 'min:1'],
         ]);
@@ -428,16 +420,10 @@ class OrderController extends Controller
         }
 
         $validated = $request->validate([
-            'orderer_name' => ['required', 'string', 'max:255'],
-            'orderer_postal_code' => ['required', 'string', 'max:8'],
-            'orderer_address' => ['required', 'string', 'max:255'],
-            'orderer_phone' => ['required', 'string', 'max:20'],
-            'orderer_email' => ['nullable', 'email', 'max:255'],
+            ...ContactRules::forPrefix('orderer_'),
+            'orderer_email' => ['nullable', 'email', 'max:' . InputLimits::SHORT_TEXT],
 
-            'shipping_name' => ['required', 'string', 'max:255'],
-            'shipping_postal_code' => ['required', 'string', 'max:8'],
-            'shipping_address' => ['required', 'string', 'max:255'],
-            'shipping_phone' => ['required', 'string', 'max:20'],
+            ...ContactRules::forPrefix('shipping_'),
         ]);
 
         $order->update($validated);
@@ -505,7 +491,7 @@ class OrderController extends Controller
         $validated = $request->validate([
             'shippings' => ['nullable', 'array'],
             'shippings.*.id' => ['nullable', 'integer', 'distinct'],
-            'shippings.*.tracking_number' => ['nullable', 'string', 'max:20'],
+            'shippings.*.tracking_number' => ['nullable', 'string', 'max:' . InputLimits::TRACKING_NUMBER],
         ]);
 
         DB::transaction(function () use ($order, $validated) {

@@ -11,7 +11,7 @@ use Livewire\Attributes\Validate;
 use Livewire\Volt\Component;
 
 new #[Layout('components.layouts.auth', ['title' => 'ログイン'])] class extends Component {
-    #[Validate('required|string|email|max:255')]
+    #[Validate('required|string|email|max:' . \App\Support\InputLimits::SHORT_TEXT)]
     public string $email = '';
 
     #[Validate('required|string')]
@@ -29,7 +29,7 @@ new #[Layout('components.layouts.auth', ['title' => 'ログイン'])] class exte
         $this->ensureIsNotRateLimited();
 
         if (!Auth::attempt(['email' => $this->email, 'password' => $this->password], $this->remember)) {
-            RateLimiter::hit($this->throttleKey());
+            RateLimiter::hit($this->throttleKey(), config('auth.login_decay_seconds'));
 
             throw ValidationException::withMessages([
                 'email' => __('auth.failed'),
@@ -52,7 +52,7 @@ new #[Layout('components.layouts.auth', ['title' => 'ログイン'])] class exte
      */
     protected function ensureIsNotRateLimited(): void
     {
-        if (!RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
+        if (!RateLimiter::tooManyAttempts($this->throttleKey(), config('auth.login_max_attempts'))) {
             return;
         }
 
@@ -85,7 +85,7 @@ new #[Layout('components.layouts.auth', ['title' => 'ログイン'])] class exte
 
     <form wire:submit="login" class="flex flex-col gap-6">
         <!-- Email Address -->
-        <flux:input wire:model="email" label="{{ __('Email address') }}" type="email" name="email" maxlength="255" required autofocus
+        <flux:input wire:model="email" label="{{ __('Email address') }}" type="email" name="email" maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}" required autofocus
             autocomplete="email" placeholder="email@example.com" />
 
         <!-- Password -->

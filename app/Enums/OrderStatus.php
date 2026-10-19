@@ -10,6 +10,11 @@ enum OrderStatus: string
     case SHIPPED = 'shipped';
     case CANCELLED = 'cancelled';
 
+    public static function activeValues(): array
+    {
+        return [self::RECEIVED->value, self::AWAITING_PAYMENT->value, self::PREPARING->value];
+    }
+
     public function label(): string
     {
         return match ($this) {

@@ -9,7 +9,7 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::orderByDesc('id')->paginate(20);
+        $users = User::orderByDesc('id')->paginate(config('shop.pagination.admin_users'));
 
         return view('admin.users.index', [
             'users' => $users,
@@ -20,7 +20,7 @@ class UserController extends Controller
     {
         $orders = $user->orders()
             ->orderByDesc('id')
-            ->paginate(10);
+            ->paginate(config('shop.pagination.admin_user_orders'));
 
         return view('admin.users.show', [
             'user' => $user,

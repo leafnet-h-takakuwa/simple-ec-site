@@ -36,7 +36,7 @@
                             氏名 <span class="text-red-600">*</span>
                         </label>
                         <input type="text" id="orderer_name" name="orderer_name"
-                            value="{{ old('orderer_name', $order->orderer_name) }}" maxlength="255" required
+                            value="{{ old('orderer_name', $order->orderer_name) }}" maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}" required
                             class="input w-full">
                     </div>
 
@@ -46,21 +46,21 @@
                         </label>
                         <input type="text" id="orderer_postal_code" name="orderer_postal_code"
                             value="{{ old('orderer_postal_code', $order->orderer_postal_code) }}" placeholder="例：030-0000"
-                            maxlength="8" required class="input w-full">
+                            maxlength="{{ \App\Support\InputLimits::POSTAL_CODE }}" required class="input w-full">
                     </div>
 
                     <div>
                         <label for="orderer_address" class="mb-2 block text-sm font-semibold">
                             住所 <span class="text-red-600">*</span>
                         </label>
-                        <textarea id="orderer_address" name="orderer_address" maxlength="255" rows="3" required class="textarea w-full">{{ old('orderer_address', $order->orderer_address) }}</textarea>
+                        <textarea id="orderer_address" name="orderer_address" maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}" rows="3" required class="textarea w-full">{{ old('orderer_address', $order->orderer_address) }}</textarea>
                     </div>
 
                     <div>
                         <label for="orderer_phone" class="mb-2 block text-sm font-semibold">
                             電話番号 <span class="text-red-600">*</span>
                         </label>
-                        <input type="tel" id="orderer_phone" name="orderer_phone" maxlength="20"
+                        <input type="tel" id="orderer_phone" name="orderer_phone" maxlength="{{ \App\Support\InputLimits::PHONE }}"
                             value="{{ old('orderer_phone', $order->orderer_phone) }}" required class="input w-full">
                     </div>
 
@@ -68,7 +68,7 @@
                         <label for="orderer_email" class="mb-2 block text-sm font-semibold">
                             メールアドレス（任意）
                         </label>
-                        <input type="email" id="orderer_email" name="orderer_email" maxlength="255"
+                        <input type="email" id="orderer_email" name="orderer_email" maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}"
                             value="{{ old('orderer_email', $order->orderer_email) }}" class="input w-full">
                     </div>
                 </div>
@@ -90,7 +90,7 @@
                             氏名 <span class="text-red-600">*</span>
                         </label>
                         <input type="text" id="shipping_name" name="shipping_name"
-                            value="{{ old('shipping_name', $order->shipping_name) }}" maxlength="255" required
+                            value="{{ old('shipping_name', $order->shipping_name) }}" maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}" required
                             class="input w-full">
                     </div>
 
@@ -100,21 +100,21 @@
                         </label>
                         <input type="text" id="shipping_postal_code" name="shipping_postal_code"
                             value="{{ old('shipping_postal_code', $order->shipping_postal_code) }}" placeholder="例：030-0000"
-                            maxlength="8" required class="input w-full">
+                            maxlength="{{ \App\Support\InputLimits::POSTAL_CODE }}" required class="input w-full">
                     </div>
 
                     <div>
                         <label for="shipping_address" class="mb-2 block text-sm font-semibold">
                             住所 <span class="text-red-600">*</span>
                         </label>
-                        <textarea id="shipping_address" name="shipping_address" maxlength="255" rows="3" required class="textarea w-full">{{ old('shipping_address', $order->shipping_address) }}</textarea>
+                        <textarea id="shipping_address" name="shipping_address" maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}" rows="3" required class="textarea w-full">{{ old('shipping_address', $order->shipping_address) }}</textarea>
                     </div>
 
                     <div>
                         <label for="shipping_phone" class="mb-2 block text-sm font-semibold">
                             電話番号 <span class="text-red-600">*</span>
                         </label>
-                        <input type="tel" id="shipping_phone" name="shipping_phone" maxlength="20"
+                        <input type="tel" id="shipping_phone" name="shipping_phone" maxlength="{{ \App\Support\InputLimits::PHONE }}"
                             value="{{ old('shipping_phone', $order->shipping_phone) }}" required class="input w-full">
                     </div>
                 </div>
@@ -133,12 +133,5 @@
         </div>
     </form>
 
-    <script>
-        document.getElementById('copy-orderer').addEventListener('click', () => {
-            ['name', 'postal_code', 'address', 'phone'].forEach(field => {
-                document.getElementById(`shipping_${field}`).value =
-                    document.getElementById(`orderer_${field}`).value;
-            });
-        });
-    </script>
+    @include('admin.orders.partials.copy-orderer-script')
 @endsection

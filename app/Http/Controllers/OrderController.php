@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\OrderStatus;
 use App\Enums\PaymentMethod;
-use App\Models\Cart;
 use App\Models\CartItem;
-use App\Models\Product;
 use App\Models\Order;
 use App\Models\OrderItem;
-use App\Enums\OrderStatus;
+use App\Services\CartService;
+use App\Support\ContactRules;
+use App\Support\InputLimits;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -16,13 +17,17 @@ use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
+    public function __construct(private CartService $cartService)
+    {
+    }
+
     public function index()
     {
         $orders = Order::where('user_id', Auth::id())
             ->with('orderItems')
             ->orderByDesc('created_at')
             ->orderByDesc('id')
-            ->paginate(10);
+            ->paginate(config('shop.pagination.orders'));
 
         return view('orders.index', [
             'orders' => $orders,
@@ -60,39 +65,7 @@ class OrderController extends Controller
             abort(403);
         }
 
-        // カート内の商品を取得
-        if (Auth::check()) {
-            $cart = Cart::where('user_id', Auth::id())->first();
-
-            $cart_items = $cart
-                ? CartItem::with('product')
-                ->where('cart_id', $cart->id)
-                ->get()
-                : collect();
-        } else {
-            $cart_items = collect();
-
-            foreach ($request->session()->get('cart', []) as $product_id => $quantity) {
-                $product = Product::find($product_id);
-
-                if (!$product) {
-                    continue;
-                }
-
-                $cart_item = new CartItem();
-                $cart_item->product_id = $product->id;
-                $cart_item->quantity = $quantity;
-                $cart_item->setRelation('product', $product);
-
-                $cart_items->push($cart_item);
-            }
-        }
-
-        // 販売中の商品だけを対象にする
-        $cart_items = $cart_items->filter(function ($cart_item) {
-            return $cart_item->product
-                && $cart_item->product->is_active;
-        });
+        $cart_items = $this->cartService->availableItems($request);
 
         // カートが空なら注文不可
         if ($cart_items->isEmpty()) {
@@ -102,19 +75,13 @@ class OrderController extends Controller
 
         // 注文者情報・配送先情報の検証
         $validated = $request->validate([
-            'orderer_name' => ['required', 'string', 'max:255'],
-            'orderer_postal_code' => ['required', 'string', 'max:8'],
-            'orderer_address' => ['required', 'string', 'max:255'],
-            'orderer_phone' => ['required', 'string', 'max:20'],
-            'orderer_email' => ['required', 'email', 'max:255'],
+            ...ContactRules::forPrefix('orderer_'),
+            'orderer_email' => ['required', 'email', 'max:' . InputLimits::SHORT_TEXT],
 
             'shipping_same' => ['required', 'in:0,1'],
 
-            'shipping_name' => ['required_if:shipping_same,0', 'nullable', 'string', 'max:255'],
-            'shipping_postal_code' => ['required_if:shipping_same,0', 'nullable', 'string', 'max:8'],
-            'shipping_address' => ['required_if:shipping_same,0', 'nullable', 'string', 'max:255'],
-            'shipping_phone' => ['required_if:shipping_same,0', 'nullable', 'string', 'max:20'],
-            'customer_note' => ['nullable', 'string', 'max:1000'],
+            ...ContactRules::forPrefix('shipping_', ['required_if:shipping_same,0', 'nullable']),
+            'customer_note' => ['nullable', 'string', 'max:' . InputLimits::CUSTOMER_NOTE],
         ]);
 
         // 注文者と配送先が同じ場合は注文者情報をコピー
@@ -128,11 +95,6 @@ class OrderController extends Controller
         } else {
             $payment_method = PaymentMethod::BANK_TRANSFER;
         }
-
-        // 合計金額を計算
-        $total_amount = $cart_items->sum(function ($cart_item) {
-            return $cart_item->product->price * $cart_item->quantity;
-        });
 
         // 注文情報をセッションに保存
         $request->session()->put('order', [
@@ -158,39 +120,7 @@ class OrderController extends Controller
             return redirect()->route('orders.create');
         }
 
-        // カート内の商品を取得
-        if (Auth::check()) {
-            $cart = Cart::where('user_id', Auth::id())->first();
-
-            $cart_items = $cart
-                ? CartItem::with('product')
-                ->where('cart_id', $cart->id)
-                ->get()
-                : collect();
-        } else {
-            $cart_items = collect();
-
-            foreach ($request->session()->get('cart', []) as $product_id => $quantity) {
-                $product = Product::find($product_id);
-
-                if (!$product) {
-                    continue;
-                }
-
-                $cart_item = new CartItem();
-                $cart_item->product_id = $product->id;
-                $cart_item->quantity = $quantity;
-                $cart_item->setRelation('product', $product);
-
-                $cart_items->push($cart_item);
-            }
-        }
-
-        // 販売中の商品だけを対象にする
-        $cart_items = $cart_items->filter(function ($cart_item) {
-            return $cart_item->product
-                && $cart_item->product->is_active;
-        });
+        $cart_items = $this->cartService->availableItems($request);
 
         // カートが空ならカート画面へ
         if ($cart_items->isEmpty()) {
@@ -199,18 +129,10 @@ class OrderController extends Controller
         }
 
         // 合計金額を計算
-        $total_amount = $cart_items->sum(function ($cart_item) {
-            return $cart_item->product->price * $cart_item->quantity;
-        });
+        $total_amount = $this->cartService->total($cart_items);
 
         // 確認画面に表示した商品情報をセッションに保存
-        $confirmed_items = $cart_items->map(function ($cart_item) {
-            return [
-                'product_id' => $cart_item->product->id,
-                'price' => $cart_item->product->price,
-                'quantity' => $cart_item->quantity,
-            ];
-        })->sortBy('product_id')->values()->all();
+        $confirmed_items = $this->cartService->snapshot($cart_items);
         $request->session()->put('confirmed_items', $confirmed_items);
 
         return view('orders.confirm', [
@@ -243,34 +165,8 @@ class OrderController extends Controller
                 ->with('error', '注文情報を入力してください。');
         }
 
-        // カートの商品を取得
-        $cart = null;
-        if (Auth::check()) {
-            $cart = Cart::where('user_id', Auth::id())->first();
-
-            $cart_items = $cart
-                ? CartItem::with('product')
-                ->where('cart_id', $cart->id)
-                ->get()
-                : collect();
-        } else {
-            $cart_items = collect();
-
-            foreach ($request->session()->get('cart', []) as $product_id => $quantity) {
-                $product = Product::find($product_id);
-
-                if (!$product) {
-                    continue;
-                }
-
-                $cart_item = new CartItem();
-                $cart_item->product_id = $product->id;
-                $cart_item->quantity = $quantity;
-                $cart_item->setRelation('product', $product);
-
-                $cart_items->push($cart_item);
-            }
-        }
+        $cart = $this->cartService->cart($request);
+        $cart_items = $this->cartService->items($request);
 
         // 販売停止・削除された商品が含まれていないか確認
         $has_unavailable_item = $cart_items->contains(function ($cart_item) {
@@ -291,21 +187,13 @@ class OrderController extends Controller
         }
 
         // 合計金額を計算
-        $total_amount = $cart_items->sum(function ($cart_item) {
-            return $cart_item->product->price * $cart_item->quantity;
-        });
+        $total_amount = $this->cartService->total($cart_items);
 
         // 確認画面で表示した商品情報を取得
         $confirmed_items = $request->session()->get('confirmed_items');
 
         // 現在のカートの商品情報を取得
-        $current_items = $cart_items->map(function ($cart_item) {
-            return [
-                'product_id' => $cart_item->product->id,
-                'price' => $cart_item->product->price,
-                'quantity' => $cart_item->quantity,
-            ];
-        })->sortBy('product_id')->values()->all();
+        $current_items = $this->cartService->snapshot($cart_items);
 
         // 確認画面と注文確定時の商品情報を比較
         if ($confirmed_items === null || $confirmed_items !== $current_items) {
@@ -348,7 +236,7 @@ class OrderController extends Controller
                         'product_name' => $cart_item->product->name,
                         'price' => $cart_item->product->price,
                         'quantity' => $cart_item->quantity,
-                        'subtotal' => $cart_item->product->price * $cart_item->quantity,
+                        'subtotal' => $cart_item->subtotal(),
                     ]);
                 }
 

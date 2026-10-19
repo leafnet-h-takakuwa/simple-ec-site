@@ -2,25 +2,23 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Order;
 use App\Enums\OrderStatus;
+use App\Http\Controllers\Controller;
+use App\Models\Order;
 use App\Models\Product;
+use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
     public function index()
     {
         // 進行中の注文（受付・入金待ち・発送準備中）
-        $active_orders = Order::whereIn('status', [
-            OrderStatus::RECEIVED->value,
-            OrderStatus::AWAITING_PAYMENT->value,
-            OrderStatus::PREPARING->value,
-        ])->count();
+        $active_orders = Order::whereIn('status', OrderStatus::activeValues())->count();
 
-        // 直近7日間の注文
-        $recent_orders = Order::where('created_at', '>=', now()->subDays(7))->count();
+        // 設定期間内の注文
+        $recent_order_days = config('shop.dashboard.recent_order_days');
+        $recent_order_from = now()->subDays($recent_order_days);
+        $recent_orders = Order::where('created_at', '>=', $recent_order_from)->count();
 
         // 全注文
         $total_orders = Order::count();
@@ -34,6 +32,8 @@ class DashboardController extends Controller
         return view('admin.dashboard', [
             'active_orders' => $active_orders,
             'recent_orders' => $recent_orders,
+            'recent_order_days' => $recent_order_days,
+            'recent_order_from' => $recent_order_from,
             'total_orders' => $total_orders,
             'shipped_orders' => $shipped_orders,
             'last_product_update' => $last_product_update,

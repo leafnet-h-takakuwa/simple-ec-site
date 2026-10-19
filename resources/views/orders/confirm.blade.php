@@ -59,7 +59,7 @@
 
                             {{-- 小計 --}}
                             <p class="shrink-0 text-right font-semibold">
-                                {{ formatYen($cart_item->product->price * $cart_item->quantity) }}
+                                {{ formatYen($cart_item->subtotal()) }}
                             </p>
                         </div>
                     @endforeach

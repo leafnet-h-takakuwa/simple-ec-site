@@ -31,17 +31,17 @@
             </p>
         </div>
 
-        {{-- 直近7日間の注文 --}}
+        {{-- 設定期間内の注文 --}}
         <div class="rounded-xl border border-slate-200 bg-white p-4 lg:p-6">
-            <h2 class="text-sm font-bold lg:text-base">直近7日間の注文</h2>
-            <a href="{{ route('admin.orders.index', ['date_from' => now()->subDays(7)->toDateString()]) }}">
+            <h2 class="text-sm font-bold lg:text-base">直近{{ $recent_order_days }}日間の注文</h2>
+            <a href="{{ route('admin.orders.index', ['date_from' => $recent_order_from->toDateString()]) }}">
                 <p class="mt-4 text-3xl font-bold text-green-800 lg:text-4xl">
                     {{ number_format($recent_orders) }}
                     <span class="text-sm font-normal text-slate-500">件</span>
                 </p>
             </a>
             <p class="mt-3 text-xs text-slate-500">
-                過去7日間の受付件数
+                過去{{ $recent_order_days }}日間の受付件数
             </p>
         </div>
         </a>

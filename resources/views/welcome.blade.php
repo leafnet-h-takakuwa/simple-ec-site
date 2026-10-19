@@ -51,7 +51,7 @@
 
         <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
 
-            @forelse ($productsTop3 as $product)
+            @forelse ($productsPopular as $product)
                 <a href="{{ route('products.show', $product->id) }}"
                     class="group relative overflow-hidden rounded-xl border border-base-300 bg-base-100 transition hover:shadow-md">
 

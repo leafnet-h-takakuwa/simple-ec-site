@@ -2,60 +2,29 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Product;
+use App\Services\CartService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
+    public function __construct(private CartService $cartService)
+    {
+    }
+
     public function index(Request $request)
     {
-        $cart_items = collect(); // 空のCollection
-
-        // ログインしてるか
-        if (Auth::check()) {
-            // 管理者なら表示しない
-            if (Auth::user()->is_admin === true) {
-                abort(403);
-            }
-
-            // カート情報取得
-            $cart = Cart::where('user_id', Auth::id())->first();
-            if ($cart !== null) {
-                // 存在するなら取得
-                $cart_items = CartItem::with('product')
-                    ->where('cart_id', $cart->id)
-                    ->whereHas('product', function ($query) {
-                        $query->where('is_active', true);
-                    })
-                    ->get();
-            }
-        } else {
-            // セッションからカート情報を取得
-            $session_cart = $request->session()->get('cart', []);
-
-            foreach ($session_cart as $product_id => $quantity) {
-                // 商品情報をDBから取得
-                $product = Product::where('id', $product_id)
-                    ->where('is_active', true)
-                    ->first();
-
-                if ($product !== null) {
-                    // 会員カートと同じように参照できる形式にする
-                    $cart_item = new CartItem();
-                    $cart_item->product_id = $product->id;
-                    $cart_item->quantity = $quantity;
-                    $cart_item->setRelation('product', $product);
-
-                    $cart_items->push($cart_item);
-                }
-            }
+        if ($request->user()?->is_admin === true) {
+            abort(403);
         }
+
+        $cart_items = $this->cartService->availableItems($request);
         return view('carts.index', [
             'cart_items' => $cart_items,
+            'total' => $this->cartService->total($cart_items),
         ]);
     }
 

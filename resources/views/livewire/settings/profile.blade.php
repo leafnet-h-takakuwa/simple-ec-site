@@ -27,14 +27,14 @@ new class extends Component {
         $user = Auth::user();
 
         $validated = $this->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:' . \App\Support\InputLimits::SHORT_TEXT],
 
             'email' => [
                 'required',
                 'string',
                 'lowercase',
                 'email',
-                'max:255',
+                'max:' . \App\Support\InputLimits::SHORT_TEXT,
                 Rule::unique(User::class)->ignore($user->id)
             ],
         ]);
@@ -74,10 +74,10 @@ new class extends Component {
 
     <x-settings.layout heading="Profile" subheading="Update your name and email address">
         <form wire:submit="updateProfileInformation" class="my-6 w-full space-y-6">
-            <flux:input wire:model="name" label="{{ __('Name') }}" type="text" name="name" maxlength="255" required autofocus autocomplete="name" />
+            <flux:input wire:model="name" label="{{ __('Name') }}" type="text" name="name" maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}" required autofocus autocomplete="name" />
 
             <div>
-                <flux:input wire:model="email" label="{{ __('Email') }}" type="email" name="email" maxlength="255" required autocomplete="email" />
+                <flux:input wire:model="email" label="{{ __('Email') }}" type="email" name="email" maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}" required autocomplete="email" />
 
                 @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail &&! auth()->user()->hasVerifiedEmail())
                     <div>

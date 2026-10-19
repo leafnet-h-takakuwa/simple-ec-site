@@ -9,23 +9,16 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $productsTop3 = Product::where('is_active', true)
-            ->withSum('orderItems', 'quantity')
-            ->orderByRaw('order_items_sum_quantity DESC NULLS LAST')
-            ->orderByDesc('id')
-            ->take(3)
-            ->get();
+        $productsPopular = Product::active()->popular()
+            ->take(config('shop.home.popular_products'))->get();
 
-        $productsNew = Product::where('is_active', true)
-            ->orderByDesc('created_at')
-            ->orderByDesc('id')
-            ->take(3)
-            ->get();
+        $productsNew = Product::active()->newest()
+            ->take(config('shop.home.new_products'))->get();
 
         $categories = ProductCategory::cases();
 
         return view('welcome', [
-            'productsTop3' => $productsTop3,
+            'productsPopular' => $productsPopular,
             'productsNew' => $productsNew,
             'categories' => $categories,
         ]);

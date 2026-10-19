@@ -367,6 +367,7 @@ npm run dev
 ### 入力文字数
 
 フロントエンドの `maxlength` とサーバー側のバリデーションで、以下の上限を設定しています。
+定義元は `app/Support/InputLimits.php` です。カラム長に関係するため、上限を増やす場合はDB定義も確認します。
 
 | 項目 | 最大文字数 |
 | --- | --- |
@@ -381,6 +382,36 @@ npm run dev
 注文者情報には `orderer_`、お届け先情報には `shipping_` のプレフィックスを付けています。
 
 Web注文では注文者メールアドレスが必須ですが、管理画面での注文登録・顧客情報編集では任意です。
+
+### 数値設定と共通処理
+
+業務・表示上の調整値は以下にまとめています。初期値は従来の動作と同じです。
+
+| 対象 | 定義元・キー | 初期値 |
+| --- | --- | --- |
+| 1商品あたりのカート数量 | `config/cart.php`: `max_quantity` | 10個 |
+| 商品一覧・注文履歴のページ件数 | `config/shop.php`: `pagination.products`, `pagination.orders` | 12件・10件 |
+| 管理画面の商品・注文・会員・会員別注文のページ件数 | `config/shop.php`: `pagination.admin_products`, `admin_orders`, `admin_users`, `admin_user_orders` | 10件・10件・20件・10件 |
+| トップの人気・新着商品件数 | `config/shop.php`: `home.popular_products`, `home.new_products` | 各3件 |
+| NEW表示の対象期間 | `config/shop.php`: `products.new_days` | 30日 |
+| 商品画像の最大容量 | `config/shop.php`: `products.image_max_kb` | 5120KB |
+| ダッシュボードの直近注文集計期間 | `config/shop.php`: `dashboard.recent_order_days` | 7日 |
+| ログイン試行制限 | `config/auth.php`: `login_max_attempts`, `login_decay_seconds` | 5回・60秒 |
+| メール認証URLへのアクセス制限 | `config/auth.php`: `verification_max_attempts`, `verification_decay_minutes` | 6回・1分 |
+
+件数・日数・容量・試行回数には1以上の整数を設定します。画像容量の案内文、ダッシュボードの日数表示・検索リンクも設定に追従します。設定キャッシュを利用している環境では、変更後に `php artisan config:cache` で再生成します。
+
+| 共通化した処理 | 定義元 | 利用箇所 |
+| --- | --- | --- |
+| ゲスト・会員カートの取得、販売中商品の抽出、合計、確認用スナップショット | `app/Services/CartService.php` | カート表示・注文確認・注文確定 |
+| カート明細の小計 | `app/Models/CartItem.php`: `subtotal()` | カート・注文画面・注文登録 |
+| 商品登録・更新の検証と属性の初期値 | `app/Http/Requests/Admin/ProductRequest.php` | 管理画面の商品登録・更新 |
+| 注文者・配送先の連絡先検証 | `app/Support/ContactRules.php` | Web注文・管理画面の注文登録・顧客編集 |
+| 販売中・人気順・新着順の商品クエリ | `app/Models/Product.php` のスコープ | トップ・商品一覧 |
+| 進行中の注文ステータス | `app/Enums/OrderStatus.php`: `activeValues()` | ダッシュボード・注文検索 |
+| 注文明細編集・注文者情報のコピー | `resources/views/admin/orders/partials/` | 管理画面の注文登録・明細編集・顧客編集 |
+
+HTTPステータスコード、数量の最小値1、金額の下限0、真偽値、秒から分への換算値、CSS・SVGの寸法や順位の色分けは、その場で意味が明らかな値として維持しています。マイグレーションのカラム長・シーダーのサンプル値も実行時設定には置き換えていません。注文確定時の価格変更・販売停止チェック、管理画面の画像差し替え時の保存・削除順序は各処理に残しています。
 
 ### 注文データの保存
 
@@ -400,9 +431,12 @@ app/
 ├── Http/
 │   ├── Controllers/       # 購入者向け処理
 │   │   └── Admin/         # 管理者向け処理
-│   └── Middleware/        # 管理者権限の確認
+│   ├── Middleware/        # 管理者権限の確認
+│   └── Requests/Admin/    # 商品登録・更新の入力検証
 ├── Listeners/             # ログイン時のカート統合
-└── Models/                # 会員・商品・カート・注文・明細・配送個口
+├── Models/                # 会員・商品・カート・注文・明細・配送個口
+├── Services/              # カート取得・集計
+└── Support/               # 入力文字数・連絡先検証
 
 database/
 ├── factories/             # モデル用のサンプルデータ定義
@@ -441,9 +475,13 @@ php artisan optimize:clear
 ./vendor/bin/pint --test
 ```
 
-PHPUnitと `phpunit.xml` は導入済みですが、現時点で `tests/` にテストケースはありません。
+回帰テストは `tests/Feature/` にあります。SQLiteのメモリDBを使用し、ゲスト・会員のカート上限、注文確認・確定、価格変更・販売停止・削除商品の検出、商品保存、画像容量、表示件数、新着判定、ログイン試行制限を検証します。
 
-自動テストの追加は今後の作業です。
+```bash
+./vendor/bin/phpunit
+```
+
+画面描画と共通JavaScriptの出力はテストしますが、ブラウザでの操作テストは含みません。
 
 ## 現時点の対応範囲と今後の課題
 
@@ -459,7 +497,7 @@ PHPUnitと `phpunit.xml` は導入済みですが、現時点で `tests/` にテ
 | 注文確認・発送通知メール | 未実装。公開時にメール通知を整備予定 |
 | メールアドレス認証 | 画面・ルートはあるが、現在は認証を必須としていない |
 | パスワード再設定メール | 開発環境の `MAIL_MAILER=log` ではログに出力 |
-| 自動テスト | テストケース未作成 |
+| 自動テスト | カート・注文・商品管理・設定値の回帰テストあり。ブラウザ操作テストは未対応 |
 | 店舗情報・案内ページ | 一部仮置き |
 
 本番運用に向けては、メール送信設定、店舗情報・案内ページの整備、入力値の正規化、セキュリティ対策、テストの追加などを進める予定です。

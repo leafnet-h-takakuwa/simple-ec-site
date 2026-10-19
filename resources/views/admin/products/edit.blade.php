@@ -30,7 +30,7 @@
                         商品名 <span class="text-red-600">*</span>
                     </label>
                     <input type="text" name="name" id="name" value="{{ old('name', $product->name) }}"
-                        maxlength="255" class="input w-full" required>
+                        maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}" class="input w-full" required>
                     @error('name')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -57,7 +57,7 @@
                         内容量 <span class="text-red-600">*</span>
                     </label>
                     <input type="text" name="volume" id="volume" value="{{ old('volume', $product->volume) }}"
-                        maxlength="255" class="input w-full" required>
+                        maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}" class="input w-full" required>
                     @error('volume')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -140,7 +140,7 @@
                     class="file-input w-full">
 
                 <p class="mt-2 text-sm text-slate-500">
-                    変更しない場合は選択不要。JPEG・PNG・WebP、最大5MB。
+                    変更しない場合は選択不要。JPEG・PNG・WebP、最大{{ config('shop.products.image_max_kb') }}KB。
                 </p>
 
                 @error('image')

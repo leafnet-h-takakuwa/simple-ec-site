@@ -13,7 +13,7 @@ new #[Layout('components.layouts.auth', ['title' => 'パスワード再設定'])
     public function sendPasswordResetLink(): void
     {
         $this->validate([
-            'email' => ['required', 'string', 'email', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:' . \App\Support\InputLimits::SHORT_TEXT],
         ]);
 
         Password::sendResetLink($this->only('email'));
@@ -31,7 +31,7 @@ new #[Layout('components.layouts.auth', ['title' => 'パスワード再設定'])
     <form wire:submit="sendPasswordResetLink" class="flex flex-col gap-6">
         <!-- Email Address -->
         <div class="grid gap-2">
-            <flux:input wire:model="email" label="{{ __('Email Address') }}" type="email" name="email" maxlength="255" required
+            <flux:input wire:model="email" label="{{ __('Email Address') }}" type="email" name="email" maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}" required
                 autofocus placeholder="email@example.com" />
         </div>
 

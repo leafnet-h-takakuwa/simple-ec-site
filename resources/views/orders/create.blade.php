@@ -46,7 +46,7 @@
 
                             <input type="text" id="orderer_name" name="orderer_name"
                                 value="{{ old('orderer_name', $order['orderer_name'] ?? auth()->user()?->name) }}"
-                                class="input w-full" maxlength="255" required>
+                                class="input w-full" maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}" required>
                         </div>
 
                         {{-- 郵便番号 --}}
@@ -57,7 +57,7 @@
 
                             <input type="text" id="orderer_postal_code" name="orderer_postal_code"
                                 value="{{ old('orderer_postal_code', $order['orderer_postal_code'] ?? auth()->user()?->postal_code) }}"
-                                class="input w-full sm:max-w-xs" placeholder="123-4567" maxlength="8" required>
+                                class="input w-full sm:max-w-xs" placeholder="123-4567" maxlength="{{ \App\Support\InputLimits::POSTAL_CODE }}" required>
                         </div>
 
                         {{-- 住所 --}}
@@ -68,7 +68,7 @@
 
                             <input type="text" id="orderer_address" name="orderer_address"
                                 value="{{ old('orderer_address', $order['orderer_address'] ?? auth()->user()?->address) }}"
-                                class="input w-full" maxlength="255" required>
+                                class="input w-full" maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}" required>
                         </div>
 
                         {{-- 電話番号 --}}
@@ -78,7 +78,7 @@
                             </label>
                             <input type="tel" id="orderer_phone" name="orderer_phone"
                                 value="{{ old('orderer_phone', $order['orderer_phone'] ?? auth()->user()?->phone) }}"
-                                class="input w-full sm:max-w-sm" placeholder="090-1234-5678" maxlength="20" required>
+                                class="input w-full sm:max-w-sm" placeholder="090-1234-5678" maxlength="{{ \App\Support\InputLimits::PHONE }}" required>
                         </div>
 
                         {{-- メールアドレス --}}
@@ -90,7 +90,7 @@
 
                             <input type="email" id="orderer_email" name="orderer_email"
                                 value="{{ old('orderer_email', $order['orderer_email'] ?? auth()->user()?->email) }}"
-                                class="input w-full" maxlength="255" placeholder="example@example.com" required>
+                                class="input w-full" maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}" placeholder="example@example.com" required>
                         </div>
                     </div>
                 </section>
@@ -122,7 +122,7 @@
                             </label>
                             <input type="text" id="shipping_name" name="shipping_name"
                                 value="{{ old('shipping_name', $order['shipping_name'] ?? '') }}" class="input w-full"
-                                maxlength="255">
+                                maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}">
                         </div>
                         <div>
                             <label for="shipping_postal_code" class="mb-2 block text-sm font-medium">
@@ -130,7 +130,7 @@
                             </label>
                             <input type="text" id="shipping_postal_code" name="shipping_postal_code"
                                 value="{{ old('shipping_postal_code', $order['shipping_postal_code'] ?? '') }}"
-                                class="input w-full sm:max-w-xs" placeholder="123-4567" maxlength="8">
+                                class="input w-full sm:max-w-xs" placeholder="123-4567" maxlength="{{ \App\Support\InputLimits::POSTAL_CODE }}">
                         </div>
                         <div>
                             <label for="shipping_address" class="mb-2 block text-sm font-medium">
@@ -138,7 +138,7 @@
                             </label>
                             <input type="text" id="shipping_address" name="shipping_address"
                                 value="{{ old('shipping_address', $order['shipping_address'] ?? '') }}"
-                                class="input w-full" maxlength="255">
+                                class="input w-full" maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}">
 
                         </div>
                         <div>
@@ -147,7 +147,7 @@
                             </label>
                             <input type="tel" id="shipping_phone" name="shipping_phone"
                                 value="{{ old('shipping_phone', $order['shipping_phone'] ?? '') }}"
-                                class="input w-full sm:max-w-sm" placeholder="090-1234-5678" maxlength="20">
+                                class="input w-full sm:max-w-sm" placeholder="090-1234-5678" maxlength="{{ \App\Support\InputLimits::PHONE }}">
                         </div>
                     </div>
                 </section>
@@ -186,7 +186,7 @@
                         備考 <span class="text-base-content/60">（任意）</span>
                     </label>
 
-                    <textarea id="customer_note" name="customer_note" class="textarea w-full" rows="4" maxlength="1000"
+                    <textarea id="customer_note" name="customer_note" class="textarea w-full" rows="4" maxlength="{{ \App\Support\InputLimits::CUSTOMER_NOTE }}"
                         placeholder="">{{ old('customer_note', $order['customer_note'] ?? '') }}</textarea>
 
                     <p class="mt-2 text-sm text-base-content/60">

@@ -35,7 +35,7 @@
                 <label for="orderer_name" class="mb-2 block text-sm font-semibold">
                     注文者氏名
                 </label>
-                <input type="text" id="orderer_name" name="orderer_name" maxlength="255"
+                <input type="text" id="orderer_name" name="orderer_name" maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}"
                     value="{{ old('orderer_name', $conditions['orderer_name'] ?? '') }}" placeholder="氏名の一部を入力"
                     class="input w-full">
             </fieldset>

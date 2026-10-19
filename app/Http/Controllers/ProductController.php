@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ProductCategory;
 use App\Models\Product;
 use Illuminate\Http\Request;
-
-use App\Enums\ProductCategory;
 
 class ProductController extends Controller
 {
@@ -27,8 +26,7 @@ class ProductController extends Controller
             abort(404);
         }
 
-        $query = Product::query()
-            ->where('is_active', true);
+        $query = Product::active();
 
         // カテゴリ指定あれば条件追加
         if ($category !== null) {
@@ -37,17 +35,13 @@ class ProductController extends Controller
 
         // 並び順
         if ($sort === 'new') {
-            $query->orderByDesc('created_at')
-                ->orderByDesc('id');
+            $query->newest();
         } else {
-            $query->withSum('orderItems', 'quantity')
-                ->orderByDesc('is_standard')
-                ->orderByRaw('order_items_sum_quantity DESC NULLS LAST')
-                ->orderByDesc('id');
+            $query->orderByDesc('is_standard')->popular();
         }
 
         $products = $query->orderBy('id')
-            ->paginate(12)
+            ->paginate(config('shop.pagination.products'))
             ->withQueryString();
 
         return view('products.index', [

@@ -600,7 +600,7 @@
                             </div>
 
                             <input type="text" name="shippings[{{ $loop->index }}][tracking_number]"
-                                value="{{ $shipping->tracking_number }}" class="input w-full" maxlength="20"
+                                value="{{ $shipping->tracking_number }}" class="input w-full" maxlength="{{ \App\Support\InputLimits::TRACKING_NUMBER }}"
                                 placeholder="送り状番号">
                         </div>
                     @endforeach
@@ -740,7 +740,7 @@
                 <input type="text"
                     name="shippings[${nextIndex}][tracking_number]"
                     class="input w-full"
-                    maxlength="20"
+                    maxlength="{{ \App\Support\InputLimits::TRACKING_NUMBER }}"
                     placeholder="送り状番号">
             `;
 

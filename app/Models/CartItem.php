@@ -30,6 +30,11 @@ class CartItem extends Model
         return $this->belongsTo(Cart::class);
     }
 
+    public function subtotal(): int
+    {
+        return $this->product->price * $this->quantity;
+    }
+
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);

@@ -75,7 +75,7 @@
                         </div>
 
                         <div class="grid grid-cols-1 gap-4 lg:grid-cols-12">
-                            <div class="lg:col-span-6">
+                            <div class="lg:col-span-5">
                                 <label class="mb-2 block text-sm font-semibold">
                                     商品名
                                 </label>
@@ -91,12 +91,23 @@
                                     required class="input item-price w-full">
                             </div>
 
-                            <div class="lg:col-span-3">
+                            <div class="lg:col-span-2">
                                 <label class="mb-2 block text-sm font-semibold">
                                     数量
                                 </label>
                                 <input type="number" data-field="quantity" value="{{ $item['quantity'] ?? 1 }}"
                                     min="1" step="1" required class="input item-quantity w-full">
+                            </div>
+
+                            <div class="lg:col-span-2">
+                                <label class="mb-2 block text-sm font-semibold">税率</label>
+                                <select data-field="tax_rate" class="select w-full item-tax-rate" required>
+                                    @foreach (config('shop.tax.rates') as $rate => $label)
+                                        <option value="{{ $rate }}" @selected((int) ($item['tax_rate'] ?? config('shop.tax.default_rate')) === $rate)>
+                                            {{ $rate }}%（{{ $label }}）
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
 
@@ -141,22 +152,24 @@
                             郵便番号 <span class="text-red-600">*</span>
                         </label>
                         <input type="text" id="orderer_postal_code" name="orderer_postal_code"
-                            value="{{ old('orderer_postal_code') }}" placeholder="例：030-0000" maxlength="{{ \App\Support\InputLimits::POSTAL_CODE }}" required
-                            class="input w-full">
+                            value="{{ old('orderer_postal_code') }}" placeholder="例：030-0000"
+                            maxlength="{{ \App\Support\InputLimits::POSTAL_CODE }}" required class="input w-full">
                     </div>
 
                     <div>
                         <label for="orderer_address" class="mb-2 block text-sm font-semibold">
                             住所 <span class="text-red-600">*</span>
                         </label>
-                        <textarea id="orderer_address" name="orderer_address" maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}" rows="3" required class="textarea w-full">{{ old('orderer_address') }}</textarea>
+                        <textarea id="orderer_address" name="orderer_address" maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}"
+                            rows="3" required class="textarea w-full">{{ old('orderer_address') }}</textarea>
                     </div>
 
                     <div>
                         <label for="orderer_phone" class="mb-2 block text-sm font-semibold">
                             電話番号 <span class="text-red-600">*</span>
                         </label>
-                        <input type="tel" id="orderer_phone" name="orderer_phone" maxlength="{{ \App\Support\InputLimits::PHONE }}" value="{{ old('orderer_phone') }}"
+                        <input type="tel" id="orderer_phone" name="orderer_phone"
+                            maxlength="{{ \App\Support\InputLimits::PHONE }}" value="{{ old('orderer_phone') }}"
                             required class="input w-full">
                     </div>
 
@@ -164,8 +177,9 @@
                         <label for="orderer_email" class="mb-2 block text-sm font-semibold">
                             メールアドレス（任意）
                         </label>
-                        <input type="email" id="orderer_email" name="orderer_email" maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}"
-                            value="{{ old('orderer_email') }}" class="input w-full">
+                        <input type="email" id="orderer_email" name="orderer_email"
+                            maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}" value="{{ old('orderer_email') }}"
+                            class="input w-full">
                     </div>
                 </div>
             </section>
@@ -186,7 +200,8 @@
                             氏名 <span class="text-red-600">*</span>
                         </label>
                         <input type="text" id="shipping_name" name="shipping_name"
-                            value="{{ old('shipping_name') }}" maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}" required class="input w-full">
+                            value="{{ old('shipping_name') }}" maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}"
+                            required class="input w-full">
                     </div>
 
                     <div>
@@ -194,23 +209,25 @@
                             郵便番号 <span class="text-red-600">*</span>
                         </label>
                         <input type="text" id="shipping_postal_code" name="shipping_postal_code"
-                            value="{{ old('shipping_postal_code') }}" placeholder="例：030-0000" maxlength="{{ \App\Support\InputLimits::POSTAL_CODE }}" required
-                            class="input w-full">
+                            value="{{ old('shipping_postal_code') }}" placeholder="例：030-0000"
+                            maxlength="{{ \App\Support\InputLimits::POSTAL_CODE }}" required class="input w-full">
                     </div>
 
                     <div>
                         <label for="shipping_address" class="mb-2 block text-sm font-semibold">
                             住所 <span class="text-red-600">*</span>
                         </label>
-                        <textarea id="shipping_address" name="shipping_address" maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}" rows="3" required class="textarea w-full">{{ old('shipping_address') }}</textarea>
+                        <textarea id="shipping_address" name="shipping_address" maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}"
+                            rows="3" required class="textarea w-full">{{ old('shipping_address') }}</textarea>
                     </div>
 
                     <div>
                         <label for="shipping_phone" class="mb-2 block text-sm font-semibold">
                             電話番号 <span class="text-red-600">*</span>
                         </label>
-                        <input type="tel" id="shipping_phone" name="shipping_phone" maxlength="{{ \App\Support\InputLimits::PHONE }}"
-                            value="{{ old('shipping_phone') }}" required class="input w-full">
+                        <input type="tel" id="shipping_phone" name="shipping_phone"
+                            maxlength="{{ \App\Support\InputLimits::PHONE }}" value="{{ old('shipping_phone') }}"
+                            required class="input w-full">
                     </div>
                 </div>
             </section>
@@ -281,9 +298,10 @@
             </div>
 
             <div class="grid grid-cols-1 gap-4 lg:grid-cols-12">
-                <div class="lg:col-span-6">
+                <div class="lg:col-span-5">
                     <label class="mb-2 block text-sm font-semibold">商品名</label>
-                    <input type="text" data-field="product_name" maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}" required class="input w-full">
+                    <input type="text" data-field="product_name"
+                        maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}" required class="input w-full">
                 </div>
 
                 <div class="lg:col-span-3">
@@ -292,10 +310,20 @@
                         class="input item-price w-full">
                 </div>
 
-                <div class="lg:col-span-3">
+                <div class="lg:col-span-2">
                     <label class="mb-2 block text-sm font-semibold">数量</label>
                     <input type="number" data-field="quantity" value="1" min="1" step="1" required
                         class="input item-quantity w-full">
+                </div>
+                <div class="lg:col-span-2">
+                    <label class="mb-2 block text-sm font-semibold">税率</label>
+                    <select data-field="tax_rate" class="select w-full item-tax-rate" required>
+                        @foreach (config('shop.tax.rates') as $rate => $label)
+                            <option value="{{ $rate }}" @selected($rate === config('shop.tax.default_rate'))>
+                                {{ $rate }}%（{{ $label }}）
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
             </div>
 
@@ -325,7 +353,7 @@
 
                     @foreach ($products as $product)
                         <option value="{{ $product->id }}" data-name="{{ $product->name }}"
-                            data-price="{{ $product->price }}">
+                            data-price="{{ $product->price }}" data-tax-rate="{{ $product->tax_rate }}">
                             {{ $product->name }}（{{ formatYen($product->price) }}）
                         </option>
                     @endforeach

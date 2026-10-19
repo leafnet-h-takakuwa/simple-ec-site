@@ -171,7 +171,7 @@
                     ご注文に関するご要望
                 </h2>
 
-                <p class="whitespace-pre-wrap break-words text-sm">{{ $order['customer_note'] ?: '特になし' }}</p>
+                <p class="whitespace-pre-wrap break-words text-sm">{{ $order['customer_note'] ?? '特になし' }}</p>
             </section>
         </div>
 

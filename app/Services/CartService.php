@@ -47,21 +47,22 @@ class CartService
 
     public function availableItems(Request $request): Collection
     {
-        return $this->items($request)->filter(fn (CartItem $item) => $item->product?->is_active);
+        return $this->items($request)->filter(fn(CartItem $item) => $item->product?->is_active);
     }
 
     public function total(Collection $items): int
     {
-        return $items->sum(fn (CartItem $item) => $item->subtotal());
+        return $items->sum(fn(CartItem $item) => $item->subtotal());
     }
 
-    /** 確認画面と注文確定時に比較する商品・価格・数量。 */
+    /** 確認画面と注文確定時に比較する商品・価格・数量・税率。 */
     public function snapshot(Collection $items): array
     {
-        return $items->map(fn (CartItem $item) => [
+        return $items->map(fn(CartItem $item) => [
             'product_id' => $item->product_id,
             'price' => $item->product->price,
             'quantity' => $item->quantity,
+            'tax_rate' => $item->product->tax_rate,
         ])->sortBy('product_id')->values()->all();
     }
 }

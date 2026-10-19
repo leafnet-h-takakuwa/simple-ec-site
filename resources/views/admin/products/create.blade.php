@@ -26,8 +26,8 @@
                     <label for="name" class="mb-2 block font-semibold">
                         商品名 <span class="text-red-600">*</span>
                     </label>
-                    <input type="text" name="name" id="name" value="{{ old('name') }}" maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}"
-                        class="input w-full" required>
+                    <input type="text" name="name" id="name" value="{{ old('name') }}"
+                        maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}" class="input w-full" required>
                     @error('name')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -54,8 +54,9 @@
                     <label for="volume" class="mb-2 block font-semibold">
                         内容量 <span class="text-red-600">*</span>
                     </label>
-                    <input type="text" name="volume" id="volume" value="{{ old('volume') }}" maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}"
-                        placeholder="例：500g" class="input w-full" required>
+                    <input type="text" name="volume" id="volume" value="{{ old('volume') }}"
+                        maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}" placeholder="例：500g" class="input w-full"
+                        required>
                     @error('volume')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -68,6 +69,24 @@
                     <input type="number" name="price" id="price" value="{{ old('price') }}" min="0"
                         step="1" class="input w-full" required>
                     @error('price')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div>
+                    <label for="tax_rate" class="mb-2 block font-semibold">
+                        消費税率 <span class="text-red-600">*</span>
+                    </label>
+
+                    <select name="tax_rate" id="tax_rate" class="select w-full" required>
+                        @foreach (config('shop.tax.rates') as $rate => $label)
+                            <option value="{{ $rate }}" @selected((int) old('tax_rate', config('shop.tax.default_rate')) === (int) $rate)>
+                                {{ $rate }}%（{{ $label }}）
+                            </option>
+                        @endforeach
+                    </select>
+
+                    @error('tax_rate')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>

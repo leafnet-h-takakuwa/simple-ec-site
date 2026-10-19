@@ -88,6 +88,7 @@
                         <th>商品名</th>
                         <th class="text-right">単価</th>
                         <th class="text-right">数量</th>
+                        <th class="text-right">税率</th>
                         <th class="text-right">小計</th>
                     </tr>
                 </thead>
@@ -108,6 +109,7 @@
                                 {{ formatYen($item->price) }}
                             </td>
                             <td class="text-right">{{ $item->quantity }}</td>
+                            <td class="text-right">{{ $item->tax_rate }}%</td>
                             <td class="text-right font-semibold">
                                 {{ formatYen($item->subtotal) }}
                             </td>
@@ -135,6 +137,7 @@
                         <span>
                             {{ formatYen($item->price) }}
                             × {{ $item->quantity }}
+                            （{{ $item->tax_rate }}%）
                         </span>
                         <span class="font-semibold text-slate-800">
                             {{ formatYen($item->subtotal) }}
@@ -232,6 +235,29 @@
                         {{ formatYen($grandTotal) }}
                     </dd>
                 </div>
+                {{-- 消費税内訳 --}}
+                @if ($order->taxSummaries->isNotEmpty())
+                    <div class="border-t border-slate-200 pt-4">
+                        <dt class="mb-3 text-sm font-bold text-slate-700">
+                            消費税内訳
+                        </dt>
+
+                        <dd class="space-y-2">
+                            @foreach ($order->taxSummaries->sortBy('tax_rate') as $summary)
+                                <div class="flex flex-wrap items-center justify-between gap-2 text-sm">
+                                    <span class="text-slate-600">
+                                        {{ $summary->tax_rate }}%対象
+                                        （税込 {{ formatYen($summary->tax_included_amount) }}）
+                                    </span>
+
+                                    <span class="font-semibold">
+                                        内消費税 {{ formatYen($summary->tax_amount) }}
+                                    </span>
+                                </div>
+                            @endforeach
+                        </dd>
+                    </div>
+                @endif
             </dl>
 
             @if (!$feesConfirmed && $order->status !== \App\Enums\OrderStatus::CANCELLED)
@@ -600,8 +626,8 @@
                             </div>
 
                             <input type="text" name="shippings[{{ $loop->index }}][tracking_number]"
-                                value="{{ $shipping->tracking_number }}" class="input w-full" maxlength="{{ \App\Support\InputLimits::TRACKING_NUMBER }}"
-                                placeholder="送り状番号">
+                                value="{{ $shipping->tracking_number }}" class="input w-full"
+                                maxlength="{{ \App\Support\InputLimits::TRACKING_NUMBER }}" placeholder="送り状番号">
                         </div>
                     @endforeach
                 </div>

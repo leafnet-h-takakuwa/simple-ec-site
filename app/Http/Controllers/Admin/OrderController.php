@@ -10,13 +10,19 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Support\ContactRules;
 use App\Support\InputLimits;
+use App\Services\TaxCalculator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
+use InvalidArgumentException;
 
 class OrderController extends Controller
 {
+    public function __construct(
+        private TaxCalculator $taxCalculator
+    ) {}
+
     public function index(Request $request)
     {
         // 検索条件を取得・検証
@@ -84,7 +90,7 @@ class OrderController extends Controller
 
     public function show($id)
     {
-        $order = Order::with(['orderItems', 'orderShippings'])->findOrFail($id);
+        $order = Order::with(['orderItems', 'orderShippings', 'taxSummaries',])->findOrFail($id);
 
         return view('admin.orders.show', [
             'order' => $order,
@@ -95,7 +101,7 @@ class OrderController extends Controller
     public function create()
     {
         $products = Product::orderBy('name')
-            ->get(['id', 'name', 'price']);
+            ->get(['id', 'name', 'price', 'tax_rate']);
 
         return view('admin.orders.create', [
             'products' => $products,
@@ -121,6 +127,11 @@ class OrderController extends Controller
             'items.*.product_name' => ['required', 'string', 'max:' . InputLimits::SHORT_TEXT],
             'items.*.price' => ['required', 'integer'],
             'items.*.quantity' => ['required', 'integer', 'min:1'],
+            'items.*.tax_rate' => [
+                'required',
+                'integer',
+                Rule::in(array_keys(config('shop.tax.rates'))),
+            ],
             'memo' => ['nullable', 'string'],
         ]);
 
@@ -168,6 +179,8 @@ class OrderController extends Controller
                 'memo' => $validated['memo'] ?? null,
             ]);
 
+            $taxItems = [];
+
             foreach ($items as $item) {
                 $order->orderItems()->create([
                     'product_id' => $item['product_id'] ?? null,
@@ -175,9 +188,29 @@ class OrderController extends Controller
                     'price' => $item['price'],
                     'quantity' => $item['quantity'],
                     'subtotal' => $item['subtotal'],
+                    'tax_rate' => $item['tax_rate'],
+                ]);
+
+                $taxItems[] = [
+                    'tax_rate' => $item['tax_rate'],
+                    'subtotal' => $item['subtotal'],
+                ];
+            }
+
+            // 税率別集計を保存
+            try {
+                $taxSummaries = $this->taxCalculator->calculate(
+                    $taxItems,
+                    shippingFee: $order->shipping_fee ?? 0,
+                    codFee: $order->cod_fee ?? 0,
+                );
+            } catch (InvalidArgumentException $e) {
+                throw ValidationException::withMessages([
+                    'items' => $e->getMessage(),
                 ]);
             }
 
+            $order->taxSummaries()->createMany($taxSummaries);
             return $order;
         });
 
@@ -201,7 +234,7 @@ class OrderController extends Controller
 
         // 商品情報取得
         $products = Product::orderBy('name')
-            ->get(['id', 'name', 'price']);
+            ->get(['id', 'name', 'price', 'tax_rate']);
 
         return view('admin.orders.edit-items', [
             'order' => $order,
@@ -219,6 +252,11 @@ class OrderController extends Controller
             'items.*.product_name' => ['required', 'string', 'max:' . InputLimits::SHORT_TEXT],
             'items.*.price' => ['required', 'integer'],
             'items.*.quantity' => ['required', 'integer', 'min:1'],
+            'items.*.tax_rate' => [
+                'required',
+                'integer',
+                Rule::in(array_keys(config('shop.tax.rates'))),
+            ],
         ]);
 
         // 注文情報を取得
@@ -257,6 +295,7 @@ class OrderController extends Controller
             }
 
             $totalAmount = 0;
+            $taxItems = [];
 
             foreach ($validated['items'] as $item) {
                 // 小計をサーバー側で計算
@@ -270,6 +309,12 @@ class OrderController extends Controller
                     'product_name' => $item['product_name'],
                     'price' => $item['price'],
                     'quantity' => $item['quantity'],
+                    'subtotal' => $subtotal,
+                    'tax_rate' => $item['tax_rate'],
+                ];
+
+                $taxItems[] = [
+                    'tax_rate' => $item['tax_rate'],
                     'subtotal' => $subtotal,
                 ];
 
@@ -300,6 +345,23 @@ class OrderController extends Controller
             // 注文合計を更新
             $order->total_amount = $totalAmount;
             $order->save();
+
+            // 更新後の注文明細と送料・手数料から税額を再計算
+            try {
+                $taxSummaries = $this->taxCalculator->calculate(
+                    $taxItems,
+                    shippingFee: $order->shipping_fee ?? 0,
+                    codFee: $order->cod_fee ?? 0,
+                );
+            } catch (InvalidArgumentException $e) {
+                throw ValidationException::withMessages([
+                    'items' => $e->getMessage(),
+                ]);
+            }
+
+            // 古い税率別集計を削除して再作成
+            $order->taxSummaries()->delete();
+            $order->taxSummaries()->createMany($taxSummaries);
         });
 
 
@@ -439,23 +501,30 @@ class OrderController extends Controller
             'payment_method' => ['required', Rule::enum(PaymentMethod::class)],
         ]);
 
-        if ($order->status !== OrderStatus::RECEIVED) {
-            return back()->withErrors([
-                'error' => '支払い方法は受付中の注文のみ変更できます。',
-            ]);
-        }
+        DB::transaction(function () use ($order, $validated) {
+            $order = Order::whereKey($order->id)
+                ->lockForUpdate()
+                ->firstOrFail();
 
-        $newPaymentMethod = PaymentMethod::from($validated['payment_method']);
+            if ($order->status !== OrderStatus::RECEIVED) {
+                throw ValidationException::withMessages([
+                    'error' => '支払い方法は受付中の注文のみ変更できます。',
+                ]);
+            }
 
-        // 支払い方法が変わった場合のみ、代引手数料を更新
-        if ($order->payment_method !== $newPaymentMethod) {
-            $order->cod_fee = $newPaymentMethod === PaymentMethod::CASH_ON_DELIVERY
-                ? null
-                : 0;
-        }
+            $newPaymentMethod = PaymentMethod::from($validated['payment_method']);
 
-        $order->payment_method = $newPaymentMethod;
-        $order->save();
+            if ($order->payment_method !== $newPaymentMethod) {
+                $order->cod_fee = $newPaymentMethod === PaymentMethod::CASH_ON_DELIVERY
+                    ? null
+                    : 0;
+            }
+
+            $order->payment_method = $newPaymentMethod;
+            $order->save();
+
+            $this->refreshTaxSummaries($order);
+        });
 
         return redirect()
             ->route('admin.orders.show', $order)
@@ -464,28 +533,35 @@ class OrderController extends Controller
 
     public function updateFees(Request $request, Order $order)
     {
-        if (!$order->isEditable()) {
-            return back()->withErrors([
-                'error' => '発送済み・キャンセル済みの注文は編集できません。',
-            ]);
-        }
-
         $validated = $request->validate([
             'shipping_fee' => ['nullable', 'integer', 'min:0'],
             'cod_fee' => ['nullable', 'integer', 'min:0'],
         ]);
 
-        if ($order->payment_method !== PaymentMethod::CASH_ON_DELIVERY) {
-            $validated['cod_fee'] = 0;
-        }
+        DB::transaction(function () use ($order, $validated) {
+            $order = Order::whereKey($order->id)
+                ->lockForUpdate()
+                ->firstOrFail();
 
-        $order->update($validated);
+            if (!$order->isEditable()) {
+                throw ValidationException::withMessages([
+                    'error' => '発送済み・キャンセル済みの注文は編集できません。',
+                ]);
+            }
+
+            if ($order->payment_method !== PaymentMethod::CASH_ON_DELIVERY) {
+                $validated['cod_fee'] = 0;
+            }
+
+            $order->update($validated);
+
+            $this->refreshTaxSummaries($order);
+        });
 
         return redirect()
             ->route('admin.orders.show', $order)
             ->with('success', '送料・代引手数料を更新しました。');
     }
-
     public function updateShippings(Request $request, Order $order)
     {
         $validated = $request->validate([
@@ -550,5 +626,32 @@ class OrderController extends Controller
         return redirect()
             ->route('admin.orders.show', $order)
             ->with('success', '送り状情報を更新しました。');
+    }
+
+    // 税額集計(トランザクション内から呼ぶこと)
+    private function refreshTaxSummaries(Order $order): void
+    {
+        $taxItems = $order->orderItems()
+            ->get(['tax_rate', 'subtotal'])
+            ->map(fn($item) => [
+                'tax_rate' => $item->tax_rate,
+                'subtotal' => $item->subtotal,
+            ])
+            ->all();
+
+        try {
+            $taxSummaries = $this->taxCalculator->calculate(
+                $taxItems,
+                shippingFee: $order->shipping_fee ?? 0,
+                codFee: $order->cod_fee ?? 0,
+            );
+        } catch (InvalidArgumentException $e) {
+            throw ValidationException::withMessages([
+                'items' => $e->getMessage(),
+            ]);
+        }
+
+        $order->taxSummaries()->delete();
+        $order->taxSummaries()->createMany($taxSummaries);
     }
 }

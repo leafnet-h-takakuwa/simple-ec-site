@@ -150,9 +150,15 @@
             </p>
         </div>
 
-        {{-- トップページへ --}}
-        <div class="text-center">
-            <a href="{{ route('home') }}" class="btn btn-primary w-full sm:w-72">
+        {{-- トップページ・注文履歴へ --}}
+        <div class="flex flex-col items-center justify-center gap-3 sm:flex-row">
+            @if ($order->user_id && auth()->id() === $order->user_id)
+                <a href="{{ route('orders.show', $order->id) }}" class="btn btn-outline btn-primary w-full sm:w-64">
+                    注文詳細を確認する
+                </a>
+            @endif
+
+            <a href="{{ route('home') }}" class="btn btn-primary w-full sm:w-64">
                 トップページへ戻る
             </a>
         </div>

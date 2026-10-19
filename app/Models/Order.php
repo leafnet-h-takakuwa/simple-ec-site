@@ -66,6 +66,12 @@ class Order extends Model
         return $this->hasMany(OrderShipping::class)->orderBy('id');
     }
 
+    // 税率別集計
+    public function taxSummaries(): HasMany
+    {
+        return $this->hasMany(OrderTaxSummary::class);
+    }
+
     // 管理画面：編集できるステータスを定義
     public function isEditable(): bool
     {

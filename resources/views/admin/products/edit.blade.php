@@ -75,6 +75,24 @@
                 </div>
 
                 <div>
+                    <label for="tax_rate" class="mb-2 block font-semibold">
+                        消費税率 <span class="text-red-600">*</span>
+                    </label>
+
+                    <select name="tax_rate" id="tax_rate" class="select w-full" required>
+                        @foreach (config('shop.tax.rates') as $rate => $label)
+                            <option value="{{ $rate }}" @selected((int) old('tax_rate', $product->tax_rate) === (int) $rate)>
+                                {{ $rate }}%（{{ $label }}）
+                            </option>
+                        @endforeach
+                    </select>
+
+                    @error('tax_rate')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div>
                     <p class="mb-2 font-semibold">
                         公開状態 <span class="text-red-600">*</span>
                     </p>

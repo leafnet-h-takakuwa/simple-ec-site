@@ -24,6 +24,7 @@ class Product extends Model
         'image_path',
         'is_active',
         'is_standard',
+        'tax_rate',
     ];
 
     protected function casts(): array
@@ -33,6 +34,7 @@ class Product extends Model
             'price' => 'integer',
             'is_active' => 'boolean',
             'is_standard' => 'boolean',
+            'tax_rate' => 'integer',
         ];
     }
 

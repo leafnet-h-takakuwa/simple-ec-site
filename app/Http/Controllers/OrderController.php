@@ -8,6 +8,7 @@ use App\Models\CartItem;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Services\CartService;
+use App\Services\TaxCalculator;
 use App\Support\ContactRules;
 use App\Support\InputLimits;
 use Illuminate\Http\Request;
@@ -17,9 +18,10 @@ use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
-    public function __construct(private CartService $cartService)
-    {
-    }
+    public function __construct(
+        private CartService $cartService,
+        private TaxCalculator $taxCalculator
+    ) {}
 
     public function index()
     {
@@ -37,7 +39,7 @@ class OrderController extends Controller
     public function show($id)
     {
         $order = Order::where('user_id', Auth::id())
-            ->with(['orderItems', 'orderShippings'])
+            ->with(['orderItems', 'orderShippings', 'taxSummaries'])
             ->findOrFail($id);
 
         return view('orders.show', [
@@ -99,6 +101,7 @@ class OrderController extends Controller
         // 注文情報をセッションに保存
         $request->session()->put('order', [
             ...$validated,
+            'customer_note' => $validated['customer_note'] ?? null,
             'payment_method' => $payment_method->value,
         ]);
 
@@ -229,16 +232,37 @@ class OrderController extends Controller
                 ]);
 
                 // 注文明細登録
+                $tax_items = [];
+
                 foreach ($cart_items as $cart_item) {
+                    $subtotal = $cart_item->subtotal();
+                    $tax_rate = $cart_item->product->tax_rate;
+
                     OrderItem::create([
                         'order_id' => $order->id,
                         'product_id' => $cart_item->product->id,
                         'product_name' => $cart_item->product->name,
                         'price' => $cart_item->product->price,
                         'quantity' => $cart_item->quantity,
-                        'subtotal' => $cart_item->subtotal(),
+                        'subtotal' => $subtotal,
+                        'tax_rate' => $tax_rate,
                     ]);
+
+                    // 税率別集計用
+                    $tax_items[] = [
+                        'subtotal' => $subtotal,
+                        'tax_rate' => $tax_rate,
+                    ];
                 }
+
+                // 税率別集計を計算して保存
+                $tax_summaries = $this->taxCalculator->calculate(
+                    $tax_items,
+                    shippingFee: $order->shipping_fee ?? 0,
+                    codFee: $order->cod_fee ?? 0
+                );
+
+                $order->taxSummaries()->createMany($tax_summaries);
 
                 // 会員カートを空にする
                 if ($cart) {

@@ -21,4 +21,12 @@ return [
     'dashboard' => [
         'recent_order_days' => 7,
     ],
+    'tax' => [
+        'rates' => [
+            8 => '軽減税率',
+            10 => '標準税率',
+        ],
+        'default_rate' => 8,
+        'shipping_rate' => 10,
+    ],
 ];

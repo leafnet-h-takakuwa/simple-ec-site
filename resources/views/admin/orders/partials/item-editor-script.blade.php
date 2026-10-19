@@ -44,6 +44,9 @@
 
             item.dataset.linkedPrice =
                 item.querySelector('[data-field="price"]').value;
+
+            item.dataset.linkedTaxRate =
+                item.querySelector('[data-field="tax_rate"]').value;
         }
 
         function refresh() {
@@ -125,6 +128,9 @@
             targetItem.querySelector('[data-field="price"]').value =
                 option.dataset.price;
 
+            targetItem.querySelector('[data-field="tax_rate"]').value =
+                option.dataset.taxRate;
+
             // 連携時の商品名・単価を記録
             rememberProductValues(targetItem);
 
@@ -161,6 +167,12 @@
 
             if (input.dataset.field === 'price') {
                 if (Number(input.value) !== Number(item.dataset.linkedPrice)) {
+                    unlinkProduct(item);
+                }
+            }
+
+            if (input.dataset.field === 'tax_rate') {
+                if (Number(input.value) !== Number(item.dataset.linkedTaxRate)) {
                     unlinkProduct(item);
                 }
             }

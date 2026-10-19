@@ -17,14 +17,19 @@ class ProductRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'name' => ['required', 'string', 'max:'.InputLimits::SHORT_TEXT],
+            'name' => ['required', 'string', 'max:' . InputLimits::SHORT_TEXT],
             'category' => ['required', Rule::enum(ProductCategory::class)],
-            'volume' => ['required', 'string', 'max:'.InputLimits::SHORT_TEXT],
+            'volume' => ['required', 'string', 'max:' . InputLimits::SHORT_TEXT],
             'price' => ['required', 'integer', 'min:0'],
+            'tax_rate' => [
+                'required',
+                'integer',
+                Rule::in(array_keys(config('shop.tax.rates'))),
+            ],
             'is_active' => ['required', 'boolean'],
             'is_standard' => ['boolean'],
             'description' => ['nullable', 'string'],
-            'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:'.config('shop.products.image_max_kb')],
+            'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:' . config('shop.products.image_max_kb')],
         ];
 
         if ($this->isMethod('put') || $this->isMethod('patch')) {
@@ -44,6 +49,9 @@ class ProductRequest extends FormRequest
 
     public function attributes(): array
     {
-        return ['name' => '商品名'];
+        return [
+            'name' => '商品名',
+            'tax_rate' => '消費税率',
+        ];
     }
 }

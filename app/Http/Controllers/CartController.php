@@ -62,10 +62,12 @@ class CartController extends Controller
 
     public function store(Request $request)
     {
+        $max_quantity = config('cart.max_quantity');
+
         // 入力値のバリデーション
         $validated = $request->validate([
             'product_id' => ['required', 'integer', 'exists:products,id'],
-            'quantity' => ['required', 'integer', 'min:1', 'max:10'],
+            'quantity' => ['required', 'integer', 'min:1', 'max:' . $max_quantity],
         ]);
 
         $product_id = $validated['product_id'];
@@ -99,8 +101,8 @@ class CartController extends Controller
 
             if ($cart_item !== null) {
                 // 既存の商品なら数量を加算
-                if ($cart_item->quantity + $quantity > 10) {
-                    return back()->with('error', '同じ商品は10個までカートに入れられます。');
+                if ($cart_item->quantity + $quantity > $max_quantity) {
+                    return back()->with('error', "同じ商品は{$max_quantity}個までカートに入れられます。");
                 }
                 $cart_item->quantity += $quantity;
                 $cart_item->save();
@@ -119,8 +121,8 @@ class CartController extends Controller
             // 同じ商品が存在するか確認
             if (isset($session_cart[$product_id])) {
                 // 既存の商品なら数量を加算
-                if ($session_cart[$product_id] + $quantity > 10) {
-                    return back()->with('error', '同じ商品は10個までカートに入れられます。');
+                if ($session_cart[$product_id] + $quantity > $max_quantity) {
+                    return back()->with('error', "同じ商品は{$max_quantity}個までカートに入れられます。");
                 }
                 $session_cart[$product_id] += $quantity;
             } else {
@@ -142,7 +144,7 @@ class CartController extends Controller
     {
         // 数量のバリデーション
         $validated = $request->validate([
-            'quantity' => ['required', 'integer', 'min:1', 'max:10'],
+            'quantity' => ['required', 'integer', 'min:1', 'max:' . config('cart.max_quantity')],
         ]);
 
         $quantity = $validated['quantity'];

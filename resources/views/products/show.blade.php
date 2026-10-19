@@ -97,7 +97,7 @@
                             @csrf
                             <input type="hidden" name="product_id" value="{{ $product->id }}">
                             <select name="quantity" class="select select-bordered">
-                                @for ($i = 1; $i <= 10; $i++)
+                                @for ($i = 1; $i <= config('cart.max_quantity'); $i++)
                                     <option value="{{ $i }}">{{ $i }}</option>
                                 @endfor
                             </select>

@@ -94,7 +94,7 @@
 
                                             <div class="flex items-center gap-2">
                                                 <select name="quantity" class="select select-bordered w-20">
-                                                    @for ($i = 1; $i <= 10; $i++)
+                                                    @for ($i = 1; $i <= config('cart.max_quantity'); $i++)
                                                         <option value="{{ $i }}" @selected($item->quantity == $i)>
                                                             {{ $i }}
                                                         </option>

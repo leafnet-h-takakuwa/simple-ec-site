@@ -58,10 +58,10 @@ class MergeGuestCart
 
                 if ($cart_item !== null) {
 
-                    // 同じ商品があれば数量を加算（最大10個）
+                    // 同じ商品があれば設定された上限まで数量を加算
                     $cart_item->quantity = min(
                         $cart_item->quantity + $guest_quantity,
-                        10
+                        config('cart.max_quantity')
                     );
 
                     $cart_item->save();
@@ -71,7 +71,7 @@ class MergeGuestCart
                     CartItem::create([
                         'cart_id' => $cart->id,
                         'product_id' => $product_id,
-                        'quantity' => min($guest_quantity, 10),
+                        'quantity' => min($guest_quantity, config('cart.max_quantity')),
                     ]);
                 }
             }

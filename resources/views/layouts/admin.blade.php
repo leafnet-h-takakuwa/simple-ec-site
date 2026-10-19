@@ -96,23 +96,6 @@
                             </a>
                         </li>
 
-                        {{-- 商品管理 --}}
-                        <li>
-                            <a href="{{ route('admin.products.index') }}" @class([
-                                'gap-3',
-                                'menu-active' => request()->routeIs('admin.products.*'),
-                            ])>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <path
-                                        d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
-                                    <path d="m3.3 7 8.7 5 8.7-5M12 22V12" />
-                                </svg>
-                                商品管理
-                            </a>
-                        </li>
-
                         {{-- 注文管理 --}}
                         <li>
                             <a href="{{ route('admin.orders.index') }}" @class([
@@ -127,6 +110,23 @@
                                     <path d="M8 12h8M8 16h5" />
                                 </svg>
                                 注文管理
+                            </a>
+                        </li>
+
+                        {{-- 商品管理 --}}
+                        <li>
+                            <a href="{{ route('admin.products.index') }}" @class([
+                                'gap-3',
+                                'menu-active' => request()->routeIs('admin.products.*'),
+                            ])>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path
+                                        d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
+                                    <path d="m3.3 7 8.7 5 8.7-5M12 22V12" />
+                                </svg>
+                                商品管理
                             </a>
                         </li>
 
@@ -219,6 +219,22 @@
                     ダッシュボード
                 </a>
 
+                {{-- 注文管理 --}}
+                <a href="{{ route('admin.orders.index') }}" @class([
+                    'flex items-center gap-3 rounded-lg px-4 py-3 transition-colors hover:bg-green-100',
+                    'bg-green-100 font-semibold text-green-800' => request()->routeIs(
+                        'admin.orders.*'),
+                ])>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M8 3H5a2 2 0 0 0-2 2v16l4-2 5 2 5-2 4 2V5a2 2 0 0 0-2-2h-3" />
+                        <path d="M8 3h8v4H8z" />
+                        <path d="M8 12h8M8 16h5" />
+                    </svg>
+                    注文管理
+                </a>
+
                 {{-- 商品管理 --}}
                 <a href="{{ route('admin.products.index') }}" @class([
                     'flex items-center gap-3 rounded-lg px-4 py-3 transition-colors hover:bg-green-100',
@@ -235,21 +251,7 @@
                     商品管理
                 </a>
 
-                {{-- 注文管理 --}}
-                <a href="{{ route('admin.orders.index') }}" @class([
-                    'flex items-center gap-3 rounded-lg px-4 py-3 transition-colors hover:bg-green-100',
-                    'bg-green-100 font-semibold text-green-800' => request()->routeIs(
-                        'admin.orders.*'),
-                ])>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <path d="M8 3H5a2 2 0 0 0-2 2v16l4-2 5 2 5-2 4 2V5a2 2 0 0 0-2-2h-3" />
-                        <path d="M8 3h8v4H8z" />
-                        <path d="M8 12h8M8 16h5" />
-                    </svg>
-                    注文管理
-                </a>
+
 
                 {{-- 会員管理 --}}
                 <a href="{{ route('admin.users.index') }}" @class([

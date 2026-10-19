@@ -18,7 +18,7 @@
 <body data-theme="light" class="min-h-screen bg-white text-slate-800">
 
     {{-- ヘッダー --}}
-    <header class="relative z-50 border-b border-green-200 bg-green-50">
+    <header class="sticky top-0 z-50 border-b border-green-200 bg-green-50">
         <div class="flex min-h-20 items-center justify-between gap-4 px-5 lg:px-12">
 
             {{-- サイト名 --}}

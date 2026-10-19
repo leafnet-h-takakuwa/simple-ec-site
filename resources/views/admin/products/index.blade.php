@@ -145,7 +145,7 @@
                     </div>
 
                     <div class="min-w-0 flex-1">
-                        <p class="font-semibold">
+                        <p class="font-semibold break-all">
                             {{ $product->name }}
                         </p>
 

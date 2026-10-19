@@ -17,9 +17,10 @@
 </head>
 
 <body class="min-h-screen flex flex-col bg-base-100">
-
     {{-- ナビゲーションバー --}}
-    @include('commons.navbar')
+    <div class="sticky top-0 z-50">
+        @include('commons.navbar')
+    </div>
 
     {{-- メインレイアウト --}}
     <div class="container mx-auto flex-1 px-4 py-6">

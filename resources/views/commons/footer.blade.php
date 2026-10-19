@@ -14,20 +14,20 @@
                 <div class="space-y-2 text-sm leading-relaxed">
 
                     <p class="font-semibold">
-                        高桑商店
+                        {{ config('company.company_name') }}
                     </p>
 
                     <p>
-                        〒000-0000<br>
-                        青森県〇〇市〇〇町0-0
+                        〒{{ config('company.postal_code') }}<br>
+                        {{ config('company.address') }}
                     </p>
 
                     <p>
-                        TEL：000-0000-0000
+                        TEL：{{ config('company.phone') }}
                     </p>
 
                     <p>
-                        営業時間：9:00〜17:00
+                        FAX：{{ config('company.fax') }}
                     </p>
 
                 </div>

@@ -23,4 +23,15 @@ class Notice extends Model
             'published_at' => 'date',
         ];
     }
+
+    // お知らせの新着判定
+    public function isNew(): bool
+    {
+        return $this->is_published
+            && $this->published_at !== null
+            && $this->published_at->betweenIncluded(
+                today()->subDays(30),
+                today()
+            );
+    }
 }

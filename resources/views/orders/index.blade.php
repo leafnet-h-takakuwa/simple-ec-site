@@ -4,6 +4,19 @@
 
 @section('content')
     <div class="mx-auto max-w-6xl px-4 py-8">
+
+        {{-- パンくずリスト --}}
+        <nav class="mb-5 text-sm text-base-content/60">
+
+            <a href="{{ route('home') }}" class="link link-hover">
+                TOP
+            </a>
+            <span class="mx-2">＞</span>
+            <span aria-current="page" class="text-base-content">
+                注文履歴
+            </span>
+        </nav>
+
         <h1 class="mb-2 text-2xl font-bold">注文履歴</h1>
         <p class="mb-8 text-sm text-base-content/60">
             これまでのご注文を確認できます。
@@ -37,7 +50,12 @@
                         @foreach ($orders as $order)
                             <tr>
                                 <td>{{ $order->created_at->format('Y/m/d') }}</td>
-                                <td>#{{ sprintf('%08d', $order->id) }}</td>
+                                <td>
+                                    <a href="{{ route('orders.show', $order->id) }}"
+                                        class="text-sky-700 underline decoration-sky-300 underline-offset-4 hover:text-sky-900 hover:decoration-sky-700">
+                                        #{{ sprintf('%08d', $order->id) }}
+                                    </a>
+                                </td>
                                 <td>
                                     @if ($order->orderItems->isNotEmpty())
                                         {{ $order->orderItems->first()->product_name }}

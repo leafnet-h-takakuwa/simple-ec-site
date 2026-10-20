@@ -13,7 +13,9 @@
             <span class="mx-2">＞</span>
             <a href="{{ route('orders.create') }}" class="link link-hover">注文情報の入力</a>
             <span class="mx-2">＞</span>
-            <span>注文内容の確認</span>
+            <span aria-current="page" class="text-base-content">
+                注文内容の確認
+            </span>
         </nav>
 
         {{-- ページタイトル --}}

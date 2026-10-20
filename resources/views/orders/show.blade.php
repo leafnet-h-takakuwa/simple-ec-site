@@ -5,6 +5,22 @@
 @section('content')
     <div class="mx-auto max-w-5xl px-4 py-8">
 
+        {{-- パンくずリスト --}}
+        <nav class="mb-5 text-sm text-base-content/60">
+
+            <a href="{{ route('home') }}" class="link link-hover">
+                TOP
+            </a>
+            <span class="mx-2">＞</span>
+            <a href="{{ route('orders.index') }}" class="link link-hover">
+                注文履歴
+            </a>
+            <span class="mx-2">＞</span>
+            <span aria-current="page" class="text-base-content">
+                注文詳細
+            </span>
+        </nav>
+
         {{-- 一覧へ戻る --}}
         <a href="{{ route('orders.index') }}"
             class="mb-6 inline-flex items-center gap-2 text-sm text-primary hover:underline">

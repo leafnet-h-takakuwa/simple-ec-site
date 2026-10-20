@@ -4,6 +4,19 @@
 
 @section('content')
     <div class="mx-auto max-w-6xl px-4 py-8">
+
+        {{-- パンくずリスト --}}
+        <nav class="mb-5 text-sm text-base-content/60">
+
+            <a href="{{ route('home') }}" class="link link-hover">
+                TOP
+            </a>
+            <span class="mx-2">＞</span>
+            <span aria-current="page" class="text-base-content">
+                お知らせ
+            </span>
+        </nav>
+
         {{-- ページタイトル --}}
         <h1 class="mb-2 text-2xl font-bold lg:text-3xl">
             お知らせ
@@ -41,6 +54,10 @@
                                 {{-- タイトル --}}
                                 <span class="flex-1 font-medium leading-relaxed group-hover:text-primary">
                                     {{ $notice->title }}
+
+                                    @if ($notice->isNew())
+                                        <span class="badge badge-success badge-outline badge-sm">NEW</span>
+                                    @endif
                                 </span>
 
                                 {{-- 矢印 --}}

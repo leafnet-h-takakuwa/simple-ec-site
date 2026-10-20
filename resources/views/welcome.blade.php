@@ -269,6 +269,10 @@
                     {{-- タイトル --}}
                     <span class="flex-1 font-medium leading-relaxed group-hover:text-primary">
                         {{ $notice->title }}
+
+                        @if ($notice->isNew())
+                            <span class="badge badge-success badge-outline badge-sm">NEW</span>
+                        @endif
                     </span>
 
                     <x-arrow direction="right" class="hidden shrink-0 text-base-content/40 sm:block" />

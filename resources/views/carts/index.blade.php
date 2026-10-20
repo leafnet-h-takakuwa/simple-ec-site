@@ -10,9 +10,9 @@
                 TOP
             </a>
             <span class="mx-2">＞</span>
-            <a href="{{ route('carts.index') }}" class="link link-hover">
+            <span aria-current="page" class="text-base-content">
                 カート
-            </a>
+            </span>
         </nav>
 
         {{-- ページタイトル --}}

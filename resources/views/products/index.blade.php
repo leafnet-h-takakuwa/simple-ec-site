@@ -14,9 +14,9 @@
                 TOP
             </a>
             <span class="mx-2">＞</span>
-            <a href="{{ route('products.index') }}" class="link link-hover">
+            <span aria-current="page" class="text-base-content">
                 商品一覧
-            </a>
+            </span>
         </nav>
 
         <h2 class="text-3xl font-bold">

@@ -5,11 +5,21 @@
 @section('content')
     <div class="mx-auto max-w-5xl px-4 py-8">
 
-        {{-- 一覧へ戻る --}}
-        <a href="{{ route('notices.index') }}"
-            class="mb-6 inline-flex items-center gap-2 text-sm text-primary hover:underline">
-            <x-arrow direction="left" /> お知らせ一覧へ戻る
-        </a>
+        {{-- パンくずリスト --}}
+        <nav class="mb-5 text-sm text-base-content/60">
+
+            <a href="{{ route('home') }}" class="link link-hover">
+                TOP
+            </a>
+            <span class="mx-2">＞</span>
+            <a href="{{ route('notices.index') }}" class="link link-hover">
+                お知らせ
+            </a>
+            <span class="mx-2">＞</span>
+            <span aria-current="page" class="text-base-content">
+                {{ $notice->title }}
+            </span>
+        </nav>
 
         {{-- ページタイトル --}}
         <div class="mb-8">

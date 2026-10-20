@@ -15,7 +15,9 @@
                 カート
             </a>
             <span class="mx-2">＞</span>
-            <span>ご注文情報の入力</span>
+            <span aria-current="page" class="text-base-content">
+                ご注文情報の入力
+            </span>
         </nav>
 
         {{-- ページタイトル --}}
@@ -57,7 +59,8 @@
 
                             <input type="text" id="orderer_postal_code" name="orderer_postal_code"
                                 value="{{ old('orderer_postal_code', $order['orderer_postal_code'] ?? auth()->user()?->postal_code) }}"
-                                class="input w-full sm:max-w-xs" placeholder="123-4567" maxlength="{{ \App\Support\InputLimits::POSTAL_CODE }}" required>
+                                class="input w-full sm:max-w-xs" placeholder="123-4567"
+                                maxlength="{{ \App\Support\InputLimits::POSTAL_CODE }}" required>
                         </div>
 
                         {{-- 住所 --}}
@@ -78,7 +81,8 @@
                             </label>
                             <input type="tel" id="orderer_phone" name="orderer_phone"
                                 value="{{ old('orderer_phone', $order['orderer_phone'] ?? auth()->user()?->phone) }}"
-                                class="input w-full sm:max-w-sm" placeholder="090-1234-5678" maxlength="{{ \App\Support\InputLimits::PHONE }}" required>
+                                class="input w-full sm:max-w-sm" placeholder="090-1234-5678"
+                                maxlength="{{ \App\Support\InputLimits::PHONE }}" required>
                         </div>
 
                         {{-- メールアドレス --}}
@@ -90,7 +94,8 @@
 
                             <input type="email" id="orderer_email" name="orderer_email"
                                 value="{{ old('orderer_email', $order['orderer_email'] ?? auth()->user()?->email) }}"
-                                class="input w-full" maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}" placeholder="example@example.com" required>
+                                class="input w-full" maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}"
+                                placeholder="example@example.com" required>
                         </div>
                     </div>
                 </section>
@@ -130,7 +135,8 @@
                             </label>
                             <input type="text" id="shipping_postal_code" name="shipping_postal_code"
                                 value="{{ old('shipping_postal_code', $order['shipping_postal_code'] ?? '') }}"
-                                class="input w-full sm:max-w-xs" placeholder="123-4567" maxlength="{{ \App\Support\InputLimits::POSTAL_CODE }}">
+                                class="input w-full sm:max-w-xs" placeholder="123-4567"
+                                maxlength="{{ \App\Support\InputLimits::POSTAL_CODE }}">
                         </div>
                         <div>
                             <label for="shipping_address" class="mb-2 block text-sm font-medium">
@@ -147,7 +153,8 @@
                             </label>
                             <input type="tel" id="shipping_phone" name="shipping_phone"
                                 value="{{ old('shipping_phone', $order['shipping_phone'] ?? '') }}"
-                                class="input w-full sm:max-w-sm" placeholder="090-1234-5678" maxlength="{{ \App\Support\InputLimits::PHONE }}">
+                                class="input w-full sm:max-w-sm" placeholder="090-1234-5678"
+                                maxlength="{{ \App\Support\InputLimits::PHONE }}">
                         </div>
                     </div>
                 </section>
@@ -186,8 +193,8 @@
                         備考 <span class="text-base-content/60">（任意）</span>
                     </label>
 
-                    <textarea id="customer_note" name="customer_note" class="textarea w-full" rows="4" maxlength="{{ \App\Support\InputLimits::CUSTOMER_NOTE }}"
-                        placeholder="">{{ old('customer_note', $order['customer_note'] ?? '') }}</textarea>
+                    <textarea id="customer_note" name="customer_note" class="textarea w-full" rows="4"
+                        maxlength="{{ \App\Support\InputLimits::CUSTOMER_NOTE }}" placeholder="">{{ old('customer_note', $order['customer_note'] ?? '') }}</textarea>
 
                     <p class="mt-2 text-sm text-base-content/60">
                         包装・梱包方法、お届け日時などのご希望がございましたらご記入ください。

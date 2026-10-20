@@ -19,18 +19,30 @@
             @enderror
         </div>
 
+
         {{-- 本文 --}}
         <div>
-            <label for="body" class="mb-2 block text-sm font-semibold">
+            <label for="notice-editor" class="mb-2 block text-sm font-semibold">
                 本文 <span class="text-red-600">*</span>
             </label>
 
-            <textarea id="body" name="body" rows="12" required class="textarea w-full">{{ old('body', $notice->body ?? '') }}</textarea>
+            {{-- Quillエディタ --}}
+            <div class="overflow-hidden rounded-lg border border-slate-300 bg-white">
+                <div id="notice-editor" class="min-h-64"></div>
+            </div>
+
+            {{-- 保存用HTML --}}
+            <textarea id="body" name="body" class="hidden">{{ old('body', $notice->body ?? '') }}</textarea>
+
+            <p class="mt-2 text-sm text-slate-500">
+                太字・リンク・箇条書きを使用できます。
+            </p>
 
             @error('body')
                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
             @enderror
         </div>
+
     </div>
 </section>
 

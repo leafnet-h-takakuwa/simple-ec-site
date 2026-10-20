@@ -30,6 +30,8 @@ class NoticeController extends Controller
             'published_at' => ['required', 'date'],
         ]);
 
+        $validated['body'] = $this->sanitizeBody($validated['body']);
+
         Notice::create($validated);
 
         return redirect()->route('admin.notices.index')
@@ -50,6 +52,8 @@ class NoticeController extends Controller
             'published_at' => ['required', 'date'],
         ]);
 
+        $validated['body'] = $this->sanitizeBody($validated['body']);
+
         $notice->update($validated);
 
         return redirect()->route('admin.notices.index')
@@ -62,5 +66,21 @@ class NoticeController extends Controller
 
         return redirect()->route('admin.notices.index')
             ->with('success', 'お知らせを削除しました。');
+    }
+
+    private function sanitizeBody(string $body): string
+    {
+        $config = \HTMLPurifier_Config::createDefault();
+
+        $config->set('HTML.Allowed', 'h2,h3,p,br,strong,b,em,i,ul,ol,li,a[href|target|rel]');
+        $config->set('URI.AllowedSchemes', [
+            'http' => true,
+            'https' => true,
+            'mailto' => true,
+        ]);
+
+        $purifier = new \HTMLPurifier($config);
+
+        return $purifier->purify($body);
     }
 }

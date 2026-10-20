@@ -16,7 +16,7 @@
         </h1>
     </div>
 
-    <form method="POST" action="{{ route('admin.notices.update', $notice) }}">
+    <form id="notice-form" method="POST" action="{{ route('admin.notices.update', $notice) }}">
         @method('PUT')
 
         @include('admin.notices._form')

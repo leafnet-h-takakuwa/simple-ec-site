@@ -16,7 +16,7 @@
         </h1>
     </div>
 
-    <form method="POST" action="{{ route('admin.notices.store') }}">
+    <form id="notice-form" method="POST" action="{{ route('admin.notices.store') }}">
         @include('admin.notices._form')
 
         {{-- 登録ボタン --}}

@@ -102,6 +102,61 @@ select:focus[data-flux-control] {
     }
 }
 
+/* お知らせ本文エディタ */
+#notice-editor .ql-editor {
+    min-height: 260px;
+    font-size: 15px;
+    line-height: 1.8;
+}
+
+.ql-toolbar.ql-snow {
+    border: none;
+    border-bottom: 1px solid #cbd5e1;
+    background: #f8fafc;
+}
+
+.ql-container.ql-snow {
+    border: none;
+}
+
+/* お知らせ本文の表示 */
+.notice-content p {
+    margin-bottom: 1em;
+}
+
+.notice-content ul {
+    list-style: disc;
+    padding-left: 1.5em;
+    margin-bottom: 1em;
+}
+
+.notice-content ol {
+    list-style: decimal;
+    padding-left: 1.5em;
+    margin-bottom: 1em;
+}
+
+.notice-content a {
+    color: #15803d;
+    text-decoration: underline;
+}
+
+.notice-content a:hover {
+    text-decoration: none;
+}
+
+.notice-content h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 1.5em 0 0.75em;
+}
+
+.notice-content h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 1.25em 0 0.5em;
+}
+
 /* [:where(&)]:size-4 {
     @apply size-4;
 } */

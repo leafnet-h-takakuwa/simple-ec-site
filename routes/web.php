@@ -12,8 +12,10 @@ use App\Http\Middleware\EnsureUserIsAdmin;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Admin\NoticeController as AdminNoticeController;
 use App\Http\Controllers\Admin\FaxOrderFormController;
 use App\Http\Controllers\FaxOrderFormPdfController;
+use App\Http\Controllers\NoticeController;
 
 /**
  * 認証不要ルート
@@ -52,6 +54,12 @@ Route::get('/orders/complete', [OrderController::class, 'complete'])
 // FAX注文書
 Route::get('/fax-order-form/pdf', [FaxOrderFormPdfController::class, 'show'])
     ->name('fax-order-form.pdf');
+
+// お知らせ
+Route::get('/notices', [NoticeController::class, 'index'])
+    ->name('notices.index');
+Route::get('/notices/{notice}', [NoticeController::class, 'show'])
+    ->name('notices.show');
 
 /**
  * 一般会員向け要認証ルート
@@ -132,6 +140,11 @@ Route::middleware(['auth', EnsureUserIsAdmin::class])
             ->name('fax-order-form.update');
         Route::post('/fax-order-form/preview', [FaxOrderFormPdfController::class, 'preview'])
             ->name('fax-order-form.preview');
+
+        // お知らせ管理
+        Route::resource('notices', AdminNoticeController::class)
+            ->except(['show'])
+            ->names('notices');
     });
 
 require __DIR__ . '/auth.php';

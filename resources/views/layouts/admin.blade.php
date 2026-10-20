@@ -100,10 +100,21 @@
                         <li>
                             <a href="{{ route('admin.fax-order-form.index') }}" @class([
                                 'gap-3',
-                                'menu-active' => request()->routeIs('admin.fax-order-form.index.*'),
+                                'menu-active' => request()->routeIs('admin.fax-order-form.*'),
                             ])>
                                 <x-icons.fax class="size-5 shrink-0" />
                                 FAX注文書管理
+                            </a>
+                        </li>
+
+                        {{-- お知らせ管理 --}}
+                        <li>
+                            <a href="{{ route('admin.notices.index') }}" @class([
+                                'gap-3',
+                                'menu-active' => request()->routeIs('admin.notices.*'),
+                            ])>
+                                <x-icons.notice class="size-5 shrink-0" />
+                                お知らせ管理
                             </a>
                         </li>
 
@@ -192,10 +203,20 @@
                 <a href="{{ route('admin.fax-order-form.index') }}" @class([
                     'flex items-center gap-3 rounded-lg px-4 py-3 transition-colors hover:bg-green-100',
                     'bg-green-100 font-semibold text-green-800' => request()->routeIs(
-                        'admin.fax-order-form.index.*'),
+                        'admin.fax-order-form.*'),
                 ])>
                     <x-icons.fax class="size-5 shrink-0" />
                     FAX注文書管理
+                </a>
+
+                {{-- お知らせ管理 --}}
+                <a href="{{ route('admin.notices.index') }}" @class([
+                    'flex items-center gap-3 rounded-lg px-4 py-3 transition-colors hover:bg-green-100',
+                    'bg-green-100 font-semibold text-green-800' => request()->routeIs(
+                        'admin.notices.*'),
+                ])>
+                    <x-icons.notice class="size-5 shrink-0" />
+                    お知らせ管理
                 </a>
 
                 {{-- 会員管理 --}}

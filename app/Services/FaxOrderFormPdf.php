@@ -15,7 +15,7 @@ class FaxOrderFormPdf
     /**
      * @param array<string, array{products: array<int, array{name:string, volume:string, price:int}>, messages: array<int, string>}> $columns
      */
-    public function render(array $columns, ?string $logoPath = null): string
+    public function render(array $columns, ?string $logoPath = null, bool $preview = false): string
     {
         if (!defined('K_PATH_FONTS')) {
             define('K_PATH_FONTS', storage_path('fonts/tcpdf') . DIRECTORY_SEPARATOR);
@@ -53,6 +53,10 @@ class FaxOrderFormPdf
         $this->drawAddressBox($pdf, 11, '御注文者様氏名');
         $this->drawAddressBox($pdf, 107, 'お届け先氏名');
         $this->drawFooter($pdf, $logoPath);
+        // プレビュー表示
+        if ($preview) {
+            $this->drawPreviewWatermark($pdf);
+        }
 
         return $pdf->Output('', 'S');
     }
@@ -110,25 +114,30 @@ class FaxOrderFormPdf
             }
         }
 
-        // Messages are centered in the space below the last product; no internal gridlines.
+        // 商品の下に残った余白
         $blankTop = $y + self::HEADER_H + count($products) * self::ROW_H;
-        $messages = array_values(array_filter(array_map('trim', $messages), fn($v) => $v !== ''));
+
+        // 空メッセージを除外
+        $messages = array_values(array_filter(
+            array_map('trim', $messages),
+            fn($message) => $message !== ''
+        ));
+
         if ($messages) {
-            $lines = [];
-            foreach ($messages as $message) {
-                foreach (preg_split('/\R/u', $message) as $line) {
-                    $lines[] = $line;
-                }
-                $lines[] = '';
-            }
-            array_pop($lines);
-            $lineH = 4.2;
-            $needed = count($lines) * $lineH;
+            // メッセージ1件 = 商品1行分の高さ
+            $lineH = self::ROW_H;
+
+            // メッセージ全体の高さ
+            $needed = count($messages) * $lineH;
+
+            // 余白の中央に配置
             $startY = $blankTop + ($bottom - $blankTop - $needed) / 2;
+
             $pdf->SetFontSize(7.2);
-            foreach ($lines as $i => $line) {
+
+            foreach ($messages as $i => $message) {
                 $pdf->SetXY($x + 1, $startY + $i * $lineH);
-                $pdf->Cell($w - 2, $lineH, $line, 0, 0, 'C');
+                $pdf->Cell($w - 2, $lineH, $message, 0, 0, 'C');
             }
         }
     }
@@ -176,5 +185,26 @@ class FaxOrderFormPdf
         $pdf->SetFontSize(6);
         $pdf->SetXY(107, 283);
         $pdf->Cell(95, 5, '※ 価格は変更される場合があります。', 0, 0, 'R');
+    }
+
+    private function drawPreviewWatermark(TCPDF $pdf): void
+    {
+        $pdf->StartTransform();
+
+        // ページ中央を基準に斜めに回転
+        $pdf->Rotate(35, 105, 148);
+
+        $pdf->SetAlpha(0.30);
+        $pdf->SetTextColor(100, 100, 100);
+        $pdf->SetFont('ipaexg', 'B', 52);
+
+        $pdf->SetXY(10, 132);
+        $pdf->Cell(190, 30, 'プレビュー中', 0, 0, 'C');
+
+        $pdf->StopTransform();
+
+        // 描画設定を元に戻す
+        $pdf->SetAlpha(1);
+        $pdf->SetTextColor(0, 0, 0);
     }
 }

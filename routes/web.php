@@ -130,6 +130,8 @@ Route::middleware(['auth', EnsureUserIsAdmin::class])
             ->name('fax-order-form.index');
         Route::put('/fax-order-form', [FaxOrderFormController::class, 'update'])
             ->name('fax-order-form.update');
+        Route::post('/fax-order-form/preview', [FaxOrderFormPdfController::class, 'preview'])
+            ->name('fax-order-form.preview');
     });
 
 require __DIR__ . '/auth.php';

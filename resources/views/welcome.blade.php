@@ -35,7 +35,7 @@
                         商品一覧を見る
                     </a>
 
-                    <a href="{{ route('fax-order-form.pdf') }}" target="_blank" rel="noopener"
+                    <a href="{{ route('fax-order-form.pdf', ['ts' => now()->timestamp]) }}" target="_blank" rel="noopener"
                         class="btn btn-outline btn-neutral">
                         <x-icons.fax />
                         FAX注文書
@@ -294,7 +294,7 @@
             </a>
 
             {{-- FAXでのご注文 --}}
-            <a href="{{ route('fax-order-form.pdf') }}" target="_blank" rel="noopener"
+            <a href="{{ route('fax-order-form.pdf', ['ts' => now()->timestamp]) }}" target="_blank" rel="noopener"
                 class="group flex items-center gap-4 rounded-xl border border-base-300 p-6 transition hover:bg-base-200 sm:col-span-2">
                 <x-icons.fax class="size-10 shrink-0" />
                 <div class="flex-1">

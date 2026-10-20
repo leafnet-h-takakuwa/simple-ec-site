@@ -9,7 +9,15 @@
             <h1 class="text-2xl font-bold lg:text-3xl">FAX注文書管理</h1>
             <p class="mt-2 text-sm text-slate-500">掲載商品とメッセージを編集します。変更は保存するまで公開されません。</p>
         </div>
-        <button type="submit" form="fax-form" class="btn btn-success">変更を保存</button>
+        <div class="flex flex-wrap items-center gap-3">
+            <button type="button" id="preview-button" class="btn btn-outline btn-neutral">
+                プレビュー
+            </button>
+
+            <button type="submit" form="fax-form" class="btn btn-success">
+                変更を保存
+            </button>
+        </div>
     </div>
 
     <form id="fax-form" method="POST" action="{{ route('admin.fax-order-form.update') }}">
@@ -249,8 +257,10 @@
                                         <span class="font-semibold">メッセージ ${position + 1}</span>${removeButton}
                                     </div>
                                     <label class="sr-only" for="message-${index}">メッセージ ${position + 1}</label>
-                                    <textarea id="message-${index}" rows="3" maxlength="255" class="textarea w-full"
-                                        data-field="message" data-index="${index}" placeholder="FAX注文書に表示するメッセージ">${escapeHtml(row.message)}</textarea>
+                                    <input id="message-${index}" type="text" maxlength="255" class="input w-full"
+                                        data-field="message" data-index="${index}"
+                                        value="${escapeHtml(row.message)}"
+                                        placeholder="FAX注文書に表示するメッセージ">
                                     <div class="mt-4 flex justify-end">${moveControls}</div>
                                 </div>`;
                         }).join('');
@@ -327,6 +337,63 @@
                 }
                 markDirty();
                 render();
+            });
+
+            const previewButton = document.getElementById('preview-button');
+
+            previewButton.addEventListener('click', async () => {
+                // ポップアップブロック対策としてクリック時にタブを開く。
+                const previewTab = window.open('', '_blank');
+
+                if (!previewTab) {
+                    alert('プレビューを表示できませんでした。ポップアップを許可してください。');
+                    return;
+                }
+
+                previewTab.document.title = 'FAX注文書プレビュー';
+                previewTab.document.body.textContent = 'PDFを生成しています...';
+
+                previewButton.disabled = true;
+
+                try {
+                    const response = await fetch(
+                        @json(route('admin.fax-order-form.preview')), {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/pdf',
+                                'X-CSRF-TOKEN': document.querySelector(
+                                    'input[name="_token"]'
+                                ).value,
+                            },
+                            body: JSON.stringify({
+                                rows
+                            }),
+                        }
+                    );
+
+                    if (!response.ok) {
+                        throw new Error(`プレビューの生成に失敗しました（${response.status}）`);
+                    }
+
+                    const blob = await response.blob();
+                    const url = URL.createObjectURL(blob);
+
+                    previewTab.location.href = url;
+
+                    // 閲覧中にURLを破棄しないよう、画面を閉じるまで保持。
+                    window.addEventListener('pagehide', () => {
+                        URL.revokeObjectURL(url);
+                    }, {
+                        once: true
+                    });
+
+                } catch (error) {
+                    previewTab.close();
+                    alert(error.message);
+                } finally {
+                    previewButton.disabled = false;
+                }
             });
 
             container.addEventListener('input', event => {

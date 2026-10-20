@@ -68,8 +68,28 @@ class FaxOrderFormController extends Controller
                 'nullable',
                 'string',
                 'max:255',
+                'not_regex:/[\r\n]/',
             ],
         ]);
+
+        // 各列の商品・メッセージの合計を25行以内に制限
+        $columnNames = [
+            'left' => '左列',
+            'center' => '中央列',
+            'right' => '右列',
+        ];
+
+        foreach ($columnNames as $column => $name) {
+            $count = collect($validated['rows'])
+                ->where('column', $column)
+                ->count();
+
+            if ($count > 25) {
+                throw ValidationException::withMessages([
+                    'rows' => "1列の商品とメッセージは合計25件以内にしてください。",
+                ]);
+            }
+        }
 
         // 行の種類に応じた入力チェック
         foreach ($validated['rows'] as $index => $row) {

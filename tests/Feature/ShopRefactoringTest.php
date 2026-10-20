@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Enums\OrderStatus;
 use App\Enums\PaymentMethod;
 use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\User;
 use App\Support\InputLimits;
@@ -177,6 +178,58 @@ class ShopRefactoringTest extends TestCase
             ->assertViewHas('productsNew', fn ($items) => $items->count() === 2 && $items->first()->is($new));
         $this->get(route('products.index'))->assertOk()
             ->assertViewHas('products', fn ($items) => $items->perPage() === 2 && $items->total() === 3 && $items->first()->is($standard));
+    }
+
+    public function test_popular_products_exclude_cancelled_orders(): void
+    {
+        $cancelledProduct = $this->product(['name' => 'キャンセル注文商品']);
+        $orderedProduct = $this->product(['name' => '受付注文商品']);
+
+        $baseOrder = [
+            'payment_method' => PaymentMethod::BANK_TRANSFER,
+            'total_amount' => 0,
+            'orderer_name' => '確認 太郎',
+            'orderer_postal_code' => '123-4567',
+            'orderer_address' => '東京都',
+            'orderer_phone' => '090-1234-5678',
+            'shipping_name' => '確認 太郎',
+            'shipping_postal_code' => '123-4567',
+            'shipping_address' => '東京都',
+            'shipping_phone' => '090-1234-5678',
+        ];
+
+        $cancelledOrder = Order::create([
+            ...$baseOrder,
+            'status' => OrderStatus::CANCELLED,
+        ]);
+        $activeOrder = Order::create([
+            ...$baseOrder,
+            'status' => OrderStatus::RECEIVED,
+        ]);
+
+        OrderItem::create([
+            'order_id' => $cancelledOrder->id,
+            'product_id' => $cancelledProduct->id,
+            'product_name' => $cancelledProduct->name,
+            'price' => $cancelledProduct->price,
+            'quantity' => 100,
+            'subtotal' => $cancelledProduct->price * 100,
+            'tax_rate' => 8,
+        ]);
+        OrderItem::create([
+            'order_id' => $activeOrder->id,
+            'product_id' => $orderedProduct->id,
+            'product_name' => $orderedProduct->name,
+            'price' => $orderedProduct->price,
+            'quantity' => 2,
+            'subtotal' => $orderedProduct->price * 2,
+            'tax_rate' => 8,
+        ]);
+
+        $popularProducts = Product::popular()->get();
+
+        $this->assertTrue($popularProducts->first()->is($orderedProduct));
+        $this->assertNull($popularProducts->firstWhere('id', $cancelledProduct->id)->order_items_sum_quantity);
     }
 
     public function test_admin_counts_period_and_shared_scripts_render(): void

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\OrderStatus;
 use App\Enums\ProductCategory;
 use Database\Factories\ProductFactory;
 use Illuminate\Database\Eloquent\Builder;
@@ -55,7 +56,12 @@ class Product extends Model
 
     public function scopePopular(Builder $query): Builder
     {
-        return $query->withSum('orderItems', 'quantity')
+        return $query->withSum([
+            'orderItems' => fn (Builder $query) => $query->whereHas(
+                'order',
+                fn (Builder $query) => $query->where('status', '!=', OrderStatus::CANCELLED->value)
+            ),
+        ], 'quantity')
             ->orderByRaw('order_items_sum_quantity DESC NULLS LAST')
             ->orderByDesc('id');
     }

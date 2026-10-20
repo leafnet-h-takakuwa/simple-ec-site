@@ -56,7 +56,9 @@
                                     {{ $notice->title }}
 
                                     @if ($notice->isNew())
-                                        <span class="badge badge-success badge-outline badge-sm">NEW</span>
+                                        <span class="badge badge-outline badge-sm border-amber-600 text-amber-600">
+                                            NEW
+                                        </span>
                                     @endif
                                 </span>
 

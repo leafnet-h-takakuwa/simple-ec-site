@@ -30,7 +30,7 @@ class Notice extends Model
         return $this->is_published
             && $this->published_at !== null
             && $this->published_at->betweenIncluded(
-                today()->subDays(30),
+                today()->subDays(config('shop.notices.new_days')),
                 today()
             );
     }

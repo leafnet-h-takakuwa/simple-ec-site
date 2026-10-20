@@ -18,6 +18,9 @@ return [
         // Laravelのファイルサイズ検証と同じKB単位
         'image_max_kb' => 5120,
     ],
+    'notices' => [
+        'new_days' => 30,
+    ],
     'dashboard' => [
         'recent_order_days' => 7,
     ],

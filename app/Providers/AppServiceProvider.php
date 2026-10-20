@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use App\Models\Notice;
+use Illuminate\Support\Facades\View;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +21,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        View::composer('layouts.app', function ($view) {
+            $newNoticeCount = Notice::where('is_published', true)
+                ->whereBetween('published_at', [
+                    today()->subDays(config('shop.notices.new_days')),
+                    today(),
+                ])
+                ->count();
+
+            $view->with('newNoticeCount', $newNoticeCount);
+        });
     }
 }

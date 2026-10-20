@@ -2,7 +2,7 @@
     <nav class="navbar gap-2 bg-neutral px-4 text-neutral-content">
 
         {{-- ロゴ --}}
-        <div class="min-w-0 flex-1">
+        <div class="min-w-0 flex-1 mt-2">
             <h1>
                 <a href="{{ route('home') }}" aria-label="TOP">
                     <x-logo class="w-28 text-white sm:w-40" />
@@ -40,6 +40,24 @@
                     </a>
                 </li>
 
+                {{-- お知らせ --}}
+                <li>
+                    <a href="{{ route('notices.index') }}" @class(['gap-2', 'menu-active' => request()->routeIs('notices.*')])>
+                        <span class="relative inline-flex shrink-0">
+                            <x-icons.notice class="size-5" />
+
+                            @if ($newNoticeCount > 0)
+                                <span
+                                    class="absolute -top-2 -right-2 flex size-4 items-center justify-center rounded-full bg-amber-600 text-[10px] font-bold text-white">
+                                    {{ $newNoticeCount > 9 ? '9+' : $newNoticeCount }}
+                                </span>
+                            @endif
+                        </span>
+
+                        <span>お知らせ</span>
+                    </a>
+                </li>
+
                 {{-- カート --}}
                 @if (!(Auth::check() && Auth::user()->is_admin))
                     <li>
@@ -50,6 +68,23 @@
                     </li>
                 @endif
             </ul>
+        </div>
+
+        {{-- スマホ用お知らせ --}}
+        <div class="flex-none md:hidden">
+            <a href="{{ route('notices.index') }}" class="btn btn-ghost btn-square" aria-label="お知らせ">
+
+                <span class="relative inline-flex">
+                    <x-icons.notice class="size-5" />
+
+                    @if ($newNoticeCount > 0)
+                        <span
+                            class="absolute -top-2 -right-2 flex size-4 items-center justify-center rounded-full bg-amber-600 text-[10px] font-bold text-white">
+                            {{ $newNoticeCount > 9 ? '9+' : $newNoticeCount }}
+                        </span>
+                    @endif
+                </span>
+            </a>
         </div>
 
         {{-- スマホ用カート --}}

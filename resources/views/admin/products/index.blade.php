@@ -157,7 +157,7 @@
                             {{ formatYen($product->price) }}
                         </p>
 
-                        <div class="mt-2">
+                        <div class="mt-2 flex flex-wrap items-center gap-2">
                             @if ($product->is_active)
                                 <span class="badge badge-success badge-outline">
                                     公開中
@@ -165,6 +165,12 @@
                             @else
                                 <span class="badge badge-ghost">
                                     非公開
+                                </span>
+                            @endif
+
+                            @if ($product->is_standard)
+                                <span class="badge badge-success badge-outline">
+                                    定番
                                 </span>
                             @endif
                         </div>

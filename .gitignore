@@ -23,7 +23,3 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
-/storage/fonts/tcpdf/*
-!/storage/fonts/tcpdf/ipaexg.json
-!/storage/fonts/tcpdf/ipaexg.z
-!/storage/fonts/tcpdf/ipaexg.ctg.z

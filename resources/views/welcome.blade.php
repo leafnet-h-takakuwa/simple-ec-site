@@ -9,7 +9,7 @@
         <div class="grid items-center gap-6 p-6 md:grid-cols-2 md:p-10">
 
             {{-- キャッチコピー --}}
-            <div class="space-y-5">
+            {{-- <div class="space-y-5">
 
                 <p class="text-sm font-semibold tracking-widest text-base-content/60">
                     髙桑商店
@@ -29,11 +29,14 @@
                     商品一覧を見る
                 </a>
 
+            </div> --}}
+
+            <div class="object-contain overflow-hidden bg-base-300">
+                <img src="{{ asset('images/top1.png') }}" alt="メイン写真" class="h-full w-full object-cover">
             </div>
 
-            {{-- メイン画像 --}}
-            <div class="overflow-hidden rounded-lg bg-base-300">
-                <img src="{{ asset('images/top.png') }}" alt="top" class="h-full w-full object-cover">
+            <div class="object-contain overflow-hidden bg-base-300">
+                <img src="{{ asset('images/top2.avif') }}" alt="理念" class="h-full w-full object-cover">
             </div>
 
         </div>

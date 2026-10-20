@@ -344,12 +344,12 @@ class DeliverySlipPdf
         }
 
         // ロゴ
-        $logoPath = public_path('images/logo.png');
+        $logoPath = public_path('images/logo.jpg');
 
         if (is_file($logoPath)) {
             $logoWidth = 70; // mm
             $logoX = $tableX + 10;
-            $logoY = $summaryY + 20;
+            $logoY = $summaryY + 15;
 
             $pdf->Image(
                 $logoPath,

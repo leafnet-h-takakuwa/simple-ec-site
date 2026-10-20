@@ -79,6 +79,32 @@ class ShopRefactoringTest extends TestCase
         $this->assertFalse(session()->has('cart'));
     }
 
+    public function test_duplicate_checkout_submission_reuses_the_existing_order(): void
+    {
+        $product = $this->product();
+        $this->post(route('carts.store'), ['product_id' => $product->id, 'quantity' => 2]);
+        $this->post(route('orders.confirm'), $this->contact());
+        $this->get(route('orders.confirm.show'))->assertOk();
+
+        $checkoutSession = [
+            'order' => session('order'),
+            'confirmed_items' => session('confirmed_items'),
+            'checkout_token' => session('checkout_token'),
+            'cart' => session('cart'),
+        ];
+
+        $this->post(route('orders.store'), ['fee_agreement' => '1'])
+            ->assertRedirect(route('orders.complete'));
+        $orderId = session('completed_order_id');
+
+        $this->withSession($checkoutSession)
+            ->post(route('orders.store'), ['fee_agreement' => '1'])
+            ->assertRedirect(route('orders.complete'));
+
+        $this->assertDatabaseCount('orders', 1);
+        $this->assertSame($orderId, session('completed_order_id'));
+    }
+
     #[DataProvider('customers')]
     public function test_checkout_rejects_price_changes_and_unavailable_products(bool $member): void
     {

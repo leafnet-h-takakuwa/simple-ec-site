@@ -11,10 +11,12 @@ use App\Services\CartService;
 use App\Services\TaxCalculator;
 use App\Support\ContactRules;
 use App\Support\InputLimits;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class OrderController extends Controller
 {
@@ -137,6 +139,10 @@ class OrderController extends Controller
         // 確認画面に表示した商品情報をセッションに保存
         $confirmed_items = $this->cartService->snapshot($cart_items);
         $request->session()->put('confirmed_items', $confirmed_items);
+        $request->session()->put(
+            'checkout_token',
+            $request->session()->get('checkout_token') ?? (string) Str::uuid()
+        );
 
         return view('orders.confirm', [
             'order' => $order,
@@ -163,13 +169,34 @@ class OrderController extends Controller
         // 確認画面で保存した注文情報を取得
         $order_data = $request->session()->get('order');
 
-        if (!$order_data) {
+        if (! $order_data) {
             return redirect()->route('orders.create')
                 ->with('error', '注文情報を入力してください。');
         }
 
+        $checkout_token = $request->session()->get('checkout_token');
+
+        if (! $checkout_token) {
+            return redirect()->route('orders.confirm.show')
+                ->with('error', '注文内容を確認してから確定してください。');
+        }
+
+        $existing_order = Order::where('checkout_token', $checkout_token)->first();
+
+        if ($existing_order) {
+            return $this->completeOrder($request, $existing_order);
+        }
+
         $cart = $this->cartService->cart($request);
         $cart_items = $this->cartService->items($request);
+
+        if ($cart_items->isEmpty()) {
+            $existing_order = Order::where('checkout_token', $checkout_token)->first();
+
+            if ($existing_order) {
+                return $this->completeOrder($request, $existing_order);
+            }
+        }
 
         // 販売停止・削除された商品が含まれていないか確認
         $has_unavailable_item = $cart_items->contains(function ($cart_item) {
@@ -208,11 +235,12 @@ class OrderController extends Controller
 
         try {
             // 注文・注文明細・会員カート削除をまとめて実行
-            $order = DB::transaction(function () use ($order_data, $cart_items, $total_amount, $cart) {
+            $order = DB::transaction(function () use ($order_data, $cart_items, $total_amount, $cart, $checkout_token) {
 
                 // 注文ヘッダー登録
                 $order = Order::create([
                     'user_id' => Auth::id(),
+                    'checkout_token' => $checkout_token,
                     'status' => OrderStatus::RECEIVED,
                     'payment_method' => $order_data['payment_method'],
                     'cod_fee' => $order_data['payment_method'] === PaymentMethod::BANK_TRANSFER->value
@@ -271,6 +299,19 @@ class OrderController extends Controller
 
                 return $order;
             });
+        } catch (QueryException $e) {
+            $existing_order = Order::where('checkout_token', $checkout_token)->first();
+
+            if ($existing_order) {
+                return $this->completeOrder($request, $existing_order);
+            }
+
+            Log::error('注文登録処理でエラーが発生しました。', [
+                'exception' => $e,
+            ]);
+
+            return redirect()->route('carts.index')
+                ->with('error', '注文処理中にエラーが発生しました。お手数ですが、もう一度お試しください。');
         } catch (\Throwable $e) {
             // 詳細なエラーはログに記録
             Log::error('注文登録処理でエラーが発生しました。', [
@@ -282,8 +323,14 @@ class OrderController extends Controller
                 ->with('error', '注文処理中にエラーが発生しました。お手数ですが、もう一度お試しください。');
         }
 
+        return $this->completeOrder($request, $order);
+    }
+
+    private function completeOrder(Request $request, Order $order)
+    {
         // DBへの登録が成功したらセッションを整理
         $request->session()->forget(['order', 'cart', 'confirmed_items']);
+        $request->session()->forget('checkout_token');
 
         // 完了画面に表示する注文IDを保存
         $request->session()->put('completed_order_id', $order->id);

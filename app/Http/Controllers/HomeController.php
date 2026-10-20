@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\ProductCategory;
 use App\Models\Product;
+use App\Models\Notice;
 
 class HomeController extends Controller
 {
@@ -17,10 +18,19 @@ class HomeController extends Controller
 
         $categories = ProductCategory::cases();
 
+        // 最新のお知らせ5件
+        $notices = Notice::where('is_published', true)
+            ->whereDate('published_at', '<=', today())
+            ->latest('published_at')
+            ->latest('id')
+            ->limit(5)
+            ->get();
+
         return view('welcome', [
             'productsPopular' => $productsPopular,
             'productsNew' => $productsNew,
             'categories' => $categories,
+            'notices' => $notices,
         ]);
     }
 }

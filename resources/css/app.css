@@ -119,9 +119,32 @@ select:focus[data-flux-control] {
     border: none;
 }
 
-/* お知らせ本文の表示 */
+/* お知らせ本文 */
+.notice-content {
+    line-height: 1.9;
+}
+
 .notice-content p {
     margin-bottom: 1em;
+}
+
+.notice-content h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.5;
+    margin: 1.5em 0 0.75em;
+}
+
+.notice-content h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.5;
+    margin: 1.25em 0 0.5em;
+}
+
+.notice-content h2:first-child,
+.notice-content h3:first-child {
+    margin-top: 0;
 }
 
 .notice-content ul {
@@ -136,25 +159,18 @@ select:focus[data-flux-control] {
     margin-bottom: 1em;
 }
 
+.notice-content li {
+    margin-bottom: 0.25em;
+}
+
 .notice-content a {
-    color: #15803d;
+    color: var(--color-primary);
     text-decoration: underline;
+    overflow-wrap: anywhere;
 }
 
 .notice-content a:hover {
     text-decoration: none;
-}
-
-.notice-content h2 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin: 1.5em 0 0.75em;
-}
-
-.notice-content h3 {
-    font-size: 1.25rem;
-    font-weight: 700;
-    margin: 1.25em 0 0.5em;
 }
 
 /* [:where(&)]:size-4 {

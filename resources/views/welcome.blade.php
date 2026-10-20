@@ -164,7 +164,7 @@
                     class="group relative overflow-hidden rounded-xl border border-base-300 bg-base-100 transition hover:shadow-md">
 
                     {{-- 商品画像 --}}
-                    <div class="relativeaspect-[4/3] overflow-hidden bg-base-200">
+                    <div class="relative aspect-[4/3] overflow-hidden bg-base-200">
                         @if ($product->image_path)
                             <img src="{{ Storage::url($product->image_path) }}" alt="{{ $product->name }}"
                                 class="h-full w-full object-cover transition duration-300 group-hover:scale-105">
@@ -241,6 +241,47 @@
         </div>
 
     </section>
+
+    {{-- お知らせ --}}
+    <section class="mb-12">
+
+        <div class="mb-6 flex items-center justify-between gap-4 border-b border-base-300 pb-3">
+            <h2 class="text-2xl font-bold">
+                お知らせ
+            </h2>
+
+            <a href="{{ route('notices.index') }}" class="inline-flex items-center gap-2 text-sm">
+                すべて見る <x-arrow direction="right" />
+            </a>
+        </div>
+
+        <div class="overflow-hidden rounded-xl border border-base-300 bg-base-100">
+            @forelse ($notices as $notice)
+                <a href="{{ route('notices.show', $notice) }}"
+                    class="group flex flex-col gap-2 border-b border-base-300 px-5 py-5 transition-colors last:border-b-0 hover:bg-base-200 sm:flex-row sm:items-center sm:gap-8">
+
+                    {{-- 公開日 --}}
+                    <time class="shrink-0 text-sm text-base-content/60"
+                        datetime="{{ $notice->published_at->format('Y-m-d') }}">
+                        {{ $notice->published_at->format('Y/m/d') }}
+                    </time>
+
+                    {{-- タイトル --}}
+                    <span class="flex-1 font-medium leading-relaxed group-hover:text-primary">
+                        {{ $notice->title }}
+                    </span>
+
+                    <x-arrow direction="right" class="hidden shrink-0 text-base-content/40 sm:block" />
+                </a>
+            @empty
+                <p class="px-5 py-8 text-center text-sm text-base-content/60">
+                    現在、お知らせはありません。
+                </p>
+            @endforelse
+        </div>
+
+    </section>
+
 
     {{-- ご利用案内 --}}
     <section class="mb-8">

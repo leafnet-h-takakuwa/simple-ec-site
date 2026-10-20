@@ -605,8 +605,6 @@ php artisan optimize:clear
 ./vendor/bin/phpunit --filter TaxCalculatorTest
 ```
 
-現時点では、税計算テストが `PHPUnit\Framework\TestCase` を継承しており、Laravelの設定コンテナを初期化していません。そのため上記の税計算テストは `Target class [config] does not exist` で失敗します。実行を通すには、Laravelのテスト基底クラスの利用など、設定を読み込むテスト環境の整備が必要です。
-
 画面描画と共通JavaScriptの出力はテストしますが、ブラウザでの操作テストは含みません。
 
 ### システムエラー画面

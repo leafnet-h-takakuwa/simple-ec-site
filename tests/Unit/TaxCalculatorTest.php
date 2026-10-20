@@ -4,13 +4,13 @@ namespace Tests\Unit;
 
 use App\Services\TaxCalculator;
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
 
 class TaxCalculatorTest extends TestCase
 {
     public function test_税率別に集計して内税額を計算できる(): void
     {
-        $calculator = new TaxCalculator();
+        $calculator = new TaxCalculator;
 
         $result = $calculator->calculate(
             [
@@ -38,7 +38,7 @@ class TaxCalculatorTest extends TestCase
 
     public function test_税額の端数を税率ごとに一度だけ切り捨てる(): void
     {
-        $calculator = new TaxCalculator();
+        $calculator = new TaxCalculator;
 
         $result = $calculator->calculate([
             ['subtotal' => 100, 'tax_rate' => 8],
@@ -50,7 +50,7 @@ class TaxCalculatorTest extends TestCase
 
     public function test_対象額がゼロなら集計を作らない(): void
     {
-        $calculator = new TaxCalculator();
+        $calculator = new TaxCalculator;
 
         $result = $calculator->calculate([
             ['subtotal' => 500, 'tax_rate' => 8],
@@ -64,7 +64,7 @@ class TaxCalculatorTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
 
-        (new TaxCalculator())->calculate([
+        (new TaxCalculator)->calculate([
             ['subtotal' => 1000, 'tax_rate' => 5],
         ]);
     }
@@ -73,7 +73,7 @@ class TaxCalculatorTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
 
-        (new TaxCalculator())->calculate([
+        (new TaxCalculator)->calculate([
             ['subtotal' => 1000, 'tax_rate' => 8],
             ['subtotal' => -1500, 'tax_rate' => 8],
         ]);

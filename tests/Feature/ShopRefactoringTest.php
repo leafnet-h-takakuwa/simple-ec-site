@@ -68,7 +68,7 @@ class ShopRefactoringTest extends TestCase
             ->assertRedirect(route('orders.confirm.show'));
         $this->get(route('orders.confirm.show'))->assertOk()->assertViewHas('total_amount', 2400);
         $this->assertSame([[
-            'product_id' => $product->id, 'price' => 1200, 'quantity' => 2,
+            'product_id' => $product->id, 'price' => 1200, 'quantity' => 2, 'tax_rate' => 8,
         ]], session('confirmed_items'));
         $this->post(route('orders.store'), ['fee_agreement' => '1'])
             ->assertRedirect(route('orders.complete'));
@@ -128,7 +128,7 @@ class ShopRefactoringTest extends TestCase
         Storage::fake('public');
         $payload = [
             'name' => '登録商品', 'category' => 'other', 'volume' => '200g',
-            'price' => 2000, 'is_active' => '1', 'is_standard' => '1', 'description' => '説明',
+            'price' => 2000, 'tax_rate' => 8, 'is_active' => '1', 'is_standard' => '1', 'description' => '説明',
         ];
         $this->post(route('admin.products.store'), $payload)->assertRedirect(route('admin.products.index'));
         $product = Product::firstOrFail();

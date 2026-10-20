@@ -36,26 +36,14 @@
             {{-- PC用ヘッダーメニュー --}}
             <div class="hidden items-center gap-6 lg:flex">
                 <a href="{{ route('home') }}" class="flex items-center gap-2 hover:text-green-700 text-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M3 10V21h18V10" />
-                        <path d="M2 10l2-7h16l2 7" />
-                        <path d="M2 10a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 2-3" />
-                        <path d="M9 21v-7h6v7" />
-                    </svg>
+                    <x-icons.store class="size-5 shrink-0" />
                     ショップを見る
                 </a>
 
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit" class="flex items-center gap-2 text-sm text-error hover:bg-error/10">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-                            stroke-linejoin="round">
-                            <path d="M10 17l5-5-5-5" />
-                            <path d="M15 12H3" />
-                            <path d="M12 3h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7" />
-                        </svg>
+                        <x-icons.log-in class="size-5 shrink-0" />
                         ログアウト
                     </button>
                 </form>
@@ -65,10 +53,7 @@
             <div class="flex-none lg:hidden">
                 <details class="dropdown dropdown-end">
                     <summary class="btn btn-ghost btn-square text-green-800" aria-label="管理メニューを開く">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="size-6" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                            <path d="M4 6h16M4 12h16M4 18h16" />
-                        </svg>
+                        <x-icons.menu class="size-6" />
                     </summary>
 
                     <ul
@@ -84,14 +69,7 @@
                                 'gap-3',
                                 'menu-active' => request()->routeIs('admin.dashboard'),
                             ])>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <rect x="3" y="3" width="7" height="9" rx="1" />
-                                    <rect x="14" y="3" width="7" height="5" rx="1" />
-                                    <rect x="14" y="12" width="7" height="9" rx="1" />
-                                    <rect x="3" y="16" width="7" height="5" rx="1" />
-                                </svg>
+                                <x-icons.layout-dashboard class="size-5 shrink-0" />
                                 ダッシュボード
                             </a>
                         </li>
@@ -102,13 +80,7 @@
                                 'gap-3',
                                 'menu-active' => request()->routeIs('admin.orders.*'),
                             ])>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <path d="M8 3H5a2 2 0 0 0-2 2v16l4-2 5 2 5-2 4 2V5a2 2 0 0 0-2-2h-3" />
-                                    <path d="M8 3h8v4H8z" />
-                                    <path d="M8 12h8M8 16h5" />
-                                </svg>
+                                <x-icons.receipt class="size-5 shrink-0" />
                                 注文管理
                             </a>
                         </li>
@@ -119,13 +91,7 @@
                                 'gap-3',
                                 'menu-active' => request()->routeIs('admin.products.*'),
                             ])>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <path
-                                        d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
-                                    <path d="m3.3 7 8.7 5 8.7-5M12 22V12" />
-                                </svg>
+                                <x-icons.package class="size-5 shrink-0" />
                                 商品管理
                             </a>
                         </li>
@@ -136,14 +102,7 @@
                                 'gap-3',
                                 'menu-active' => request()->routeIs('admin.users.*'),
                             ])>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="size-5" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                                    <circle cx="9" cy="7" r="4" />
-                                    <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-                                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                                </svg>
+                                <x-icons.users class="size-5" />
                                 会員管理
                             </a>
                         </li>
@@ -151,14 +110,7 @@
                         {{-- ショップを見る --}}
                         <li>
                             <a href="{{ route('home') }}" class="gap-3">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"
-                                    stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M3 10V21h18V10" />
-                                    <path d="M2 10l2-7h16l2 7" />
-                                    <path d="M2 10a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 2-3" />
-                                    <path d="M9 21v-7h6v7" />
-                                </svg>
+                                <x-icons.store class="size-5 shrink-0" />
                                 ショップを見る
                             </a>
                         </li>
@@ -173,13 +125,7 @@
                                 @csrf
                                 <button type="submit"
                                     class="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-error hover:bg-error/10">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0" fill="none"
-                                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"
-                                        stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M10 17l5-5-5-5" />
-                                        <path d="M15 12H3" />
-                                        <path d="M12 3h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7" />
-                                    </svg>
+                                    <x-icons.log-in class="size-5 shrink-0" />
                                     ログアウト
                                 </button>
                             </form>
@@ -208,14 +154,7 @@
                     'bg-green-100 font-semibold text-green-800' => request()->routeIs(
                         'admin.dashboard'),
                 ])>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <rect x="3" y="3" width="7" height="9" rx="1" />
-                        <rect x="14" y="3" width="7" height="5" rx="1" />
-                        <rect x="14" y="12" width="7" height="9" rx="1" />
-                        <rect x="3" y="16" width="7" height="5" rx="1" />
-                    </svg>
+                    <x-icons.layout-dashboard class="size-5 shrink-0" />
                     ダッシュボード
                 </a>
 
@@ -225,13 +164,7 @@
                     'bg-green-100 font-semibold text-green-800' => request()->routeIs(
                         'admin.orders.*'),
                 ])>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <path d="M8 3H5a2 2 0 0 0-2 2v16l4-2 5 2 5-2 4 2V5a2 2 0 0 0-2-2h-3" />
-                        <path d="M8 3h8v4H8z" />
-                        <path d="M8 12h8M8 16h5" />
-                    </svg>
+                    <x-icons.receipt class="size-5 shrink-0" />
                     注文管理
                 </a>
 
@@ -241,13 +174,7 @@
                     'bg-green-100 font-semibold text-green-800' => request()->routeIs(
                         'admin.products.*'),
                 ])>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <path
-                            d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
-                        <path d="m3.3 7 8.7 5 8.7-5M12 22V12" />
-                    </svg>
+                    <x-icons.package class="size-5 shrink-0" />
                     商品管理
                 </a>
 
@@ -259,13 +186,7 @@
                     'bg-green-100 font-semibold text-green-800' => request()->routeIs(
                         'admin.users.*'),
                 ])>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="size-5" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                        <circle cx="9" cy="7" r="4" />
-                        <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                    </svg>
+                    <x-icons.users class="size-5" />
                     会員管理
                 </a>
 

@@ -96,6 +96,17 @@
                             </a>
                         </li>
 
+                        {{-- FAX注文書管理 --}}
+                        <li>
+                            <a href="{{ route('admin.fax-order-form.index') }}" @class([
+                                'gap-3',
+                                'menu-active' => request()->routeIs('admin.fax-order-form.index.*'),
+                            ])>
+                                <x-icons.fax class="size-5 shrink-0" />
+                                FAX注文書管理
+                            </a>
+                        </li>
+
                         {{-- 会員管理 --}}
                         <li>
                             <a href="{{ route('admin.users.index') }}" @class([
@@ -139,8 +150,7 @@
     <div class="lg:flex">
 
         {{-- PC用サイドバー --}}
-        <aside
-            class="hidden min-h-[calc(100vh-5rem)] w-72 shrink-0 border-r border-green-200 bg-green-50 p-8 lg:block">
+        <aside class="hidden min-h-[calc(100vh-5rem)] w-72 shrink-0 border-r border-green-200 bg-green-50 p-8 lg:block">
 
             <h2 class="mb-6 text-xl font-bold">
                 管理メニュー
@@ -178,7 +188,15 @@
                     商品管理
                 </a>
 
-
+                {{-- FAX注文書管理 --}}
+                <a href="{{ route('admin.fax-order-form.index') }}" @class([
+                    'flex items-center gap-3 rounded-lg px-4 py-3 transition-colors hover:bg-green-100',
+                    'bg-green-100 font-semibold text-green-800' => request()->routeIs(
+                        'admin.fax-order-form.index.*'),
+                ])>
+                    <x-icons.fax class="size-5 shrink-0" />
+                    FAX注文書管理
+                </a>
 
                 {{-- 会員管理 --}}
                 <a href="{{ route('admin.users.index') }}" @class([

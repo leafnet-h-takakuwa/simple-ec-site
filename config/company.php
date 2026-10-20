@@ -2,10 +2,10 @@
 
 return [
     // 店舗名
-    'shop_name' => '高桑商店',
+    'shop_name' => '髙桑商店',
 
     // 運営会社
-    'company_name' => '有限会社高桑商店',
+    'company_name' => '有限会社 髙桑商店',
 
     // 所在地
     'postal_code' => '030-0862',

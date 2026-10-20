@@ -12,6 +12,8 @@ use App\Http\Middleware\EnsureUserIsAdmin;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Admin\FaxOrderFormController;
+use App\Http\Controllers\FaxOrderFormPdfController;
 
 /**
  * 認証不要ルート
@@ -46,6 +48,10 @@ Route::post('/orders', [OrderController::class, 'store'])
     ->name('orders.store');
 Route::get('/orders/complete', [OrderController::class, 'complete'])
     ->name('orders.complete');
+
+// FAX注文書
+Route::get('/fax-order-form/pdf', [FaxOrderFormPdfController::class, 'show'])
+    ->name('fax-order-form.pdf');
 
 /**
  * 一般会員向け要認証ルート
@@ -118,6 +124,12 @@ Route::middleware(['auth', EnsureUserIsAdmin::class])
         // 会員情報
         Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
         Route::get('/users/{user}', [AdminUserController::class, 'show'])->name('users.show');
+
+        // FAX注文書管理
+        Route::get('/fax-order-form', [FaxOrderFormController::class, 'index'])
+            ->name('fax-order-form.index');
+        Route::put('/fax-order-form', [FaxOrderFormController::class, 'update'])
+            ->name('fax-order-form.update');
     });
 
 require __DIR__ . '/auth.php';

@@ -8,37 +8,41 @@
 
         <div class="grid items-center gap-6 p-6 md:grid-cols-2 md:p-10">
 
-            {{-- キャッチコピー --}}
-            {{-- <div class="space-y-5">
-
-                <p class="text-sm font-semibold tracking-widest text-base-content/60">
-                    髙桑商店
-                </p>
-
-                <h2 class="text-3xl font-bold leading-relaxed md:text-4xl">
-                    海の恵みを、<br>
-                    食卓へ。
-                </h2>
-
-                <p class="leading-relaxed text-base-content/70">
-                    こだわりのすじこ・たらこをお届けします。<br>
-                    毎日の食卓に、ちょっとした贅沢を。
-                </p>
-
-                <a href="{{ route('products.index') }}" class="btn btn-neutral">
-                    商品一覧を見る
-                </a>
-
-            </div> --}}
-
             <div class="object-contain overflow-hidden bg-base-300">
                 <img src="{{ asset('images/top1.png') }}" alt="メイン写真" class="h-full w-full object-cover">
             </div>
 
-            <div class="object-contain overflow-hidden bg-base-300">
-                <img src="{{ asset('images/top2.avif') }}" alt="理念" class="h-full w-full object-cover">
-            </div>
+            {{-- キャッチコピー --}}
+            <div class="space-y-5">
 
+                <h2 class="font-serif text-3xl font-semibold leading-relaxed md:text-4xl">
+                    自信のある商品を<br>
+                    笑顔とおもてなしで お届けします
+                </h2>
+
+                <p class="leading-relaxed text-base-content/70">
+                    先代からの教え「笑顔」「品質」「おもてなし」を<br>
+                    今でも心に刻み、自分たちの納得した商品を<br>
+                    お客様のもとへと届けます。<br>
+                    ご来店いただいたお客様へも、<br>
+                    遠くからご注文いただいたお客様へも、<br>
+                    私たちが自信と責任をもって<br>
+                    青森の"うまい"ものお届けします。
+                </p>
+
+                <div class="flex flex-wrap items-center gap-3">
+                    <a href="{{ route('products.index') }}" class="btn btn-neutral">
+                        商品一覧を見る
+                    </a>
+
+                    <a href="{{ route('fax-order-form.pdf') }}" target="_blank" rel="noopener"
+                        class="btn btn-outline btn-neutral">
+                        <x-icons.fax />
+                        FAX注文書
+                    </a>
+                </div>
+
+            </div>
         </div>
 
     </section>
@@ -289,7 +293,19 @@
                 </div>
             </a>
 
+            {{-- FAXでのご注文 --}}
+            <a href="{{ route('fax-order-form.pdf') }}" target="_blank" rel="noopener"
+                class="group flex items-center gap-4 rounded-xl border border-base-300 p-6 transition hover:bg-base-200 sm:col-span-2">
+                <x-icons.fax class="size-10 shrink-0" />
+                <div class="flex-1">
+                    <h3 class="font-bold">
+                        FAXでのご注文
+                    </h3>
+                    <p class="mt-1 text-sm text-base-content/60">
+                        FAX注文書はこちらからダウンロードできます。
+                    </p>
+                </div>
+            </a>
         </div>
-
     </section>
 @endsection

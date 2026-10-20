@@ -7,7 +7,9 @@
     <div class="mb-8 flex flex-wrap items-center justify-between gap-4">
         <div>
             <h1 class="text-2xl font-bold lg:text-3xl">FAX注文書管理</h1>
-            <p class="mt-2 text-sm text-slate-500">掲載商品とメッセージを編集します。変更は保存するまで公開されません。</p>
+            <p class="mt-2 text-sm text-slate-500">
+                掲載商品とメッセージを編集します。変更は保存するまで公開されません。<br>各列 25件まで登録できます。保存前にプレビューで確認してください。
+            </p>
         </div>
         <div class="flex flex-wrap items-center gap-3">
             <button type="button" id="preview-button" class="btn btn-outline btn-neutral">
@@ -75,7 +77,7 @@
     <dialog id="product-select-modal" class="modal">
         <div class="modal-box">
             <h3 class="text-lg font-bold">商品を選択</h3>
-            <p class="mt-2 text-sm text-slate-500">商品を選択すると、FAX用表示名に商品名が自動入力されます。</p>
+            <p class="mt-2 text-sm text-slate-500">商品を選択すると、注文書表示名に商品名が自動入力されます。</p>
             <div class="mt-5">
                 <label for="product-select" class="mb-2 block text-sm font-semibold">商品</label>
                 <select id="product-select" class="select w-full">

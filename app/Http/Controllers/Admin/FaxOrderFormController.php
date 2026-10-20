@@ -25,7 +25,7 @@ class FaxOrderFormController extends Controller
 
         // 商品選択用（非公開・削除済み商品は除外）
         $products = Product::where('is_active', true)
-            ->orderBy('id')
+            ->orderBy('name')
             ->get();
 
         return view('admin.fax-order-form.index', [

@@ -124,7 +124,7 @@
                                 'gap-3',
                                 'menu-active' => request()->routeIs('admin.customers.*'),
                             ])>
-                                <x-icons.users class="size-5" />
+                                <x-icons.customers class="size-5" />
                                 顧客台帳
                             </a>
                         </li>
@@ -236,7 +236,7 @@
                     'bg-green-100 font-semibold text-green-800' => request()->routeIs(
                         'admin.customers.*'),
                 ])>
-                    <x-icons.users class="size-5" />
+                    <x-icons.customers class="size-5" />
                     顧客台帳
                 </a>
 

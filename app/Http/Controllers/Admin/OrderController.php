@@ -8,6 +8,7 @@ use App\Enums\PaymentMethod;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\Customer;
 use App\Support\ContactRules;
 use App\Support\InputLimits;
 use App\Services\TaxCalculator;
@@ -102,10 +103,25 @@ class OrderController extends Controller
     public function create()
     {
         $products = Product::orderBy('name')
-            ->get(['id', 'name', 'price', 'tax_rate']);
+            ->get(['id', 'name', 'volume', 'price', 'tax_rate']);
+
+        // 顧客台帳から選択するためのデータ
+        $customers = Customer::orderBy('name')
+            ->get([
+                'id',
+                'name',
+                'postal_code',
+                'address',
+                'phone',
+                'email',
+                'memo',
+                'is_orderer',
+                'is_recipient',
+            ]);
 
         return view('admin.orders.create', [
             'products' => $products,
+            'customers' => $customers,
             'orderSources' => OrderSource::cases(),
             'paymentMethods' => PaymentMethod::cases(),
         ]);

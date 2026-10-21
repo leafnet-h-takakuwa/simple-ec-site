@@ -29,7 +29,7 @@
 
         <div class="flex flex-col gap-3 sm:flex-row">
             <input type="text" name="keyword" id="keyword" value="{{ $keyword }}"
-                placeholder="氏名・電話番号・住所・メールアドレス・メモなど" class="input w-full flex-1">
+                placeholder="氏名・電話番号・住所・メールアドレス・メモなど" class="input input-bordered h-10 w-full">
 
             <div class="flex gap-2">
                 <button type="submit" class="btn btn-success flex-1 sm:flex-none">

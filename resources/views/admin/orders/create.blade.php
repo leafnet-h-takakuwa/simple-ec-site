@@ -136,7 +136,13 @@
 
             {{-- 注文者情報 --}}
             <section class="rounded-xl border border-slate-200 bg-white p-5 lg:p-7">
-                <h2 class="mb-5 text-lg font-bold">注文者情報</h2>
+                <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
+                    <h2 class="text-lg font-bold">注文者情報</h2>
+
+                    <button type="button" class="select-customer btn btn-outline btn-neutral btn-sm" data-target="orderer">
+                        顧客台帳から選択
+                    </button>
+                </div>
 
                 <div class="space-y-4">
                     <div>
@@ -189,9 +195,16 @@
                 <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
                     <h2 class="text-lg font-bold">お届け先情報</h2>
 
-                    <button type="button" id="copy-orderer" class="btn btn-outline btn-neutral btn-sm">
-                        注文者情報をコピー
-                    </button>
+                    <div class="flex flex-wrap gap-2">
+                        <button type="button" class="select-customer btn btn-outline btn-neutral btn-sm"
+                            data-target="shipping">
+                            顧客台帳から選択
+                        </button>
+
+                        <button type="button" id="copy-orderer" class="btn btn-neutral btn-sm">
+                            注文者情報をコピー
+                        </button>
+                    </div>
                 </div>
 
                 <div class="space-y-4">
@@ -278,7 +291,7 @@
         </div>
     </form>
 
-    {{-- 新規商品テンプレート --}}
+    {{-- 商品追加テンプレート --}}
     <template id="item-template">
         <div class="order-item rounded-lg border border-slate-200 p-4">
             <input type="hidden" data-field="product_id" value="">
@@ -334,49 +347,14 @@
         </div>
     </template>
 
-    {{-- 商品選択モーダル --}}
-    <dialog id="product-select-modal" class="modal">
-        <div class="modal-box">
-            <h3 class="text-lg font-bold">商品を選択</h3>
 
-            <p class="mt-2 text-sm text-slate-500">
-                商品を選択すると、商品名と単価が自動入力されます。
-            </p>
 
-            <div class="mt-5">
-                <label for="product-select" class="mb-2 block text-sm font-semibold">
-                    商品
-                </label>
+    {{-- モーダル --}}
+    @include('admin.orders.partials.item-editor-modal')
+    @include('admin.orders.partials.customer-select-modal')
 
-                <select id="product-select" class="select w-full">
-                    <option value="">商品を選択してください</option>
-
-                    @foreach ($products as $product)
-                        <option value="{{ $product->id }}" data-name="{{ $product->name }}"
-                            data-price="{{ $product->price }}" data-tax-rate="{{ $product->tax_rate }}">
-                            {{ $product->name }}（{{ formatYen($product->price) }}）
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div class="modal-action">
-                <button type="button" class="btn btn-outline btn-neutral"
-                    onclick="document.getElementById('product-select-modal').close()">
-                    キャンセル
-                </button>
-
-                <button type="button" id="confirm-product" class="btn btn-success">
-                    選択する
-                </button>
-            </div>
-        </div>
-
-        <form method="dialog" class="modal-backdrop">
-            <button>閉じる</button>
-        </form>
-    </dialog>
-
+    {{-- モーダル処理 --}}
     @include('admin.orders.partials.item-editor-script')
     @include('admin.orders.partials.copy-orderer-script')
+    @include('admin.orders.partials.customer-select-script')
 @endsection

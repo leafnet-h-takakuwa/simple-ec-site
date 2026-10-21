@@ -5,8 +5,11 @@
         const formatter = new Intl.NumberFormat('ja-JP');
 
         const modal = document.getElementById('product-select-modal');
-        const productSelect = document.getElementById('product-select');
-        const confirmProduct = document.getElementById('confirm-product');
+        const productSearch = document.getElementById('product-search');
+        const productResults = document.getElementById('product-results');
+        const productRows = [...productResults.querySelectorAll('.product-result')];
+        const productResultCount = document.getElementById('product-result-count');
+        const closeProductModal = document.getElementById('close-product-modal');
 
         // 現在、商品選択の対象になっている明細
         let targetItem = null;
@@ -14,6 +17,35 @@
         const formatYen = (amount) => {
             return `${amount < 0 ? '-' : ''}¥${formatter.format(Math.abs(amount))}`;
         };
+
+        // 検索用の文字列を正規化
+        const normalizeProductName = (value) => {
+            return String(value ?? '')
+                .normalize('NFKC')
+                .toLowerCase()
+                .trim();
+        };
+
+        // 商品をリアルタイムで絞り込み
+        function filterProducts() {
+            const keyword = normalizeProductName(productSearch.value);
+            let count = 0;
+
+            productRows.forEach(row => {
+                const productName = normalizeProductName(row.dataset.name);
+                const matches = productName.includes(keyword);
+
+                row.style.display = matches ? '' : 'none';
+
+                if (matches) {
+                    count++;
+                }
+            });
+
+            productResultCount.textContent = `検索結果：${count}件`;
+        }
+
+        productSearch.addEventListener('input', filterProducts);
 
         // 商品連携ボタンの表示を切り替える
         function updateLinkButton(item) {
@@ -99,39 +131,38 @@
             if (selectButton) {
                 targetItem = selectButton.closest('.order-item');
 
-                // すでに連携済みなら、現在の商品を初期選択
-                const productId = targetItem.querySelector(
-                    '[data-field="product_id"]'
-                ).value;
-
-                productSelect.value = productId || '';
+                // 検索条件をリセット
+                productSearch.value = '';
+                filterProducts();
 
                 modal.showModal();
+                productSearch.focus();
             }
         });
 
-        // モーダルで商品を確定
-        confirmProduct.addEventListener('click', () => {
-            if (!targetItem || !productSelect.value) {
-                alert('商品を選択してください。');
-                return;
-            }
+        // 一覧の「選択」ボタンから商品を確定
+        productResults.addEventListener('click', event => {
+            const button = event.target.closest('.choose-product');
 
-            const option = productSelect.selectedOptions[0];
+            if (!button || !targetItem) return;
+
+            const product = button.closest('.product-result');
+
+            if (!product) return;
 
             targetItem.querySelector('[data-field="product_id"]').value =
-                option.value;
+                product.dataset.id;
 
             targetItem.querySelector('[data-field="product_name"]').value =
-                option.dataset.name;
+                product.dataset.name;
 
             targetItem.querySelector('[data-field="price"]').value =
-                option.dataset.price;
+                product.dataset.price;
 
             targetItem.querySelector('[data-field="tax_rate"]').value =
-                option.dataset.taxRate;
+                product.dataset.taxRate;
 
-            // 連携時の商品名・単価を記録
+            // 連携時の商品名・単価・税率を記録
             rememberProductValues(targetItem);
 
             // 数量は変更しない
@@ -140,6 +171,11 @@
 
             modal.close();
             targetItem = null;
+        });
+
+        // キャンセル
+        closeProductModal.addEventListener('click', () => {
+            modal.close();
         });
 
         modal.addEventListener('close', () => {

@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\NoticeController as AdminNoticeController;
 use App\Http\Controllers\Admin\FaxOrderFormController;
 use App\Http\Controllers\FaxOrderFormPdfController;
 use App\Http\Controllers\NoticeController;
+use App\Http\Controllers\Admin\CustomerController;
 
 /**
  * 認証不要ルート
@@ -145,6 +146,10 @@ Route::middleware(['auth', EnsureUserIsAdmin::class])
         Route::resource('notices', AdminNoticeController::class)
             ->except(['show'])
             ->names('notices');
+
+        // 顧客台帳
+        Route::resource('customers', CustomerController::class)
+            ->names('customers');
     });
 
 require __DIR__ . '/auth.php';

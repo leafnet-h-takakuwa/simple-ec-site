@@ -118,14 +118,25 @@
                             </a>
                         </li>
 
-                        {{-- 会員管理 --}}
+                        {{-- 顧客台帳 --}}
+                        <li>
+                            <a href="{{ route('admin.customers.index') }}" @class([
+                                'gap-3',
+                                'menu-active' => request()->routeIs('admin.customers.*'),
+                            ])>
+                                <x-icons.users class="size-5" />
+                                顧客台帳
+                            </a>
+                        </li>
+
+                        {{-- WEB会員管理 --}}
                         <li>
                             <a href="{{ route('admin.users.index') }}" @class([
                                 'gap-3',
                                 'menu-active' => request()->routeIs('admin.users.*'),
                             ])>
                                 <x-icons.users class="size-5" />
-                                会員管理
+                                WEB会員管理
                             </a>
                         </li>
 
@@ -219,14 +230,24 @@
                     お知らせ管理
                 </a>
 
-                {{-- 会員管理 --}}
+                {{-- 顧客台帳 --}}
+                <a href="{{ route('admin.customers.index') }}" @class([
+                    'flex items-center gap-3 rounded-lg px-4 py-3 transition-colors hover:bg-green-100',
+                    'bg-green-100 font-semibold text-green-800' => request()->routeIs(
+                        'admin.customers.*'),
+                ])>
+                    <x-icons.users class="size-5" />
+                    顧客台帳
+                </a>
+
+                {{-- WEB会員管理 --}}
                 <a href="{{ route('admin.users.index') }}" @class([
                     'flex items-center gap-3 rounded-lg px-4 py-3 transition-colors hover:bg-green-100',
                     'bg-green-100 font-semibold text-green-800' => request()->routeIs(
                         'admin.users.*'),
                 ])>
                     <x-icons.users class="size-5" />
-                    会員管理
+                    WEB会員管理
                 </a>
 
             </nav>

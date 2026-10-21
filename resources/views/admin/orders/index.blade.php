@@ -5,7 +5,13 @@
 @section('content')
     {{-- ページタイトル --}}
     <div class="mb-8 flex flex-wrap items-center justify-between gap-4">
-        <h1 class="text-2xl font-bold lg:text-3xl">注文管理</h1>
+        <div>
+            <h1 class="text-2xl font-bold lg:text-3xl">注文管理</h1>
+            <p class="mt-2 text-sm text-slate-500">
+                注文情報の確認・登録や、発送状況を管理します。<br>
+                WEB注文のほか、店頭・電話・FAXで受けた注文も登録できます。
+            </p>
+        </div>
         <a href="{{ route('admin.orders.create') }}" class="btn btn-success">
             <x-plus /> 注文を登録
         </a>
@@ -35,7 +41,8 @@
                 <label for="orderer_name" class="mb-2 block text-sm font-semibold">
                     注文者氏名
                 </label>
-                <input type="text" id="orderer_name" name="orderer_name" maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}"
+                <input type="text" id="orderer_name" name="orderer_name"
+                    maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}"
                     value="{{ old('orderer_name', $conditions['orderer_name'] ?? '') }}" placeholder="氏名の一部を入力"
                     class="input w-full">
             </fieldset>

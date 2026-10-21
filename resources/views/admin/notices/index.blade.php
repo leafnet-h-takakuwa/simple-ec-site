@@ -5,8 +5,12 @@
 @section('content')
     {{-- ページタイトル --}}
     <div class="mb-8 flex flex-wrap items-center justify-between gap-4">
-        <h1 class="text-2xl font-bold lg:text-3xl">お知らせ管理</h1>
-
+        <div>
+            <h1 class="text-2xl font-bold lg:text-3xl">お知らせ管理</h1>
+            <p class="mt-2 text-sm text-slate-500">
+                TOPページに表示するお知らせを管理します。
+            </p>
+        </div>
         <a href="{{ route('admin.notices.create') }}" class="btn btn-success">
             <x-plus /> お知らせを追加
         </a>

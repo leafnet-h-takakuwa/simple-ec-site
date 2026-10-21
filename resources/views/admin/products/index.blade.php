@@ -5,9 +5,15 @@
 @section('content')
     {{-- タイトル --}}
     <div class="mb-8 flex flex-wrap items-center justify-between gap-4">
-        <h1 class="text-2xl font-bold lg:text-3xl">
-            商品管理
-        </h1>
+        <div>
+            <h1 class="text-2xl font-bold lg:text-3xl">
+                商品管理
+            </h1>
+            <p class="mt-2 text-sm text-slate-500">
+                商品情報を管理します。<br>
+                公開中の商品のみ表示され、定番商品に設定すると商品一覧で優先的に表示されます。
+            </p>
+        </div>
 
         <a href="{{ route('admin.products.create') }}" class="btn btn-success">
             <x-plus /> 商品を登録

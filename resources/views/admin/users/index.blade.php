@@ -1,13 +1,17 @@
 @extends('layouts.admin')
 
-@section('title', '会員管理')
+@section('title', 'WEB会員管理')
 
 @section('content')
     {{-- タイトル --}}
     <div class="mb-8">
         <h1 class="text-2xl font-bold lg:text-3xl">
-            会員管理
+            WEB会員管理
         </h1>
+        <p class="mt-2 text-sm text-slate-500">
+            WEBサイトで登録された会員情報を閲覧・管理します。<br>
+            各会員に紐づく注文履歴も確認できます。
+        </p>
     </div>
 
     {{-- 件数 --}}

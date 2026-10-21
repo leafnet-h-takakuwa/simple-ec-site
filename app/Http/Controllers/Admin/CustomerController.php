@@ -20,12 +20,9 @@ class CustomerController extends Controller
         $customers = Customer::query()
             ->when($keyword !== '', function ($query) use ($keyword) {
                 $query->where(function ($q) use ($keyword) {
-                    $q->where('name', 'ilike', "%{$keyword}%")
-                        ->orWhere('postal_code', 'ilike', "%{$keyword}%")
-                        ->orWhere('address', 'ilike', "%{$keyword}%")
-                        ->orWhere('phone', 'ilike', "%{$keyword}%")
-                        ->orWhere('email', 'ilike', "%{$keyword}%")
-                        ->orWhere('memo', 'ilike', "%{$keyword}%");
+                    foreach (['name', 'postal_code', 'address', 'phone', 'email', 'memo'] as $column) {
+                        $q->orWhereRaw("LOWER({$column}) LIKE LOWER(?)", ["%{$keyword}%"]);
+                    }
                 });
             })
             ->orderByDesc('id')

@@ -69,12 +69,22 @@ class ShopRefactoringTest extends TestCase
             ->assertRedirect(route('orders.confirm.show'));
         $this->get(route('orders.confirm.show'))->assertOk()->assertViewHas('total_amount', 2400);
         $this->assertSame([[
-            'product_id' => $product->id, 'price' => 1200, 'quantity' => 2, 'tax_rate' => 8,
+            'product_id' => $product->id, 'product_name' => '確認用商品',
+            'volume' => '100g', 'price' => 1200, 'quantity' => 2, 'tax_rate' => 8,
         ]], session('confirmed_items'));
         $this->post(route('orders.store'), ['fee_agreement' => '1'])
             ->assertRedirect(route('orders.complete'));
         $this->assertDatabaseHas('orders', ['total_amount' => 2400, 'payment_method' => PaymentMethod::CASH_ON_DELIVERY->value]);
-        $this->assertDatabaseHas('order_items', ['product_id' => $product->id, 'subtotal' => 2400]);
+        $this->assertDatabaseHas('order_items', [
+            'product_id' => $product->id, 'subtotal' => 2400, 'volume' => '100g',
+        ]);
+        $this->assertDatabaseHas('customers', [
+            'name' => '確認 太郎',
+            'is_orderer' => true,
+            'is_recipient' => false,
+        ]);
+        $this->assertDatabaseCount('customers', 1);
+        $this->get(route('orders.complete'))->assertOk()->assertSee('内容量：100g');
         $this->assertDatabaseCount('cart_items', 0);
         $this->assertFalse(session()->has('cart'));
     }
@@ -103,6 +113,35 @@ class ShopRefactoringTest extends TestCase
 
         $this->assertDatabaseCount('orders', 1);
         $this->assertSame($orderId, session('completed_order_id'));
+    }
+
+    public function test_checkout_preserves_volumes_for_products_with_the_same_name(): void
+    {
+        $small = $this->product(['volume' => '100g']);
+        $large = $this->product(['volume' => '200g', 'price' => 1500]);
+
+        $this->post(route('carts.store'), ['product_id' => $small->id, 'quantity' => 1]);
+        $this->post(route('carts.store'), ['product_id' => $large->id, 'quantity' => 1]);
+        $this->post(route('orders.confirm'), $this->contact())
+            ->assertRedirect(route('orders.confirm.show'));
+        $this->get(route('orders.confirm.show'))->assertOk();
+        $this->post(route('orders.store'), ['fee_agreement' => '1'])
+            ->assertRedirect(route('orders.complete'));
+
+        $this->assertDatabaseHas('order_items', [
+            'product_id' => $small->id,
+            'product_name' => '確認用商品',
+            'volume' => '100g',
+        ]);
+        $this->assertDatabaseHas('order_items', [
+            'product_id' => $large->id,
+            'product_name' => '確認用商品',
+            'volume' => '200g',
+        ]);
+        $this->get(route('orders.complete'))
+            ->assertOk()
+            ->assertSee('内容量：100g')
+            ->assertSee('内容量：200g');
     }
 
     #[DataProvider('customers')]

@@ -78,17 +78,16 @@ class CustomerService
 
     public function findMatchingCustomer(array $data, ?int $exceptId = null): ?Customer
     {
+        $phone = $this->normalizeNumber($data['phone']);
+        $postalCode = $this->normalizeNumber($data['postal_code']);
+
         return Customer::query()
             ->whereRaw("REPLACE(REPLACE(name, ' ', ''), '　', '') = ?", [
                 $this->normalizeName($data['name']),
             ])
-            ->whereRaw("REPLACE(REPLACE(TRANSLATE(phone, '０１２３４５６７８９', '0123456789'), '-', ''), '－', '') = ?", [
-                $this->normalizeNumber($data['phone']),
-            ])
-            ->whereRaw("REPLACE(REPLACE(TRANSLATE(postal_code, '０１２３４５６７８９', '0123456789'), '-', ''), '－', '') = ?", [
-                $this->normalizeNumber($data['postal_code']),
-            ])
             ->when($exceptId !== null, fn($query) => $query->where('id', '!=', $exceptId))
-            ->first();
+            ->get()
+            ->first(fn(Customer $customer) => $this->normalizeNumber($customer->phone) === $phone
+                && $this->normalizeNumber($customer->postal_code) === $postalCode);
     }
 }

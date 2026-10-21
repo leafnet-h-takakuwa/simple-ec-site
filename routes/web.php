@@ -25,6 +25,13 @@ use App\Http\Controllers\Admin\CustomerController;
 Route::get('/', [HomeController::class, 'index'])
     ->name('home');
 
+// ご案内
+Route::view('/guide/order', 'guide.order')->name('guide.order');
+Route::view('/guide/shipping', 'guide.shipping')->name('guide.shipping');
+Route::view('/guide/shop', 'guide.shop')->name('guide.shop');
+Route::view('/legal/commerce', 'legal.commerce')->name('legal.commerce');
+Route::view('/legal/privacy', 'legal.privacy')->name('legal.privacy');
+
 // 商品一覧
 Route::get('/products', [ProductController::class, 'index'])
     ->name('products.index');

@@ -36,19 +36,29 @@
         <ul class="menu w-full gap-1 p-0">
 
             <li>
-                <a href="#" class="rounded-lg">
+                <a href="{{ route('guide.order') }}" class="rounded-lg">
                     ご注文方法
                 </a>
             </li>
 
             <li>
-                <a href="#" class="rounded-lg">
+                <a href="{{ route('guide.shipping') }}" class="rounded-lg">
                     送料について
                 </a>
             </li>
 
         </ul>
 
+    </div>
+    {{-- ご利用案内 --}}
+    <div class="mt-6 border-t border-base-300 pt-4">
+        <ul class="menu w-full gap-1 p-0">
+            <li>
+                <a href="{{ route('guide.shop') }}" class="rounded-lg">
+                    店舗案内
+                </a>
+            </li>
+        </ul>
     </div>
 
 </aside>

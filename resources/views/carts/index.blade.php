@@ -190,6 +190,11 @@
                 <div class="mt-4 space-y-1 text-sm text-base-content/70">
                     <p>※ 送料は別途かかります。金額はご注文受付後にご案内します。</p>
                     <p>※ 代金引換をご利用の場合は、別途代引手数料がかかります。</p>
+
+                    <a href="{{ route('guide.shipping') }}" target="_blank" rel="noopener noreferrer"
+                        class="link link-hover mt-2 inline-block text-primary">
+                        送料・手数料について詳しく見る
+                    </a>
                 </div>
 
             </div>

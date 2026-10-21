@@ -31,6 +31,12 @@
                     </p>
 
                 </div>
+                <div>
+                    <a href="{{ route('guide.shop') }}"
+                        class="link link-hover mt-4 inline-flex items-center gap-2 font-semibold text-primary">
+                        店舗案内
+                    </a>
+                </div>
 
             </section>
 
@@ -44,13 +50,13 @@
                 <ul class="space-y-3 text-sm">
 
                     <li>
-                        <a href="#" class="link link-hover">
+                        <a href="{{ route('guide.order') }}" class="link link-hover">
                             ご注文方法
                         </a>
                     </li>
 
                     <li>
-                        <a href="#" class="link link-hover">
+                        <a href="{{ route('guide.shipping') }}" class="link link-hover">
                             送料について
                         </a>
                     </li>
@@ -62,13 +68,13 @@
                     </li>
 
                     <li>
-                        <a href="#" class="link link-hover">
+                        <a href="{{ route('legal.commerce') }}" class="link link-hover">
                             特定商取引法に基づく表記
                         </a>
                     </li>
 
                     <li>
-                        <a href="#" class="link link-hover">
+                        <a href="{{ route('legal.privacy') }}" class="link link-hover">
                             個人情報保護方針
                         </a>
                     </li>

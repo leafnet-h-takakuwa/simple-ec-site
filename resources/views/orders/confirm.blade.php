@@ -95,13 +95,21 @@
                     @endif
 
 
-                    <p class="border-t border-base-200 pt-4 text-sm text-base-content/70">
-                        @if ($payment_method === \App\Enums\PaymentMethod::CASH_ON_DELIVERY)
-                            ※ 送料・手数料を含むお支払い総額は、ご注文受付後にご案内します。
-                        @else
-                            ※ 送料を含むお支払い総額は、ご注文受付後にご案内します。
-                        @endif
-                    </p>
+                    {{-- 送料・手数料についてのご案内 --}}
+                    <div class="border-t border-base-200 pt-4 text-sm text-base-content/70">
+                        <p>
+                            @if ($payment_method === \App\Enums\PaymentMethod::CASH_ON_DELIVERY)
+                                ※ 送料・手数料を含むお支払い総額は、ご注文受付後にご案内します。
+                            @else
+                                ※ 送料を含むお支払い総額は、ご注文受付後にご案内します。
+                            @endif
+                        </p>
+
+                        <a href="{{ route('guide.shipping') }}" target="_blank" rel="noopener noreferrer"
+                            class="link link-hover mt-2 inline-block text-primary">
+                            送料・手数料について詳しく見る
+                        </a>
+                    </div>
 
                 </div>
             </section>

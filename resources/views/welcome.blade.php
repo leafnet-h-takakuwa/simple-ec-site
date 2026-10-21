@@ -299,7 +299,7 @@
         <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
 
             {{-- ご注文方法 --}}
-            <a href="#"
+            <a href="{{ route('guide.order') }}"
                 class="group flex items-center gap-4 rounded-xl border border-base-300 p-6 transition hover:bg-base-200">
 
                 <svg xmlns="http://www.w3.org/2000/svg" class="size-10 shrink-0" fill="none" viewBox="0 0 24 24"
@@ -319,7 +319,7 @@
             </a>
 
             {{-- 送料について --}}
-            <a href="#"
+            <a href="{{ route('guide.shipping') }}"
                 class="group flex items-center gap-4 rounded-xl border border-base-300 p-6 transition hover:bg-base-200">
 
                 <svg xmlns="http://www.w3.org/2000/svg" class="size-10 shrink-0" fill="none" viewBox="0 0 24 24"

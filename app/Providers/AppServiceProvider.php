@@ -21,6 +21,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // ナビバーのお知らせ新着件数
         View::composer('layouts.app', function ($view) {
             $newNoticeCount = Notice::where('is_published', true)
                 ->whereBetween('published_at', [
@@ -31,5 +32,13 @@ class AppServiceProvider extends ServiceProvider
 
             $view->with('newNoticeCount', $newNoticeCount);
         });
+
+        // TCPDFの許可パス追加
+        if (! defined('K_ALLOWED_PATHS')) {
+            define('K_ALLOWED_PATHS', [
+                public_path('images'),
+                storage_path('fonts'),
+            ]);
+        }
     }
 }

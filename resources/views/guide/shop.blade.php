@@ -67,7 +67,16 @@
 
                     <div class="grid gap-2 p-4 sm:grid-cols-[180px_1fr] sm:p-5">
                         <dt class="font-semibold">定休日</dt>
-                        <dd>火曜日</dd>
+                        <dd>
+                            火曜日（青森魚菜センターの休業日に準じます）
+                            <p class="mt-2 text-sm text-base-content/70">
+                                祝日・年末年始などは営業日が変更になる場合があります。
+                            </p>
+                            <a href="https://nokkedon.jp/about/" target="_blank" rel="noopener noreferrer"
+                                class="link link-hover mt-2 inline-block text-primary">
+                                営業カレンダーを確認する（青森魚菜センター公式サイト）
+                            </a>
+                        </dd>
                     </div>
 
                 </dl>
@@ -94,6 +103,16 @@
             <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode('青森魚菜センター 青森市') }}" target="_blank"
                 rel="noopener noreferrer" class="link link-hover mt-3 inline-block text-primary">
                 Googleマップで開く
+            </a>
+
+            <p class="mt-4 text-sm text-base-content/70">
+                JR青森駅から徒歩約5分。
+                店舗は青森魚菜センター内にあります。
+            </p>
+
+            <a href="https://nokkedon.jp/about/" target="_blank" rel="noopener noreferrer"
+                class="link link-hover mt-2 inline-block text-primary">
+                青森魚菜センターの店内マップを見る
             </a>
         </section>
     </div>

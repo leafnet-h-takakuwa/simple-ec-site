@@ -4,12 +4,15 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
+use App\Services\CustomerService;
 use App\Support\InputLimits;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
 class CustomerController extends Controller
 {
+    public function __construct(private CustomerService $customerService) {}
+
     public function index(Request $request)
     {
         $keyword = trim($request->input('keyword', ''));
@@ -105,50 +108,10 @@ class CustomerController extends Controller
     }
 
 
-    // 入力内容の正規化を行い、重複チェック
+    // 正規化した氏名・電話番号・郵便番号で重複チェック
     private function checkDuplicate(array $validated, ?int $exceptId = null): void
     {
-        // 氏名：半角・全角スペースを除去
-        $name = str_replace([' ', '　'], '', $validated['name']);
-
-        // 電話番号・郵便番号：全角数字を半角に変換し、ハイフンを除去
-        $phone = str_replace(
-            ['-', '－'],
-            '',
-            mb_convert_kana($validated['phone'], 'n')
-        );
-
-        $postalCode = str_replace(
-            ['-', '－'],
-            '',
-            mb_convert_kana($validated['postal_code'], 'n')
-        );
-
-        $exists = Customer::query()
-            ->whereRaw(
-                "REPLACE(REPLACE(name, ' ', ''), '　', '') = ?",
-                [$name]
-            )
-            ->whereRaw(
-                "REPLACE(REPLACE(
-                TRANSLATE(phone, '０１２３４５６７８９', '0123456789'),
-                '-', ''
-            ), '－', '') = ?",
-                [$phone]
-            )
-            ->whereRaw(
-                "REPLACE(REPLACE(
-                TRANSLATE(postal_code, '０１２３４５６７８９', '0123456789'),
-                '-', ''
-            ), '－', '') = ?",
-                [$postalCode]
-            )
-            ->when($exceptId !== null, function ($query) use ($exceptId) {
-                $query->where('id', '!=', $exceptId);
-            })
-            ->exists();
-
-        if ($exists) {
+        if ($this->customerService->findMatchingCustomer($validated, $exceptId)) {
             throw ValidationException::withMessages([
                 'name' => '同じ氏名・電話番号・郵便番号の顧客がすでに登録されています。',
             ]);

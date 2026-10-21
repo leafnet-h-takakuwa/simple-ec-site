@@ -9,6 +9,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Services\CartService;
 use App\Services\TaxCalculator;
+use App\Services\CustomerService;
 use App\Support\ContactRules;
 use App\Support\InputLimits;
 use Illuminate\Database\QueryException;
@@ -22,7 +23,8 @@ class OrderController extends Controller
 {
     public function __construct(
         private CartService $cartService,
-        private TaxCalculator $taxCalculator
+        private TaxCalculator $taxCalculator,
+        private CustomerService $customerService
     ) {}
 
     public function index()
@@ -292,6 +294,9 @@ class OrderController extends Controller
                 );
 
                 $order->taxSummaries()->createMany($tax_summaries);
+
+                // 顧客台帳に反映（重複時は利用区分のみ更新）
+                $this->customerService->registerFromOrder($order);
 
                 // 会員カートを空にする
                 if ($cart) {

@@ -12,6 +12,7 @@ use App\Models\Customer;
 use App\Support\ContactRules;
 use App\Support\InputLimits;
 use App\Services\TaxCalculator;
+use App\Services\CustomerService;
 use App\Services\DeliverySlipPdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -22,7 +23,8 @@ use InvalidArgumentException;
 class OrderController extends Controller
 {
     public function __construct(
-        private TaxCalculator $taxCalculator
+        private TaxCalculator $taxCalculator,
+        private CustomerService $customerService
     ) {}
 
     public function index(Request $request)
@@ -230,6 +232,10 @@ class OrderController extends Controller
             }
 
             $order->taxSummaries()->createMany($taxSummaries);
+
+            // 顧客台帳に反映（重複時は利用区分のみ更新）
+            $this->customerService->registerFromOrder($order);
+
             return $order;
         });
 

@@ -47,6 +47,7 @@
                     [
                         'product_id' => '',
                         'product_name' => '',
+                        'volume' => '',
                         'price' => 0,
                         'quantity' => 1,
                     ],
@@ -77,15 +78,22 @@
                         <div class="grid grid-cols-1 gap-4 lg:grid-cols-12">
                             <div class="lg:col-span-5">
                                 <label class="mb-2 block text-sm font-semibold">
-                                    商品名
+                                    商品名<span class="text-red-600">*</span>
                                 </label>
                                 <input type="text" data-field="product_name" value="{{ $item['product_name'] ?? '' }}"
                                     maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}" required class="input w-full">
+
+                                <label class="mt-3 mb-2 block text-sm font-semibold">
+                                    内容量
+                                </label>
+                                <input type="text" data-field="volume" value="{{ $item['volume'] ?? '' }}"
+                                    maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}" placeholder="例：500g"
+                                    class="input w-full">
                             </div>
 
                             <div class="lg:col-span-3">
                                 <label class="mb-2 block text-sm font-semibold">
-                                    単価（円）
+                                    単価（円）<span class="text-red-600">*</span>
                                 </label>
                                 <input type="number" data-field="price" value="{{ $item['price'] ?? 0 }}" step="1"
                                     required class="input item-price w-full">
@@ -93,14 +101,16 @@
 
                             <div class="lg:col-span-2">
                                 <label class="mb-2 block text-sm font-semibold">
-                                    数量
+                                    数量<span class="text-red-600">*</span>
                                 </label>
                                 <input type="number" data-field="quantity" value="{{ $item['quantity'] ?? 1 }}"
                                     min="1" step="1" required class="input item-quantity w-full">
                             </div>
 
                             <div class="lg:col-span-2">
-                                <label class="mb-2 block text-sm font-semibold">税率</label>
+                                <label class="mb-2 block text-sm font-semibold">
+                                    税率<span class="text-red-600">*</span>
+                                </label>
                                 <select data-field="tax_rate" class="select w-full item-tax-rate" required>
                                     @foreach (config('shop.tax.rates') as $rate => $label)
                                         <option value="{{ $rate }}" @selected((int) ($item['tax_rate'] ?? config('shop.tax.default_rate')) === $rate)>
@@ -312,24 +322,38 @@
 
             <div class="grid grid-cols-1 gap-4 lg:grid-cols-12">
                 <div class="lg:col-span-5">
-                    <label class="mb-2 block text-sm font-semibold">商品名</label>
+                    <label class="mb-2 block text-sm font-semibold">
+                        商品名<span class="text-red-600">*</span>
+                    </label>
                     <input type="text" data-field="product_name"
                         maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}" required class="input w-full">
+
+                    <label class="mt-3 mb-2 block text-sm font-semibold">
+                        内容量<span class="text-red-600">*</span>
+                    </label>
+                    <input type="text" data-field="volume" maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}"
+                        placeholder="例：500g" class="input w-full">
                 </div>
 
                 <div class="lg:col-span-3">
-                    <label class="mb-2 block text-sm font-semibold">単価（円）</label>
+                    <label class="mb-2 block text-sm font-semibold">
+                        単価（円）<span class="text-red-600">*</span>
+                    </label>
                     <input type="number" data-field="price" value="0" step="1" required
                         class="input item-price w-full">
                 </div>
 
                 <div class="lg:col-span-2">
-                    <label class="mb-2 block text-sm font-semibold">数量</label>
+                    <label class="mb-2 block text-sm font-semibold">
+                        数量<span class="text-red-600">*</span>
+                    </label>
                     <input type="number" data-field="quantity" value="1" min="1" step="1" required
                         class="input item-quantity w-full">
                 </div>
                 <div class="lg:col-span-2">
-                    <label class="mb-2 block text-sm font-semibold">税率</label>
+                    <label class="mb-2 block text-sm font-semibold">
+                        税率<span class="text-red-600">*</span>
+                    </label>
                     <select data-field="tax_rate" class="select w-full item-tax-rate" required>
                         @foreach (config('shop.tax.rates') as $rate => $label)
                             <option value="{{ $rate }}" @selected($rate === config('shop.tax.default_rate'))>

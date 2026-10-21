@@ -98,6 +98,11 @@
                                     定番
                                 </span>
                             @endif
+                            @if ($product->volume)
+                                <p class="mt-1 text-sm font-normal text-slate-500">
+                                    内容量：{{ $product->volume }}
+                                </p>
+                            @endif
                         </td>
                         <td>
                             {{ $product->category->label() }}
@@ -154,6 +159,11 @@
                         <p class="font-semibold break-all">
                             {{ $product->name }}
                         </p>
+                        @if ($product->volume)
+                            <p class="mt-1 text-sm text-slate-500">
+                                内容量：{{ $product->volume }}
+                            </p>
+                        @endif
 
                         <p class="mt-1 text-sm text-slate-500">
                             {{ $product->category->label() }}

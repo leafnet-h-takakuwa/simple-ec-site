@@ -4,7 +4,7 @@
         <h3 class="text-lg font-bold">商品を選択</h3>
 
         <p class="mt-2 text-sm text-slate-500">
-            商品を選択すると、商品名・単価・税率が自動入力されます。
+            商品を選択すると、商品名・内容量・単価・税率が自動入力されます。
         </p>
 
         {{-- 検索 --}}
@@ -25,7 +25,8 @@
 
                 @forelse ($products as $product)
                     <div class="product-result p-4" data-id="{{ $product->id }}" data-name="{{ $product->name }}"
-                        data-price="{{ $product->price }}" data-tax-rate="{{ $product->tax_rate }}">
+                        data-volume="{{ $product->volume }}" data-price="{{ $product->price }}"
+                        data-tax-rate="{{ $product->tax_rate }}">
 
                         <div class="flex items-center justify-between gap-4">
                             {{-- 商品情報 --}}

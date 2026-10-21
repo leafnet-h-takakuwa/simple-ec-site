@@ -112,6 +112,12 @@
                                 @else
                                     {{ $item->product_name }}
                                 @endif
+
+                                @if ($item->volume)
+                                    <p class="mt-1 text-sm text-slate-500">
+                                        内容量：{{ $item->volume }}
+                                    </p>
+                                @endif
                             </td>
                             <td class="text-right">
                                 {{ formatYen($item->price) }}
@@ -141,6 +147,13 @@
                             {{ $item->product_name }}
                         @endif
                     </p>
+
+                    @if ($item->volume)
+                        <p class="mt-1 text-sm text-slate-500">
+                            内容量：{{ $item->volume }}
+                        </p>
+                    @endif
+
                     <div class="mt-2 flex justify-between text-sm text-slate-600">
                         <span>
                             {{ formatYen($item->price) }}

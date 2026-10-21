@@ -74,6 +74,9 @@
             item.dataset.linkedName =
                 item.querySelector('[data-field="product_name"]').value;
 
+            item.dataset.linkedVolume =
+                item.querySelector('[data-field="volume"]').value;
+
             item.dataset.linkedPrice =
                 item.querySelector('[data-field="price"]').value;
 
@@ -156,6 +159,9 @@
             targetItem.querySelector('[data-field="product_name"]').value =
                 product.dataset.name;
 
+            targetItem.querySelector('[data-field="volume"]').value =
+                product.dataset.volume;
+
             targetItem.querySelector('[data-field="price"]').value =
                 product.dataset.price;
 
@@ -197,6 +203,12 @@
 
             if (input.dataset.field === 'product_name') {
                 if (input.value !== item.dataset.linkedName) {
+                    unlinkProduct(item);
+                }
+            }
+
+            if (input.dataset.field === 'volume') {
+                if (input.value !== item.dataset.linkedVolume) {
                     unlinkProduct(item);
                 }
             }

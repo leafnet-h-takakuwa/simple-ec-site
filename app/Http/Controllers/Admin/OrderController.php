@@ -142,6 +142,7 @@ class OrderController extends Controller
             'items' => ['required', 'array', 'min:1'],
             'items.*.product_id' => ['nullable', 'integer', 'exists:products,id'],
             'items.*.product_name' => ['required', 'string', 'max:' . InputLimits::SHORT_TEXT],
+            'items.*.volume' => ['nullable', 'string', 'max:' . InputLimits::SHORT_TEXT],
             'items.*.price' => ['required', 'integer'],
             'items.*.quantity' => ['required', 'integer', 'min:1'],
             'items.*.tax_rate' => [
@@ -202,6 +203,7 @@ class OrderController extends Controller
                 $order->orderItems()->create([
                     'product_id' => $item['product_id'] ?? null,
                     'product_name' => $item['product_name'],
+                    'volume' => $item['volume'] ?? null,
                     'price' => $item['price'],
                     'quantity' => $item['quantity'],
                     'subtotal' => $item['subtotal'],
@@ -251,7 +253,7 @@ class OrderController extends Controller
 
         // 商品情報取得
         $products = Product::orderBy('name')
-            ->get(['id', 'name', 'price', 'tax_rate']);
+            ->get(['id', 'name', 'volume', 'price', 'tax_rate']);
 
         return view('admin.orders.edit-items', [
             'order' => $order,
@@ -267,6 +269,7 @@ class OrderController extends Controller
             'items.*.id' => ['nullable', 'integer', 'distinct'],
             'items.*.product_id' => ['nullable', 'integer', Rule::exists('products', 'id')],
             'items.*.product_name' => ['required', 'string', 'max:' . InputLimits::SHORT_TEXT],
+            'items.*.volume' => ['nullable', 'string', 'max:' . InputLimits::SHORT_TEXT],
             'items.*.price' => ['required', 'integer'],
             'items.*.quantity' => ['required', 'integer', 'min:1'],
             'items.*.tax_rate' => [
@@ -324,6 +327,7 @@ class OrderController extends Controller
                 $data = [
                     'product_id' => $item['product_id'] ?? null,
                     'product_name' => $item['product_name'],
+                    'volume' => $item['volume'] ?? null,
                     'price' => $item['price'],
                     'quantity' => $item['quantity'],
                     'subtotal' => $subtotal,

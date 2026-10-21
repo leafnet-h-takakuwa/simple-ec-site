@@ -10,21 +10,8 @@
             <x-arrow direction="left" /> 顧客台帳へ戻る
         </a>
 
-        <div class="mt-4 flex flex-wrap items-center justify-between gap-4">
-            <div>
-                <h1 class="text-2xl font-bold lg:text-3xl">
-                    顧客詳細
-                </h1>
-
-                <p class="mt-2 text-sm text-slate-500">
-                    顧客ID：{{ $customer->id }}
-                </p>
-            </div>
-
-            <a href="{{ route('admin.customers.edit', $customer) }}" class="btn btn-success">
-                編集する
-            </a>
-        </div>
+        <h1 class="mt-4 text-2xl font-bold lg:text-3xl">顧客詳細</h1>
+        <p class="mt-2 text-sm text-slate-500">顧客ID：{{ $customer->id }}</p>
     </div>
 
     {{-- 登録情報 --}}
@@ -132,16 +119,14 @@
         </dl>
     </section>
 
-    {{-- 削除 --}}
-    <div class="flex justify-end">
-        <form method="POST" action="{{ route('admin.customers.destroy', $customer) }}"
-            onsubmit="return confirm('この顧客を住所録から削除します。よろしいですか？')">
-            @csrf
-            @method('DELETE')
-
-            <button type="submit" class="btn btn-error btn-outline">
-                削除する
-            </button>
-        </form>
+    {{-- 操作 --}}
+    <div class="flex flex-col-reverse justify-end gap-3 sm:flex-row">
+        <a href="{{ route('admin.customers.index') }}" class="btn btn-outline">
+            一覧へ戻る
+        </a>
+        <a href="{{ route('admin.customers.edit', $customer) }}" class="btn btn-success">
+            顧客情報を編集
+        </a>
     </div>
+
 @endsection

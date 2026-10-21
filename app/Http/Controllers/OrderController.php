@@ -270,6 +270,7 @@ class OrderController extends Controller
                         'order_id' => $order->id,
                         'product_id' => $cart_item->product->id,
                         'product_name' => $cart_item->product->name,
+                        'volume' => $cart_item->product->volume,
                         'price' => $cart_item->product->price,
                         'quantity' => $cart_item->quantity,
                         'subtotal' => $subtotal,

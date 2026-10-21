@@ -60,6 +60,8 @@ class CartService
     {
         return $items->map(fn(CartItem $item) => [
             'product_id' => $item->product_id,
+            'product_name' => $item->product->name,
+            'volume' => $item->product->volume,
             'price' => $item->product->price,
             'quantity' => $item->quantity,
             'tax_rate' => $item->product->tax_rate,

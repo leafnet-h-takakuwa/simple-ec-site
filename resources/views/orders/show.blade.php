@@ -115,6 +115,12 @@
                                     @else
                                         {{ $item->product_name }}
                                     @endif
+
+                                    @if ($item->volume)
+                                        <p class="mt-1 text-sm text-base-content/60">
+                                            内容量：{{ $item->volume }}
+                                        </p>
+                                    @endif
                                 </td>
                                 <td class="text-right">
                                     {{ formatYen($item->price) }}
@@ -133,28 +139,31 @@
             {{-- スマホ：カード --}}
             <div class="space-y-4 lg:hidden">
                 @foreach ($order->orderItems as $item)
-                    <div class="border-b border-base-300 pb-4 last:border-b-0">
-                        <p class="font-semibold">
-                            @if ($item->product_id)
-                                <a href="{{ route('products.show', $item->product_id) }}"
-                                    class="text-primary hover:underline">
-                                    {{ $item->product_name }}
-                                </a>
-                            @else
+                    <p class="font-semibold">
+                        @if ($item->product_id)
+                            <a href="{{ route('products.show', $item->product_id) }}" class="text-primary hover:underline">
                                 {{ $item->product_name }}
-                            @endif
-                        </p>
+                            </a>
+                        @else
+                            {{ $item->product_name }}
+                        @endif
+                    </p>
 
-                        <div class="mt-2 flex justify-between text-sm text-base-content/70">
-                            <span>
-                                {{ formatYen($item->price) }}
-                                × {{ $item->quantity }}
-                                （{{ $item->tax_rate }}%）
-                            </span>
-                            <span class="font-semibold text-base-content">
-                                {{ formatYen($item->subtotal) }}
-                            </span>
-                        </div>
+                    @if ($item->volume)
+                        <p class="mt-1 text-sm text-base-content/60">
+                            内容量：{{ $item->volume }}
+                        </p>
+                    @endif
+
+                    <div class="mt-2 flex justify-between text-sm text-base-content/70">
+                        <span>
+                            {{ formatYen($item->price) }}
+                            × {{ $item->quantity }}
+                            （{{ $item->tax_rate }}%）
+                        </span>
+                        <span class="font-semibold text-base-content">
+                            {{ formatYen($item->subtotal) }}
+                        </span>
                     </div>
                 @endforeach
             </div>

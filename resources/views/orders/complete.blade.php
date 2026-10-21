@@ -47,12 +47,18 @@
             <div class="divide-y divide-base-200">
                 @foreach ($order->orderItems as $item)
                     <div class="flex items-start justify-between gap-4 py-4">
-                        <div>
-                            <p class="font-medium">
+                        <div class="min-w-0 flex-1">
+                            <p class="break-words font-medium">
                                 {{ $item->product_name }}
                             </p>
 
-                            <p class="mt-1 text-sm text-base-content/60">
+                            @if ($item->volume)
+                                <p class="mt-1 text-sm text-base-content/60">
+                                    内容量：{{ $item->volume }}
+                                </p>
+                            @endif
+
+                            <p class="mt-2 text-sm text-base-content/60">
                                 {{ formatYen($item->price) }}
                                 × {{ $item->quantity }}点
                             </p>

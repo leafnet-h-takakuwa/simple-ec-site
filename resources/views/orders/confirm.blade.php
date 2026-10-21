@@ -48,12 +48,17 @@
                                 @endif
                             </div>
 
-                            {{-- 商品名・数量 --}}
+                            {{-- 商品名・内容量・数量 --}}
                             <div class="min-w-0 flex-1">
-                                <p class="font-medium">
+                                <p class="break-words font-medium">
                                     {{ $cart_item->product->name }}
                                 </p>
+
                                 <p class="mt-1 text-sm text-base-content/60">
+                                    内容量：{{ $cart_item->product->volume }}
+                                </p>
+
+                                <p class="mt-2 text-sm text-base-content/60">
                                     {{ formatYen($cart_item->product->price) }}
                                     × {{ $cart_item->quantity }}
                                 </p>

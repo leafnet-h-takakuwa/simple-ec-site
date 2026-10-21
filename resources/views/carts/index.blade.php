@@ -135,7 +135,7 @@
                                         </h3>
 
                                         <p class="py-4">
-                                            「{{ $product->name }}」をカートから削除します。
+                                            「{{ $product->name }}（{{ $product->volume }}）」をカートから削除します。
                                         </p>
 
                                         <div class="modal-action">

@@ -49,7 +49,7 @@
                         〒{{ config('company.postal_code') }}<br>
                         {{ config('company.address_sub') }}（事務所）<br>
                         {{ config('company.address') }}（店舗）<br>
-                        （株式会社青森魚菜センター内）
+                        （{{ config('company.facility_name') }}内）
                     </dd>
                 </div>
 

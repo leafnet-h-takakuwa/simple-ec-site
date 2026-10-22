@@ -38,7 +38,7 @@ class FaxOrderFormPdf
         $pdf->Cell(189, 5, 'こちらをプリントアウトしてご記入後、FAX送信願います。', 0, 1, 'R');
         $pdf->SetFontSize(16);
         $pdf->SetXY(11, 14);
-        $pdf->Cell(189, 9, 'FAX番号 '. config('company.fax'), 0, 1, 'C');
+        $pdf->Cell(189, 9, 'FAX番号 ' . config('company.fax'), 0, 1, 'C');
         $pdf->SetFontSize(14);
         $pdf->SetXY(11, 25);
         $pdf->Cell(100, 7, 'FAX御注文書', 0, 0, 'L');
@@ -178,7 +178,7 @@ class FaxOrderFormPdf
         $pdf->Cell(95, 9, config('company.company_name'), 0, 1, 'C');
         $pdf->SetFontSize(8);
         $pdf->SetXY(106, 261);
-        $pdf->MultiCell(92, 4.2, "〒" . config('company.postal_code') . " " . config('company.address') . "\n（株式会社青森魚菜センター内 ※ 火曜定休）\nTEL: " . config('company.phone') . " FAX:" . config('company.fax'), 0, 'C');
+        $pdf->MultiCell(92, 4.2, "〒" . config('company.postal_code') . " " . config('company.address') . "\n（" . config('company.facility_name') . "内 ※ 火曜定休）\nTEL: " . config('company.phone') . " FAX:" . config('company.fax'), 0, 'C');
         $pdf->SetFontSize(7.5);
         $pdf->SetXY(100, 279);
         $pdf->Cell(95, 5, now()->format('Y年n月j日') . ' 発行', 0, 0, 'R');

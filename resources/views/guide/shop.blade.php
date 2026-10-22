@@ -46,7 +46,7 @@
                         <dd>
                             〒{{ config('company.postal_code') }}<br>
                             {{ config('company.address') }}<br>
-                            （株式会社青森魚菜センター内）
+                            （{{ config('company.facility_name') }}内）
                         </dd>
                     </div>
 

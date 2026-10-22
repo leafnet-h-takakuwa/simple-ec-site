@@ -24,4 +24,14 @@ return [
 
     // ロゴ
     'logo' => 'images/logo.svg',
+
+    // 振り込み先情報
+    'bank' => [
+        'name' => '青森みちのく銀行',
+        'kana' => 'アオモリミチノクギンコウ',
+        'branch' => '青森支店',
+        'account_type' => '普通',
+        'account_number' => '2699576',
+        'account_holder' => '有)高桑商店',
+    ],
 ];

@@ -16,7 +16,7 @@
 
     {{-- 件数 --}}
     <div class="mb-4 text-sm text-slate-500">
-        {{ $users->total() }}件の会員
+        {{ $users->total() }}件の会員（退会済みを含む）
     </div>
 
     {{-- PC：テーブル --}}
@@ -39,8 +39,16 @@
                         <td class="text-slate-500">
                             {{ $user->id }}
                         </td>
-                        <td class="font-semibold">
-                            {{ $user->name }}
+                        <td>
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="font-semibold">{{ $user->name }}</span>
+
+                                @if ($user->trashed())
+                                    <span class="badge badge-ghost badge-sm whitespace-nowrap">
+                                        退会済み
+                                    </span>
+                                @endif
+                            </div>
                         </td>
                         <td>
                             {{ $user->email }}
@@ -74,9 +82,15 @@
             <div class="rounded-xl border border-slate-200 bg-white p-4">
                 <div class="flex items-start justify-between gap-3">
                     <div class="min-w-0 flex-1">
-                        <p class="font-semibold">
-                            {{ $user->name }}
-                        </p>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <p class="font-semibold">{{ $user->name }}</p>
+
+                            @if ($user->trashed())
+                                <span class="badge badge-ghost badge-sm whitespace-nowrap">
+                                    退会済み
+                                </span>
+                            @endif
+                        </div>
 
                         <p class="mt-1 text-xs text-slate-500">
                             会員ID：{{ $user->id }}

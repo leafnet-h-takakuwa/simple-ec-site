@@ -10,9 +10,15 @@
             <x-arrow direction="left" /> 会員一覧へ戻る
         </a>
 
-        <h1 class="mt-4 text-2xl font-bold lg:text-3xl">
-            会員詳細
-        </h1>
+        <div class="mt-4 flex flex-wrap items-center gap-3">
+            <h1 class="text-2xl font-bold lg:text-3xl">
+                会員詳細
+            </h1>
+
+            @if ($user->trashed())
+                <span class="badge badge-ghost whitespace-nowrap">退会済み</span>
+            @endif
+        </div>
 
         <p class="mt-2 text-sm text-slate-500">
             会員ID：{{ $user->id }}
@@ -86,6 +92,16 @@
                     {{ $user->updated_at->format('Y/m/d H:i') }}
                 </dd>
             </div>
+            @if ($user->trashed())
+                <div>
+                    <dt class="mb-2 text-sm font-semibold text-slate-500">
+                        退会日時
+                    </dt>
+                    <dd>
+                        {{ $user->deleted_at->format('Y/m/d H:i') }}
+                    </dd>
+                </div>
+            @endif
         </dl>
     </section>
 

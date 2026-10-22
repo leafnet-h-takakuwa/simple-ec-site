@@ -82,6 +82,12 @@ Route::middleware(['auth'])->group(function () {
     // 会員情報
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+
+    // 退会
+    Route::get('/profile/withdraw', [ProfileController::class, 'withdraw'])
+        ->name('profile.withdraw');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])
+        ->name('profile.destroy');
 });
 
 /**
@@ -139,7 +145,9 @@ Route::middleware(['auth', EnsureUserIsAdmin::class])
 
         // 会員情報
         Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
-        Route::get('/users/{user}', [AdminUserController::class, 'show'])->name('users.show');
+        Route::get('/users/{user}', [AdminUserController::class, 'show'])
+            ->withTrashed()
+            ->name('users.show');
 
         // FAX注文書管理
         Route::get('/fax-order-form', [FaxOrderFormController::class, 'index'])

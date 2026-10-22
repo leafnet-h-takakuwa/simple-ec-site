@@ -9,7 +9,7 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::orderByDesc('id')->paginate(config('shop.pagination.admin_users'));
+        $users = User::withTrashed()->orderByDesc('id')->paginate(config('shop.pagination.admin_users'));
 
         return view('admin.users.index', [
             'users' => $users,

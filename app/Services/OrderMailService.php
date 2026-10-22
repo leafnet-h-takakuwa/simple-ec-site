@@ -19,6 +19,48 @@ class OrderMailService
                 'view' => 'emails.orders.payment-guide',
                 'subject' => '[重要]ご入金先のご案内',
             ],
+            'preparing:shipped' => [
+                'type' => 'shipping_notice',
+                'view' => 'emails.orders.shipping-notice',
+                'subject' => '商品発送のご案内',
+            ],
+            'received:cancelled' => [
+                'type' => 'order_cancelled',
+                'view' => 'emails.orders.cancelled',
+                'subject' => 'ご注文キャンセルのお知らせ',
+            ],
+            'awaiting_payment:cancelled' => [
+                'type' => 'order_cancelled',
+                'view' => 'emails.orders.cancelled',
+                'subject' => 'ご注文キャンセルのお知らせ',
+            ],
+            'preparing:cancelled' => [
+                'type' => 'order_cancelled',
+                'view' => 'emails.orders.cancelled',
+                'subject' => 'ご注文キャンセルのお知らせ',
+            ],
+        ],
+        'cod' => [
+            'received:preparing' => [
+                'type' => 'total_confirmed',
+                'view' => 'emails.orders.total-confirmed',
+                'subject' => 'お支払い金額確定のご案内',
+            ],
+            'preparing:shipped' => [
+                'type' => 'shipping_notice',
+                'view' => 'emails.orders.shipping-notice',
+                'subject' => '商品発送のご案内',
+            ],
+            'received:cancelled' => [
+                'type' => 'order_cancelled',
+                'view' => 'emails.orders.cancelled',
+                'subject' => 'ご注文キャンセルのお知らせ',
+            ],
+            'preparing:cancelled' => [
+                'type' => 'order_cancelled',
+                'view' => 'emails.orders.cancelled',
+                'subject' => 'ご注文キャンセルのお知らせ',
+            ],
         ],
     ];
 
@@ -92,8 +134,11 @@ class OrderMailService
             'orderShippings',
         ]);
 
-        // お客様宛て
-        if (filled($order->orderer_email)) {
+        // お客様宛て（店頭支払いは送信しない）
+        if (
+            $order->payment_method !== PaymentMethod::PAY_AT_STORE &&
+            filled($order->orderer_email)
+        ) {
             $this->send(
                 $order,
                 'order_received',

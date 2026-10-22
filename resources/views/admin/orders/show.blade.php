@@ -758,7 +758,9 @@
 
                     <input type="hidden" name="status" value="{{ \App\Enums\OrderStatus::CANCELLED->value }}">
 
-                    @include('admin.orders.partials.contact-fields')
+                    @include('admin.orders.partials.contact-fields', [
+                        'canSendEmail' => $canSendCancelEmail,
+                    ])
 
                     <div class="modal-action">
                         <button type="button" class="btn btn-outline btn-neutral"

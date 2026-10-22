@@ -107,11 +107,21 @@ class OrderController extends Controller
 
         $nextStatus = $order->status->next($order->payment_method);
 
+        // 通常のステータス更新用
+        $canSendEmail = $nextStatus !== null
+            && $this->orderMailService->canSendForStatus($order, $nextStatus);
+
+        // キャンセル用
+        $canSendCancelEmail = $this->orderMailService->canSendForStatus(
+            $order,
+            OrderStatus::CANCELLED
+        );
+
         return view('admin.orders.show', [
             'order' => $order,
             'statuses' => OrderStatus::cases(),
-            'canSendEmail' => $nextStatus !== null
-                && $this->orderMailService->canSendForStatus($order, $nextStatus),
+            'canSendEmail' => $canSendEmail,
+            'canSendCancelEmail' => $canSendCancelEmail,
         ]);
     }
 

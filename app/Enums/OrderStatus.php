@@ -40,4 +40,52 @@ enum OrderStatus: string
             self::SHIPPED, self::CANCELLED => null,
         };
     }
+
+    // ステータス更新時にメール送信対象かチェック
+    public static function mailTypeForTransition(
+        self $oldStatus,
+        self $newStatus,
+        PaymentMethod $paymentMethod
+    ): ?string {
+        if ($newStatus === self::CANCELLED) {
+            return 'cancelled';
+        }
+
+        if ($oldStatus === self::RECEIVED) {
+            if (
+                $paymentMethod === PaymentMethod::BANK_TRANSFER
+                && $newStatus === self::AWAITING_PAYMENT
+            ) {
+                return 'payment_guide';
+            }
+
+            if (
+                $paymentMethod === PaymentMethod::CASH_ON_DELIVERY
+                && $newStatus === self::PREPARING
+            ) {
+                return 'total_confirmed';
+            }
+        }
+
+        if (
+            $oldStatus === self::PREPARING
+            && $newStatus === self::SHIPPED
+        ) {
+            return 'shipped';
+        }
+
+        return null;
+    }
+
+    public static function canSendMail(
+        self $oldStatus,
+        self $newStatus,
+        PaymentMethod $paymentMethod
+    ): bool {
+        return self::mailTypeForTransition(
+            $oldStatus,
+            $newStatus,
+            $paymentMethod
+        ) === 'payment_guide';
+    }
 }

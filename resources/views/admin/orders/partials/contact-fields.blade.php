@@ -5,11 +5,23 @@
         </label>
 
         <select name="contact_method" class="select w-full" required>
-            <option value="none">連絡なし</option>
-            <option value="phone">電話</option>
-            <option value="fax">FAX</option>
-            <option value="in_person">対面</option>
+            <option value="" selected disabled>連絡方法を選択してください</option>
+
+            @if ($canSendEmail)
+                <option value="email">メール送信する</option>
+            @endif
+
+            <option value="phone">電話連絡済</option>
+            <option value="fax">FAX連絡済</option>
+            <option value="in_person">対面連絡済</option>
+            <option value="none">連絡不要</option>
         </select>
+
+        @if ($canSendEmail)
+            <p class="mt-2 text-sm text-amber-700">
+                ※「メール送信する」を選択すると、ステータス更新時にお客様へメールを自動送信します。
+            </p>
+        @endif
     </div>
 
     <div>

@@ -14,6 +14,8 @@ use App\Support\InputLimits;
 use App\Services\TaxCalculator;
 use App\Services\CustomerService;
 use App\Services\DeliverySlipPdf;
+use App\Services\OrderMailService;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -24,7 +26,8 @@ class OrderController extends Controller
 {
     public function __construct(
         private TaxCalculator $taxCalculator,
-        private CustomerService $customerService
+        private CustomerService $customerService,
+        private OrderMailService $orderMailService
     ) {}
 
     public function index(Request $request)
@@ -102,9 +105,13 @@ class OrderController extends Controller
             'statusHistories.user',
         ])->findOrFail($id);
 
+        $nextStatus = $order->status->next($order->payment_method);
+
         return view('admin.orders.show', [
             'order' => $order,
             'statuses' => OrderStatus::cases(),
+            'canSendEmail' => $nextStatus !== null
+                && $this->orderMailService->canSendForStatus($order, $nextStatus),
         ]);
     }
 
@@ -244,6 +251,16 @@ class OrderController extends Controller
 
             return $order;
         });
+
+        // 注文受付メールを送信
+        try {
+            $this->orderMailService->sendReceived($order);
+        } catch (\Throwable $e) {
+            Log::error('注文受付メールの処理でエラーが発生しました。', [
+                'order_id' => $order->id,
+                'exception' => $e,
+            ]);
+        }
 
         return redirect()
             ->route('admin.orders.show', $order->id)
@@ -415,10 +432,11 @@ class OrderController extends Controller
         ]);
 
         $order = Order::findOrFail($id);
+        $oldStatus = $order->status;
         $newStatus = OrderStatus::from($validated['status']);
 
         // 発送済み・キャンセル済みは変更不可
-        if (in_array($order->status, [
+        if (in_array($oldStatus, [
             OrderStatus::SHIPPED,
             OrderStatus::CANCELLED,
         ], true)) {
@@ -428,7 +446,7 @@ class OrderController extends Controller
         }
 
         // 次のステータスを取得
-        $nextStatus = $order->status->next($order->payment_method);
+        $nextStatus = $oldStatus->next($order->payment_method);
 
         // キャンセル、または次のステータスへの変更のみ許可
         if (
@@ -442,7 +460,7 @@ class OrderController extends Controller
 
         // 受付から先へ進む場合は金額の確定が必要
         if (
-            $order->status === OrderStatus::RECEIVED
+            $oldStatus === OrderStatus::RECEIVED
             && $newStatus !== OrderStatus::CANCELLED
         ) {
             if (
@@ -458,6 +476,7 @@ class OrderController extends Controller
             }
         }
 
+        // 発送時はすべての送り状番号が必要
         if ($newStatus === OrderStatus::SHIPPED) {
             $shippings = $order->orderShippings;
 
@@ -471,10 +490,17 @@ class OrderController extends Controller
             }
         }
 
-        DB::transaction(function () use ($order, $newStatus, $validated, $request) {
-            // 変更前のステータスを保存
-            $oldStatus = $order->status;
+        // メール送信可能か確認
+        if (
+            $validated['contact_method'] === 'email'
+            && !$this->orderMailService->canSendForStatus($order, $newStatus)
+        ) {
+            throw ValidationException::withMessages([
+                'contact_method' => 'このステータス変更ではメールを送信できません。',
+            ]);
+        }
 
+        DB::transaction(function () use ($order, $oldStatus, $newStatus, $validated, $request) {
             // ステータスを更新
             $order->status = $newStatus;
             $order->save();
@@ -488,6 +514,22 @@ class OrderController extends Controller
                 'user_id' => $request->user()->id,
             ]);
         });
+
+        // メール送信が選択されている場合のみ実行
+        if ($validated['contact_method'] === 'email') {
+            try {
+                $this->orderMailService->sendForStatus(
+                    $order,
+                    $oldStatus,
+                    $newStatus
+                );
+            } catch (\Throwable $e) {
+                Log::error('注文メールの処理でエラーが発生しました。', [
+                    'order_id' => $order->id,
+                    'exception' => $e,
+                ]);
+            }
+        }
 
         return redirect()
             ->route('admin.orders.show', $order)

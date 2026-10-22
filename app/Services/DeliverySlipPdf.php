@@ -45,18 +45,19 @@ class DeliverySlipPdf
         $tableX = 15;
         $tableWidth = 180;
 
-        // 商品名 / 単価 / 数量 / 小計
-        $widths = [78, 34, 34, 34];
+        // 商品名 / 内容量 / 単価 / 数量 / 小計
+        $widths = [88, 24, 20, 18, 30];
 
-        $priceX = $tableX + $widths[0];
-        $quantityX = $priceX + $widths[1];
-        $subtotalX = $quantityX + $widths[2];
+        $volumeX = $tableX + $widths[0];
+        $priceX = $volumeX + $widths[1];
+        $quantityX = $priceX + $widths[2];
+        $subtotalX = $quantityX + $widths[3];
         $tableRight = $tableX + $tableWidth;
 
-        // 金額内訳は「数量」「小計」と同じ列境界
-        $summaryX = $quantityX;
-        $summaryLabelWidth = $widths[2];
-        $summaryAmountWidth = $widths[3];
+        // 金額内訳は「単価＋数量」「小計」の列境界に合わせる
+        $summaryX = $priceX;
+        $summaryLabelWidth = $widths[2] + $widths[3];
+        $summaryAmountWidth = $widths[4];
 
         // --------------------------------------------------
         // 注文日・タイトル
@@ -189,7 +190,7 @@ class DeliverySlipPdf
 
         $pdf->SetFontSize(9);
 
-        $headers = ['商品名', '単価', '数量', '小計(税込)'];
+        $headers = ['商品名', '内容量', '単価', '数量', '小計(税込)'];
         $drawHeader = function (float $y) use ($pdf, $headers, $tableX, $widths, $headerHeight): void {
             $pdf->SetFontSize(9);
             $x = $tableX;
@@ -218,15 +219,19 @@ class DeliverySlipPdf
         foreach ($order->orderItems as $item) {
             $itemCount++;
             $name = $item->product_name;
+
             if ((int) $item->tax_rate === 8) {
                 $name .= ' ※';
                 $hasReducedTaxItem = true;
             }
 
-            // 商品名の折り返し行数に合わせて、明細行全体の高さを決める
+            $volume = $item->volume ?? '';
+
+            // 商品名と内容量の折り返し行数に合わせて明細行の高さを決める
             $pdf->SetFontSize(9);
             $nameLines = $pdf->getNumLines($name, $widths[0] - 4);
-            $itemRowHeight = max($rowHeight, $nameLines * 5 + 2);
+            $volumeLines = $volume !== '' ? $pdf->getNumLines($volume, $widths[1] - 4) : 1;
+            $itemRowHeight = max($rowHeight, max($nameLines, $volumeLines) * 5 + 2);
 
             $ensureRowFits($itemRowHeight);
             $this->drawItemRow(
@@ -236,9 +241,10 @@ class DeliverySlipPdf
                 $widths,
                 [
                     $name,
-                    '￥' . number_format($item->price),
+                    $volume,
+                    formatYen($item->price),
                     number_format($item->quantity),
-                    '￥' . number_format($item->subtotal),
+                    formatYen($item->subtotal),
                 ],
                 $itemRowHeight
             );
@@ -253,8 +259,8 @@ class DeliverySlipPdf
                 $tableX,
                 $currentY,
                 $widths,
-                ['', '', '', ''],
-                ['L', 'R', 'C', 'R'],
+                ['', '', '', '', ''],
+                ['L', 'C', 'R', 'C', 'R'],
                 $rowHeight
             );
             $currentY += $rowHeight;
@@ -269,7 +275,7 @@ class DeliverySlipPdf
             }
             $pdf->SetFontSize(8);
             $pdf->SetXY($tableX, $currentY + 1);
-            $pdf->Cell($tableWidth, 5, '(※は軽減税率対象商品)', 0, 1);
+            $pdf->Cell($tableWidth, 5, '(※は軽減税率（8%）対象の明細)', 0, 1);
         }
 
         // --------------------------------------------------
@@ -433,7 +439,7 @@ class DeliverySlipPdf
     }
 
     /**
-     * 商品名だけを折り返し、他の列は同じ高さのセルで描画する
+     * 商品名・内容量を折り返し、他の列は同じ高さのセルで描画する
      */
     private function drawItemRow(
         TCPDF $pdf,
@@ -464,10 +470,32 @@ class DeliverySlipPdf
         );
 
         $x += $widths[0];
+
+        // 内容量も長い場合はセル内で折り返す
+        $pdf->SetXY($x, $y);
+        $pdf->MultiCell(
+            $widths[1],
+            $height,
+            (string) $values[1],
+            1,
+            'C',
+            false,
+            0,
+            $x,
+            $y,
+            true,
+            0,
+            false,
+            true,
+            $height,
+            'M'
+        );
+
+        $x += $widths[1];
         foreach (['R', 'C', 'R'] as $index => $align) {
             $pdf->SetXY($x, $y);
-            $pdf->Cell($widths[$index + 1], $height, (string) $values[$index + 1], 1, 0, $align);
-            $x += $widths[$index + 1];
+            $pdf->Cell($widths[$index + 2], $height, (string) $values[$index + 2], 1, 0, $align);
+            $x += $widths[$index + 2];
         }
     }
 

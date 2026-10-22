@@ -41,6 +41,22 @@
 
         @php
             $nextStatus = $order->status->next($order->payment_method);
+
+            // 送料・代引手数料の確定チェック
+            $feesReady =
+                $order->shipping_fee !== null &&
+                ($order->payment_method !== \App\Enums\PaymentMethod::CASH_ON_DELIVERY || $order->cod_fee !== null);
+
+            // 発送時の送り状番号チェック
+            $shippingsReady =
+                $order->orderShippings->isNotEmpty() &&
+                $order->orderShippings->every(fn($shipping) => filled($shipping->tracking_number));
+
+            // 次のステータスに進めるか
+            $canAdvanceStatus =
+                $nextStatus !== null &&
+                !($order->status === \App\Enums\OrderStatus::RECEIVED && !$feesReady) &&
+                !($nextStatus === \App\Enums\OrderStatus::SHIPPED && !$shippingsReady);
         @endphp
 
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -53,7 +69,7 @@
             </div>
 
             @if ($nextStatus)
-                <button type="button" class="btn btn-success"
+                <button type="button" class="btn btn-success" @disabled(!$canAdvanceStatus)
                     onclick="document.getElementById('status_modal').showModal()">
 
                     @if ($order->status === \App\Enums\OrderStatus::AWAITING_PAYMENT)
@@ -65,16 +81,63 @@
             @endif
         </div>
 
-        @if ($order->status === \App\Enums\OrderStatus::RECEIVED && ($order->shipping_fee === null || $order->cod_fee === null))
-            <p class="mt-4 text-sm text-amber-700">
-                @if ($order->payment_method === \App\Enums\PaymentMethod::CASH_ON_DELIVERY)
-                    ※送料・代引手数料を確定すると、次のステータスへ進められます。
-                @else
-                    ※送料を確定すると、次のステータスへ進められます。
-                @endif
+        @if ($nextStatus)
+            @if ($order->status === \App\Enums\OrderStatus::RECEIVED && !$feesReady)
+                <p class="mt-4 text-sm text-amber-700">
+                    ※送料・手数料を確定すると、次のステータスへ進められます。
+                </p>
+            @elseif ($nextStatus === \App\Enums\OrderStatus::SHIPPED && !$shippingsReady)
+                <p class="mt-4 text-sm text-amber-700">
+                    ※すべての個口に送り状番号を登録すると、発送済みに変更できます。
+                </p>
+            @endif
+        @endif
+    </section>
+
+    {{-- 注文対応履歴 --}}
+    <section class="mb-8 rounded-xl border border-slate-200 bg-white p-5 lg:p-7">
+        <h2 class="mb-5 text-lg font-bold">注文対応履歴</h2>
+
+        @php
+            $histories = $order->statusHistories;
+        @endphp
+
+        @if ($histories->isNotEmpty())
+            {{-- 最新の履歴 --}}
+            <div class="py-2">
+                @include('admin.orders.partials.status-history-item', [
+                    'history' => $histories->first(),
+                ])
+            </div>
+
+            {{-- 過去の履歴 --}}
+            @if ($histories->count() > 1)
+                <details class="mt-4 border-t border-slate-200 pt-4">
+                    <summary
+                        class="flex cursor-pointer items-center justify-between gap-2 text-sm font-semibold text-green-700 hover:text-green-900">
+                        <span>過去の履歴を表示（{{ $histories->count() - 1 }}件）</span>
+                        <span class="text-xs">▼</span>
+                    </summary>
+
+                    <div class="mt-4 space-y-4">
+                        @foreach ($histories->skip(1) as $history)
+                            <div class="border-b border-slate-200 pb-4 last:border-b-0 last:pb-0">
+                                @include('admin.orders.partials.status-history-item', [
+                                    'history' => $history,
+                                ])
+                            </div>
+                        @endforeach
+                    </div>
+                </details>
+            @endif
+        @else
+            <p class="text-sm text-slate-500">
+                まだ対応履歴はありません。
             </p>
         @endif
     </section>
+
+
 
     {{-- 注文商品 --}}
     <section class="mb-8 rounded-xl border border-slate-200 bg-white p-5 lg:p-7">
@@ -475,6 +538,8 @@
 
                     <input type="hidden" name="status" value="{{ $nextStatus->value }}">
 
+                    @include('admin.orders.partials.contact-fields')
+
                     <div class="modal-action">
                         <button type="button" class="btn btn-outline btn-neutral"
                             onclick="document.getElementById('status_modal').close()">
@@ -692,6 +757,8 @@
                     @method('PATCH')
 
                     <input type="hidden" name="status" value="{{ \App\Enums\OrderStatus::CANCELLED->value }}">
+
+                    @include('admin.orders.partials.contact-fields')
 
                     <div class="modal-action">
                         <button type="button" class="btn btn-outline btn-neutral"

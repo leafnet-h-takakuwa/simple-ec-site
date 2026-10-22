@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Order extends Model
@@ -71,6 +72,18 @@ class Order extends Model
     public function taxSummaries(): HasMany
     {
         return $this->hasMany(OrderTaxSummary::class);
+    }
+
+    // ステータス変更履歴
+    public function statusHistories(): HasMany
+    {
+        return $this->hasMany(OrderStatusHistory::class);
+    }
+
+    // 注文に直接紐づくメール送信履歴
+    public function mailHistories(): MorphMany
+    {
+        return $this->morphMany(MailHistory::class, 'related');
     }
 
     // 管理画面：編集できるステータスを定義

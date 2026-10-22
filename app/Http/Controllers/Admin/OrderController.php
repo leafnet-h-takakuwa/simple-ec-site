@@ -94,7 +94,13 @@ class OrderController extends Controller
 
     public function show($id)
     {
-        $order = Order::with(['orderItems', 'orderShippings', 'taxSummaries',])->findOrFail($id);
+        $order = Order::with([
+            'orderItems',
+            'orderShippings',
+            'taxSummaries',
+            'statusHistories' => fn($query) => $query->latest('id'),
+            'statusHistories.user',
+        ])->findOrFail($id);
 
         return view('admin.orders.show', [
             'order' => $order,
@@ -401,6 +407,11 @@ class OrderController extends Controller
     {
         $validated = $request->validate([
             'status' => ['required', Rule::enum(OrderStatus::class)],
+            'contact_method' => [
+                'required',
+                Rule::in(['email', 'phone', 'fax', 'in_person', 'none']),
+            ],
+            'contact_note' => ['nullable', 'string', 'max:2000'],
         ]);
 
         $order = Order::findOrFail($id);
@@ -460,8 +471,23 @@ class OrderController extends Controller
             }
         }
 
-        $order->status = $newStatus;
-        $order->save();
+        DB::transaction(function () use ($order, $newStatus, $validated, $request) {
+            // 変更前のステータスを保存
+            $oldStatus = $order->status;
+
+            // ステータスを更新
+            $order->status = $newStatus;
+            $order->save();
+
+            // ステータス変更履歴を登録
+            $order->statusHistories()->create([
+                'from_status' => $oldStatus->value,
+                'to_status' => $newStatus->value,
+                'contact_method' => $validated['contact_method'],
+                'contact_note' => $validated['contact_note'] ?? null,
+                'user_id' => $request->user()->id,
+            ]);
+        });
 
         return redirect()
             ->route('admin.orders.show', $order)

@@ -5,6 +5,9 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use App\Models\Notice;
 use Illuminate\Support\Facades\View;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use App\Models\Order;
+use App\Models\OrderStatusHistory;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -32,6 +35,12 @@ class AppServiceProvider extends ServiceProvider
 
             $view->with('newNoticeCount', $newNoticeCount);
         });
+
+        // ポリモーフィックリレーション
+        Relation::enforceMorphMap([
+            'order' => Order::class,
+            'order_status_history' => OrderStatusHistory::class,
+        ]);
 
         // TCPDFの許可パス追加
         if (! defined('K_ALLOWED_PATHS')) {

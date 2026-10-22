@@ -10,6 +10,7 @@ use App\Models\OrderItem;
 use App\Services\CartService;
 use App\Services\TaxCalculator;
 use App\Services\CustomerService;
+use App\Services\OrderMailService;
 use App\Support\ContactRules;
 use App\Support\InputLimits;
 use Illuminate\Database\QueryException;
@@ -24,7 +25,8 @@ class OrderController extends Controller
     public function __construct(
         private CartService $cartService,
         private TaxCalculator $taxCalculator,
-        private CustomerService $customerService
+        private CustomerService $customerService,
+        private OrderMailService $orderMailService
     ) {}
 
     public function index()
@@ -327,6 +329,16 @@ class OrderController extends Controller
             // ユーザーには一般的なエラーメッセージを表示
             return redirect()->route('carts.index')
                 ->with('error', '注文処理中にエラーが発生しました。お手数ですが、もう一度お試しください。');
+        }
+
+        // 注文登録完了後にメール送信
+        try {
+            $this->orderMailService->sendReceived($order);
+        } catch (\Throwable $e) {
+            Log::error('注文メール処理でエラーが発生しました。', [
+                'order_id' => $order->id,
+                'exception' => $e,
+            ]);
         }
 
         return $this->completeOrder($request, $order);

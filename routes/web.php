@@ -18,6 +18,7 @@ use App\Http\Controllers\FaxOrderFormPdfController;
 use App\Http\Controllers\NoticeController;
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Middleware\EnsureEmailVerifiedForCheckout;
+use App\Http\Controllers\EmailChangeController;
 
 /**
  * 認証不要ルート
@@ -85,6 +86,14 @@ Route::middleware(['auth'])->group(function () {
     // 会員情報
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+
+    // メールアドレス変更
+    Route::post('/profile/email', [EmailChangeController::class, 'update'])
+        ->middleware('throttle:6,1')
+        ->name('profile.email.update');
+    Route::get('/profile/email/verify/{user}/{token}', [EmailChangeController::class, 'verify'])
+        ->middleware('signed')
+        ->name('profile.email.verify');
 
     // 退会
     Route::get('/profile/withdraw', [ProfileController::class, 'withdraw'])

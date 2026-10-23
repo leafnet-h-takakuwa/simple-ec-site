@@ -12,6 +12,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Notifications\VerifyEmailText;
+use App\Notifications\ResetPasswordText;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -26,6 +28,7 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $fillable = [
         'name',
         'email',
+        'pending_email',
         'password',
         'postal_code',
         'address',
@@ -53,6 +56,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_admin' => 'boolean',
+            'pending_email_requested_at' => 'datetime',
         ];
     }
 
@@ -82,5 +86,15 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->is_admin
             || !is_null($this->email_verified_at);
+    }
+
+    public function sendEmailVerificationNotification(): void
+    {
+        $this->notify(new VerifyEmailText());
+    }
+
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new ResetPasswordText($token));
     }
 }

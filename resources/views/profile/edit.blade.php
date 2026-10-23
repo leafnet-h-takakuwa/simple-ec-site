@@ -25,15 +25,23 @@
 
         <div id="profile-settings" class="mx-auto max-w-2xl">
             {{-- タブ --}}
-            <div role="tablist" aria-label="会員設定" class="tabs tabs-box mb-5 grid grid-cols-2">
+            <div role="tablist" aria-label="会員設定" class="tabs tabs-box mb-5 grid grid-cols-3 gap-1">
+
                 <button type="button" role="tab" id="profile-tab" aria-controls="profile-panel" aria-selected="true"
-                    class="tab tab-active" data-tab="profile">
+                    class="tab tab-active px-1 text-xs whitespace-nowrap sm:text-sm" data-tab="profile">
                     会員情報
                 </button>
 
+                <button type="button" role="tab" id="email-tab" aria-controls="email-panel" aria-selected="false"
+                    tabindex="-1" class="tab px-1 text-xs whitespace-nowrap sm:text-sm" data-tab="email">
+                    <span class="sm:hidden">メール変更</span>
+                    <span class="hidden sm:inline">メールアドレス変更</span>
+                </button>
+
                 <button type="button" role="tab" id="password-tab" aria-controls="password-panel" aria-selected="false"
-                    tabindex="-1" class="tab" data-tab="password">
-                    パスワード変更
+                    tabindex="-1" class="tab px-1 text-xs whitespace-nowrap sm:text-sm" data-tab="password">
+                    <span class="sm:hidden">PW変更</span>
+                    <span class="hidden sm:inline">パスワード変更</span>
                 </button>
             </div>
 
@@ -57,11 +65,27 @@
 
                         {{-- メールアドレス --}}
                         <div>
-                            <label for="email" class="mb-2 block text-sm font-semibold">
-                                メールアドレス <span class="text-red-600">*</span>
-                            </label>
-                            <input type="email" id="email" name="email" value="{{ old('email', $user->email) }}"
-                                maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}" required class="input w-full">
+                            <div class="mb-2 flex flex-wrap items-center gap-2">
+                                <span class="text-sm font-semibold">メールアドレス</span>
+
+                                @if ($user->hasVerifiedEmail())
+                                    <span class="badge badge-success badge-sm">
+                                        認証済み
+                                    </span>
+                                @else
+                                    <span class="badge badge-warning badge-sm">
+                                        未認証
+                                    </span>
+                                @endif
+                            </div>
+
+                            <p class="rounded-lg bg-base-200 px-4 py-3 text-sm break-all">
+                                {{ $user->email }}
+                            </p>
+
+                            <p class="mt-2 text-xs text-base-content/60">
+                                メールアドレスの変更は「メール変更」タブから行えます。
+                            </p>
                         </div>
 
                         {{-- 郵便番号 --}}
@@ -112,6 +136,111 @@
                         退会手続きへ
                     </a>
                 </div>
+
+            </section>
+
+            {{-- メールアドレス変更 --}}
+            <section id="email-panel" role="tabpanel" aria-labelledby="email-tab" data-panel="email"
+                class="hidden rounded-xl border border-base-300 bg-base-100 p-5 lg:p-8">
+
+                <h2 class="text-lg font-bold">
+                    メールアドレスの変更
+                </h2>
+
+                <p class="mb-6 mt-2 text-sm text-base-content/70">
+                    新しいメールアドレスに確認メールを送信します。
+                    認証が完了するまでは、現在のメールアドレスが使用されます。
+                </p>
+
+                @if ($user->pending_email)
+                    @php
+                        $isExpired =
+                            !$user->pending_email_requested_at ||
+                            $user->pending_email_requested_at->addMinutes(60)->isPast();
+                    @endphp
+
+                    <div class="alert {{ $isExpired ? 'alert-error' : 'alert-warning' }} mb-6">
+                        <div>
+                            <p class="font-semibold">
+                                {{ $isExpired ? 'メールアドレス変更の有効期限切れ' : 'メールアドレスの変更確認待ち' }}
+                            </p>
+
+                            <p class="mt-1 text-sm break-all">
+                                {{ $user->pending_email }}
+                            </p>
+
+                            <p class="mt-1 text-xs">
+                                @if ($isExpired)
+                                    確認リンクの有効期限が切れました。
+                                    変更する場合は、もう一度申請してください。
+                                @else
+                                    確認メール内のリンクを開くと変更が確定します。
+                                    再申請すると以前のリンクは無効になります。
+                                @endif
+                            </p>
+                        </div>
+                    </div>
+                @endif
+
+                <form method="POST" action="{{ route('profile.email.update') }}">
+                    @csrf
+
+                    <div class="space-y-5">
+                        {{-- 現在のメールアドレス --}}
+                        <div>
+                            <div class="mb-2 flex flex-wrap items-center gap-2">
+                                <span class="text-sm font-semibold">
+                                    現在のメールアドレス
+                                </span>
+
+                                @if ($user->hasVerifiedEmail())
+                                    <span class="badge badge-success badge-sm">認証済み</span>
+                                @else
+                                    <span class="badge badge-warning badge-sm">未認証</span>
+                                @endif
+                            </div>
+
+                            <p class="rounded-lg bg-base-200 px-4 py-3 text-sm break-all">
+                                {{ $user->email }}
+                            </p>
+                        </div>
+
+                        {{-- 新しいメールアドレス --}}
+                        <div>
+                            <label for="new_email" class="mb-2 block text-sm font-semibold">
+                                新しいメールアドレス <span class="text-red-600">*</span>
+                            </label>
+
+                            <input type="email" id="new_email" name="new_email" value="{{ old('new_email') }}"
+                                maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}" autocomplete="email" required
+                                class="input w-full">
+
+                            @error('new_email')
+                                <p class="mt-1 text-sm text-error">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        {{-- 現在のパスワード --}}
+                        <div>
+                            <label for="current_password" class="mb-2 block text-sm font-semibold">
+                                現在のパスワード <span class="text-red-600">*</span>
+                            </label>
+
+                            <input type="password" id="current_password" name="current_password"
+                                autocomplete="current-password" required class="input w-full">
+
+                            @error('current_password')
+                                <p class="mt-1 text-sm text-error">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="mt-8 flex justify-end">
+                        <button type="submit" class="btn btn-primary">
+                            確認メールを送信
+                        </button>
+                    </div>
+                </form>
 
             </section>
 
@@ -183,6 +312,10 @@
                     });
                 });
             }
+
+            @if ($errors->has('new_email') || $errors->has('current_password'))
+                switchTab('email');
+            @endif
 
             if (document.readyState === 'loading') {
                 document.addEventListener('DOMContentLoaded', initializeProfileTabs, {

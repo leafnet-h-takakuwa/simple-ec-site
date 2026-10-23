@@ -19,7 +19,6 @@ class ProfileController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:' . InputLimits::SHORT_TEXT],
-            'email' => ['required', 'email', 'max:' . InputLimits::SHORT_TEXT, 'unique:users,email,' . $request->user()->id],
             'postal_code' => ['nullable', 'string', 'max:' . InputLimits::POSTAL_CODE],
             'address' => ['nullable', 'string', 'max:' . InputLimits::SHORT_TEXT],
             'phone' => ['nullable', 'string', 'max:' . InputLimits::PHONE],

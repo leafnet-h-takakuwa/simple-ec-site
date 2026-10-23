@@ -181,6 +181,12 @@
             <p class="mt-3 font-semibold">
                 TEL：{{ config('company.phone') }}
             </p>
+            <p>
+                <a href="mailto:{{ config('company.email') }}" class="inline-flex items-center gap-2 hover:underline">
+                    <x-icons.mail class="size-5" />
+                    {{ config('company.email') }}
+                </a>
+            </p>
         </div>
     </div>
 

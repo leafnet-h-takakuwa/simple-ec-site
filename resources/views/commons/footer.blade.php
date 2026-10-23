@@ -23,11 +23,16 @@
                     </p>
 
                     <p>
-                        TEL：{{ config('company.phone') }}
+                        TEL：{{ config('company.phone') }}<br>
+                        FAX：{{ config('company.fax') }}
                     </p>
 
                     <p>
-                        FAX：{{ config('company.fax') }}
+                        <a href="mailto:{{ config('company.email') }}"
+                            class="inline-flex items-center gap-2 hover:underline">
+                            <x-icons.mail class="size-5" />
+                            {{ config('company.email') }}
+                        </a>
                     </p>
 
                 </div>
@@ -58,12 +63,6 @@
                     <li>
                         <a href="{{ route('guide.shipping') }}" class="link link-hover">
                             送料について
-                        </a>
-                    </li>
-
-                    <li>
-                        <a href="#" class="link link-hover">
-                            お問い合わせ
                         </a>
                     </li>
 

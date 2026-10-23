@@ -165,6 +165,10 @@ Route::middleware(['auth', EnsureUserIsAdmin::class])
         // 顧客台帳
         Route::resource('customers', CustomerController::class)
             ->names('customers');
+
+        // パスワード変更
+        Route::view('/password', 'admin.password.edit')
+            ->name('password.edit');
     });
 
 require __DIR__ . '/auth.php';

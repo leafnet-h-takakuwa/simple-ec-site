@@ -40,18 +40,54 @@
                     ショップを見る
                 </a>
 
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="flex items-center gap-2 text-sm text-error hover:bg-error/10">
-                        <x-icons.log-in class="size-5 shrink-0" />
-                        ログアウト
-                    </button>
-                </form>
+                {{-- アカウントメニュー --}}
+                <details class="dropdown dropdown-end group js-auto-close">
+                    <summary class="btn btn-ghost btn-sm gap-2">
+                        <x-icons.users class="size-5 shrink-0" />
+                        <span>アカウント</span>
+
+                        {{-- 開閉アイコン --}}
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                            class="size-4 transition-transform duration-200 group-open:rotate-180" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <path d="m6 9 6 6 6-6" />
+                        </svg>
+                    </summary>
+
+                    <ul
+                        class="menu dropdown-content z-50 mt-2 w-52 rounded-box border border-green-200 bg-white p-2 shadow-lg">
+
+                        {{-- パスワード変更 --}}
+                        <li>
+                            <a href="{{ route('admin.password.edit') }}" class="flex items-center gap-3 text-sm">
+                                <span class="flex size-5 shrink-0 items-center justify-center">
+                                    <x-icons.key-round class="size-5" />
+                                </span>
+                                <span>パスワード変更</span>
+                            </a>
+                        </li>
+
+                        {{-- ログアウト --}}
+                        <li>
+                            <form method="POST" action="{{ route('logout') }}" class="block p-0">
+                                @csrf
+                                <button type="submit"
+                                    class="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm text-error hover:bg-error/10">
+                                    <span class="flex size-5 shrink-0 items-center justify-center">
+                                        <x-icons.log-out class="size-5" />
+                                    </span>
+                                    <span>ログアウト</span>
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </details>
             </div>
 
             {{-- スマホ用ハンバーガーメニュー --}}
             <div class="flex-none lg:hidden">
-                <details class="dropdown dropdown-end">
+                <details class="dropdown dropdown-end js-auto-close">
                     <summary class="btn btn-ghost btn-square text-green-800" aria-label="管理メニューを開く">
                         <x-icons.menu class="size-6" />
                     </summary>
@@ -152,13 +188,19 @@
                             <div class="divider my-1"></div>
                         </li>
 
+                        <li>
+                            <a href="{{ route('admin.password.edit') }}" class="gap-3">
+                                <x-icons.key-round class="size-5 shrink-0" />
+                                パスワード変更
+                            </a>
+                        </li>
                         {{-- ログアウト --}}
                         <li>
                             <form method="POST" action="{{ route('logout') }}" class="p-0">
                                 @csrf
                                 <button type="submit"
                                     class="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-error hover:bg-error/10">
-                                    <x-icons.log-in class="size-5 shrink-0" />
+                                    <x-icons.log-out class="size-5 shrink-0" />
                                     ログアウト
                                 </button>
                             </form>

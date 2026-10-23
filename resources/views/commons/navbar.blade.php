@@ -98,7 +98,7 @@
 
         {{-- PC用会員メニュー --}}
         <div class="hidden flex-none md:block">
-            <details class="dropdown dropdown-end">
+            <details class="dropdown dropdown-end js-auto-close">
                 <summary class="btn btn-ghost btn-sm gap-1 px-2">
                     @auth
                         @if (Auth::user()->is_admin)
@@ -153,7 +153,7 @@
                                 @csrf
                                 <button type="submit"
                                     class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-error hover:bg-error/10">
-                                    <x-icons.log-in class="size-5" />
+                                    <x-icons.log-out class="size-5" />
                                     ログアウト
                                 </button>
                             </form>
@@ -181,7 +181,7 @@
 
         {{-- スマホ用ハンバーガーメニュー --}}
         <div class="flex-none md:hidden">
-            <details class="dropdown dropdown-end">
+            <details class="dropdown dropdown-end js-auto-close">
                 <summary class="btn btn-ghost btn-square" aria-label="メニューを開く">
                     <x-icons.menu class="size-6" stroke-linejoin="round" />
                 </summary>
@@ -261,7 +261,7 @@
                                 @csrf
                                 <button type="submit"
                                     class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-error hover:bg-error/10">
-                                    <x-icons.log-in class="size-5 shrink-0" />
+                                    <x-icons.log-out class="size-5 shrink-0" />
                                     ログアウト
                                 </button>
                             </form>

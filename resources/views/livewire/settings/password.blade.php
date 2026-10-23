@@ -40,7 +40,8 @@ new class extends Component {
 
         session()->flash('success', 'パスワードを変更しました。');
 
-        $this->redirectRoute('profile.edit');
+        // 管理者と共通で利用のため、リダイレクト先振り分け
+        $this->redirectRoute(Auth::user()->is_admin ? 'admin.dashboard' : 'profile.edit');
     }
 }; ?>
 
@@ -84,7 +85,8 @@ new class extends Component {
 
         {{-- 操作ボタン --}}
         <div class="flex justify-end pt-3">
-            <button type="submit" class="btn btn-primary" wire:loading.attr="disabled" wire:target="updatePassword">
+            <button type="submit" class="btn {{ request()->routeIs('admin.*') ? 'btn-success' : 'btn-primary' }}"
+                wire:loading.attr="disabled" wire:target="updatePassword">
                 パスワードを変更
             </button>
         </div>

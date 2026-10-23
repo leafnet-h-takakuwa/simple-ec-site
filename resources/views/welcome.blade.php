@@ -342,7 +342,7 @@
 
             {{-- FAXでのご注文 --}}
             <a href="{{ route('fax-order-form.pdf', ['ts' => now()->timestamp]) }}" target="_blank" rel="noopener"
-                class="group flex items-center gap-4 rounded-xl border border-base-300 p-6 transition hover:bg-base-200 sm:col-span-2">
+                class="group flex items-center gap-4 rounded-xl border border-base-300 p-6 transition hover:bg-base-200">
                 <x-icons.fax class="size-10 shrink-0" />
                 <div class="flex-1">
                     <h3 class="font-bold">
@@ -353,6 +353,32 @@
                     </p>
                 </div>
             </a>
+
+
+            {{-- パンフレット --}}
+            <a href="{{ asset('documents/pamphlet.pdf') }}" target="_blank" rel="noopener noreferrer"
+                class="group flex items-center gap-4 rounded-xl border border-base-300 p-6 transition hover:bg-base-200">
+                <svg xmlns="http://www.w3.org/2000/svg" class="size-10 shrink-0" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                        d="M12 6.5c-2.5-1.8-5.4-2.2-9-1.4v13c3.6-.8 6.5-.4 9 1.4 2.5-1.8 5.4-2.2 9-1.4v-13c-3.6-.8-6.5-.4-9 1.4Z" />
+                    <path d="M12 6.5v13" />
+                    <path d="M5.5 9c1.5-.1 2.8.1 4 .7" />
+                    <path d="M14.5 9.7c1.2-.6 2.5-.8 4-.7" />
+                    <path d="M5.5 12c1.5-.1 2.8.1 4 .7" />
+                    <path d="M14.5 12.7c1.2-.6 2.5-.8 4-.7" />
+                </svg>
+
+                <div class="flex-1">
+                    <h3 class="font-bold">
+                        髙桑商店パンフレット
+                    </h3>
+                    <p class="mt-1 text-sm text-base-content/60">
+                        パンフレットをPDFでご覧いただけます。
+                    </p>
+                </div>
+            </a>
+
         </div>
     </section>
 @endsection

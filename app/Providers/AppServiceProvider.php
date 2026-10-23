@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\View;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use App\Models\Order;
 use App\Models\OrderStatusHistory;
+use App\Models\User;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -40,6 +41,7 @@ class AppServiceProvider extends ServiceProvider
         Relation::enforceMorphMap([
             'order' => Order::class,
             'order_status_history' => OrderStatusHistory::class,
+            'user' => User::class,
         ]);
 
         // TCPDFの許可パス追加

@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}?v=3">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>
         @hasSection('title')
             @yield('title') | {{ config('app.name') }} 管理画面
@@ -12,7 +13,7 @@
             {{ config('app.name') }} 管理画面
         @endif
     </title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/push-notifications.js'])
 </head>
 
 <body data-theme="light" class="min-h-screen bg-white text-slate-800">

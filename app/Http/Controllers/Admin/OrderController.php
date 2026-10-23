@@ -18,6 +18,7 @@ use App\Services\OrderMailService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use InvalidArgumentException;
@@ -255,6 +256,15 @@ class OrderController extends Controller
             }
 
             $order->taxSummaries()->createMany($taxSummaries);
+
+            // 注文受付履歴を登録
+            $order->statusHistories()->create([
+                'from_status' => null,
+                'to_status' => OrderStatus::RECEIVED->value,
+                'contact_method' => 'none',
+                'contact_note' => null,
+                'user_id' => Auth::user()->id,
+            ]);
 
             // 顧客台帳に反映（重複時は利用区分のみ更新）
             $this->customerService->registerFromOrder($order);

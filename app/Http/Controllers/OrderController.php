@@ -297,6 +297,15 @@ class OrderController extends Controller
 
                 $order->taxSummaries()->createMany($tax_summaries);
 
+                // 注文受付履歴を登録
+                $order->statusHistories()->create([
+                    'from_status' => null,
+                    'to_status' => OrderStatus::RECEIVED->value,
+                    'contact_method' => 'none',
+                    'contact_note' => null,
+                    'user_id' => null,
+                ]);
+
                 // 顧客台帳に反映（重複時は利用区分のみ更新）
                 $this->customerService->registerFromOrder($order);
 

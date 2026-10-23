@@ -47,6 +47,8 @@ class Order extends Model
             'order_source' => OrderSource::class,
             'shipping_fee' => 'integer',
             'cod_fee' => 'integer',
+            'delivery_date' => 'date',
+            'delivery_time_slot' => \App\Enums\DeliveryTimeSlot::class,
         ];
     }
 

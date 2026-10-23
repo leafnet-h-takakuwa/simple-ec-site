@@ -21,6 +21,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use App\Enums\DeliveryTimeSlot;
 use Illuminate\Validation\ValidationException;
 use InvalidArgumentException;
 
@@ -700,6 +701,8 @@ class OrderController extends Controller
     public function updateShippings(Request $request, Order $order)
     {
         $validated = $request->validate([
+            'delivery_date' => ['nullable', 'date'],
+            'delivery_time_slot' => ['nullable', Rule::enum(DeliveryTimeSlot::class)],
             'shippings' => ['nullable', 'array'],
             'shippings.*.id' => ['nullable', 'integer', 'distinct'],
             'shippings.*.tracking_number' => ['nullable', 'string', 'max:' . InputLimits::TRACKING_NUMBER],
@@ -716,6 +719,11 @@ class OrderController extends Controller
                     'shippings' => 'キャンセル済みの注文は送り状情報を編集できません。',
                 ]);
             }
+
+            // 配達予定日時を更新
+            $order->delivery_date = $validated['delivery_date'] ?? null;
+            $order->delivery_time_slot = $validated['delivery_time_slot'] ?? null;
+            $order->save();
 
             $existingShippings = $order->orderShippings()
                 ->lockForUpdate()
@@ -760,7 +768,7 @@ class OrderController extends Controller
 
         return redirect()
             ->route('admin.orders.show', $order)
-            ->with('success', '送り状情報を更新しました。');
+            ->with('success', '配送情報を更新しました。');
     }
 
     // 納品書PDF作成

@@ -23,8 +23,8 @@
 【配送情報】
 
 配送会社：ヤマト運輸
-お届け予定日：指定なし
-お届け時間帯：指定なし
+お届け予定日：{{ $order->delivery_date?->format('Y年n月j日') ?? '指定なし' }}
+お届け時間帯：{{ $order->delivery_time_slot?->label() ?? '指定なし' }}
 
 @if ($order->orderShippings->count() > 1)
 お荷物は {{ $order->orderShippings->count() }} 個口での発送となります。

@@ -359,19 +359,37 @@
     {{-- 配送・送り状情報 --}}
     <section class="mb-8 rounded-xl border border-slate-200 bg-white p-5 lg:p-7">
         <div class="mb-5 flex items-center justify-between gap-3">
-            <h2 class="text-lg font-bold">配送・送り状情報</h2>
+            <h2 class="text-lg font-bold">配送情報</h2>
 
             @if ($order->status !== \App\Enums\OrderStatus::CANCELLED)
                 <button type="button" class="btn btn-outline btn-neutral btn-sm"
                     onclick="document.getElementById('shippings_modal').showModal()">
-                    送り状情報を編集
+                    配送情報を編集
                 </button>
             @endif
         </div>
 
+        {{-- 配送会社 --}}
         <div class="mb-4 flex items-center justify-between gap-4">
             <span class="text-sm text-slate-500">配送会社</span>
             <span class="font-semibold">ヤマト運輸</span>
+        </div>
+
+        {{-- お届け予定日時 --}}
+        <div class="border-t border-slate-200 py-4">
+            <div class="flex items-center justify-between gap-4">
+                <span class="text-sm text-slate-500">お届け予定日</span>
+                <span class="font-semibold">
+                    {{ $order->delivery_date?->format('Y年n月j日') ?? '指定なし' }}
+                </span>
+            </div>
+
+            <div class="mt-4 flex items-center justify-between gap-4">
+                <span class="text-sm text-slate-500">お届け時間帯</span>
+                <span class="font-semibold">
+                    {{ $order->delivery_time_slot?->label() ?? '指定なし' }}
+                </span>
+            </div>
         </div>
 
         @forelse ($order->orderShippings as $shipping)
@@ -508,7 +526,7 @@
     @if ($nextStatus)
         <dialog id="status_modal" class="modal">
             <div class="modal-box">
-                <h3 class="text-lg font-bold">注文ステータスの更新</h3>
+                <h3 class="text-lg font-bold" tabindex="-1" autofocus>注文ステータスの更新</h3>
 
                 <p class="mt-4">
                     注文番号
@@ -569,7 +587,7 @@
     @endif
     <dialog id="fees_modal" class="modal">
         <div class="modal-box">
-            <h3 class="text-lg font-bold">送料・代引手数料の編集</h3>
+            <h3 class="text-lg font-bold" tabindex="-1" autofocus>送料・代引手数料の編集</h3>
 
             <p class="mt-2 text-sm text-slate-500">
                 @if ($order->payment_method === \App\Enums\PaymentMethod::CASH_ON_DELIVERY)
@@ -636,7 +654,7 @@
     {{-- 支払い方法変更モーダル --}}
     <dialog id="payment_modal" class="modal">
         <div class="modal-box">
-            <h3 class="text-lg font-bold">お支払い方法の変更</h3>
+            <h3 class="text-lg font-bold" tabindex="-1" autofocus>お支払い方法の変更</h3>
 
             <p class="mt-2 text-sm text-slate-500">
                 変更するお支払い方法を選択してください。
@@ -678,43 +696,130 @@
         </form>
     </dialog>
 
-    {{-- 送り状情報編集モーダル --}}
+    {{-- 配送情報編集モーダル --}}
+    @if ($errors->has('delivery_date') || $errors->has('delivery_time_slot') || $errors->has('shippings'))
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                document.getElementById('shippings_modal').showModal();
+            });
+        </script>
+    @endif
+
     <dialog id="shippings_modal" class="modal">
         <div class="modal-box">
-            <h3 class="text-lg font-bold">送り状情報の編集</h3>
+            <h3 class="text-lg font-bold" tabindex="-1" autofocus>配送情報の編集</h3>
 
             <p class="mt-2 text-sm text-slate-500">
-                個口ごとに送り状番号を登録してください。未発行の場合は空欄にできます。
+                お届け予定日時は注文共通です。送り状番号は個口ごとに登録してください。
             </p>
 
             <form method="POST" action="{{ route('admin.orders.shippings.update', $order) }}">
                 @csrf
                 @method('PATCH')
 
-                <div id="shipping-fields" class="mt-6 space-y-4">
-                    @foreach ($order->orderShippings as $shipping)
-                        <div class="shipping-row rounded-lg border border-slate-200 p-4">
-                            <input type="hidden" name="shippings[{{ $loop->index }}][id]"
-                                value="{{ $shipping->id }}">
+                {{-- お届け予定日時 --}}
+                <div class="mt-6 space-y-4 border-b border-slate-200 pb-6">
+                    <div class="flex flex-wrap items-center justify-between gap-3">
+                        <h4 class="font-semibold">お届け予定日時</h4>
 
-                            <div class="mb-2 flex items-center justify-between">
-                                <label class="text-sm font-semibold">送り状番号</label>
-                                <button type="button" class="remove-item btn btn-outline btn-error btn-sm"
-                                    onclick="this.closest('.shipping-row').remove()">
-                                    削除
+                        {{-- お客様からの備考 --}}
+                        @if (filled($order->customer_note))
+                            <div class="dropdown dropdown-end">
+                                <button type="button" tabindex="0" class="btn btn-outline btn-neutral btn-sm">
+                                    注文時の備考を確認
                                 </button>
-                            </div>
 
-                            <input type="text" name="shippings[{{ $loop->index }}][tracking_number]"
-                                value="{{ $shipping->tracking_number }}" class="input w-full"
-                                maxlength="{{ \App\Support\InputLimits::TRACKING_NUMBER }}" placeholder="送り状番号">
-                        </div>
-                    @endforeach
+                                <div tabindex="0"
+                                    class="dropdown-content z-50 mt-2 w-80 max-w-[80vw] rounded-lg border border-slate-200 bg-white p-4 shadow-lg">
+                                    <p class="mb-2 text-sm font-bold">注文時の備考</p>
+                                    <p
+                                        class="max-h-48 overflow-y-auto whitespace-pre-wrap break-words text-sm text-slate-700">
+                                        {{ $order->customer_note }}</p>
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+
+                    <div>
+                        <label for="delivery_date" class="mb-2 block text-sm font-semibold">
+                            お届け予定日
+                        </label>
+
+                        <input type="date" id="delivery_date" name="delivery_date"
+                            value="{{ old('delivery_date', $order->delivery_date?->format('Y-m-d')) }}"
+                            class="input w-full">
+
+                        @error('delivery_date')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="delivery_time_slot" class="mb-2 block text-sm font-semibold">
+                            お届け時間帯
+                        </label>
+
+                        <select id="delivery_time_slot" name="delivery_time_slot" class="select w-full">
+                            <option value="">指定なし</option>
+
+                            @foreach (\App\Enums\DeliveryTimeSlot::cases() as $slot)
+                                <option value="{{ $slot->value }}" @selected(old('delivery_time_slot', $order->delivery_time_slot?->value) === $slot->value)>
+                                    {{ $slot->label() }}
+                                </option>
+                            @endforeach
+                        </select>
+
+                        @error('delivery_time_slot')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
                 </div>
 
-                <button type="button" id="add-shipping" class="btn btn-outline btn-neutral btn-sm mt-4">
-                    <x-plus /> 個口を追加
-                </button>
+                {{-- 送り状番号（個口別） --}}
+                <div class="mt-6">
+                    <h4 class="mb-4 font-semibold">送り状番号（個口別）</h4>
+
+                    <div id="shipping-fields" class="space-y-4">
+                        @forelse  ($order->orderShippings as $shipping)
+                            <div class="shipping-row rounded-lg border border-slate-200 p-4">
+                                <input type="hidden" name="shippings[{{ $loop->index }}][id]"
+                                    value="{{ $shipping->id }}">
+
+                                <div class="mb-2 flex items-center justify-between">
+                                    <label class="text-sm font-semibold">送り状番号</label>
+
+                                    <button type="button" class="remove-item btn btn-outline btn-error btn-sm"
+                                        onclick="this.closest('.shipping-row').remove()">
+                                        削除
+                                    </button>
+                                </div>
+
+                                <input type="text" name="shippings[{{ $loop->index }}][tracking_number]"
+                                    value="{{ $shipping->tracking_number }}" class="input w-full"
+                                    maxlength="{{ \App\Support\InputLimits::TRACKING_NUMBER }}" placeholder="送り状番号">
+                            </div>
+                        @empty
+                            {{-- 送り状未登録の場合は空欄を1件表示 --}}
+                            <div class="shipping-row rounded-lg border border-slate-200 p-4">
+                                <div class="mb-2 flex items-center justify-between">
+                                    <label class="text-sm font-semibold">送り状番号</label>
+
+                                    <button type="button" class="remove-item btn btn-outline btn-error btn-sm"
+                                        onclick="this.closest('.shipping-row').remove()">
+                                        削除
+                                    </button>
+                                </div>
+
+                                <input type="text" name="shippings[0][tracking_number]" class="input w-full"
+                                    maxlength="{{ \App\Support\InputLimits::TRACKING_NUMBER }}" placeholder="送り状番号">
+                            </div>
+                        @endforelse
+                    </div>
+
+                    <button type="button" id="add-shipping" class="btn btn-outline btn-neutral btn-sm mt-4">
+                        <x-plus /> 個口を追加
+                    </button>
+                </div>
 
                 <div class="modal-action">
                     <button type="button" class="btn btn-outline btn-neutral"
@@ -738,7 +843,7 @@
     @if (!in_array($order->status, [\App\Enums\OrderStatus::SHIPPED, \App\Enums\OrderStatus::CANCELLED], true))
         <dialog id="cancel_modal" class="modal">
             <div class="modal-box">
-                <h3 class="text-lg font-bold text-red-700">
+                <h3 class="text-lg font-bold text-red-700" tabindex="-1" autofocus>
                     注文をキャンセルしますか？
                 </h3>
 
@@ -832,7 +937,7 @@
             const container = document.getElementById('shipping-fields');
             const addButton = document.getElementById('add-shipping');
 
-            let nextIndex = {{ $order->orderShippings->count() }};
+            let nextIndex = {{ max(1, $order->orderShippings->count()) }};
 
             addButton.addEventListener('click', () => {
                 const row = document.createElement('div');
@@ -841,7 +946,7 @@
                 row.innerHTML = `
                 <div class="mb-2 flex items-center justify-between">
                     <label class="text-sm font-semibold">送り状番号</label>
-                    <button type="button" class="btn btn-ghost btn-error btn-xs"
+                    <button type="button" class="remove-item btn btn-outline btn-error btn-sm"
                         onclick="this.closest('.shipping-row').remove()">
                         削除
                     </button>

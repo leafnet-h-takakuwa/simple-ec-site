@@ -6,8 +6,8 @@ use App\Notifications\VerifyEmailChange;
 use App\Support\InputLimits;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
+use App\Notifications\EmailChanged;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -105,6 +105,9 @@ class EmailChangeController extends Controller
                 ->with('error', 'このメールアドレスはすでに使用されています。');
         }
 
+        // 変更前のメールアドレスを退避
+        $oldEmail = $account->email;
+
         $account->email = $account->pending_email;
         $account->email_verified_at = now();
         $account->pending_email = null;
@@ -112,6 +115,14 @@ class EmailChangeController extends Controller
         $account->pending_email_requested_at = null;
         $account->save();
 
+        // 変更前のメールアドレスに完了通知
+        try {
+            Notification::route('mail', $oldEmail)
+                ->notify(new EmailChanged());
+        } catch (\Throwable $e) {
+            // 通知失敗でもメールアドレス変更は取り消さない
+            report($e);
+        }
         return redirect()->route('home')
             ->with('success', 'メールアドレスの変更が完了しました。');
     }

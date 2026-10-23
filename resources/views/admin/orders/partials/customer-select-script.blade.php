@@ -148,7 +148,6 @@
 
                 renderCustomers();
                 modal.showModal();
-                search.focus();
             });
         });
 

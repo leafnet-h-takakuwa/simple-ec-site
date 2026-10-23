@@ -1,7 +1,7 @@
 {{-- 商品選択モーダル --}}
 <dialog id="product-select-modal" class="modal">
     <div class="modal-box w-11/12 max-w-3xl">
-        <h3 class="text-lg font-bold">商品を選択</h3>
+        <h3 class="text-lg font-bold" tabindex="-1" autofocus>商品を選択</h3>
 
         <p class="mt-2 text-sm text-slate-500">
             商品を選択すると、商品名・内容量・単価・税率が自動入力されます。

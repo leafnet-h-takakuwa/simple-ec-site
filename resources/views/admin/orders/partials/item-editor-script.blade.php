@@ -139,7 +139,6 @@
                 filterProducts();
 
                 modal.showModal();
-                productSearch.focus();
             }
         });
 

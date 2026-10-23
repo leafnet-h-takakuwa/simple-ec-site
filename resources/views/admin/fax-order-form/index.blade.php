@@ -73,27 +73,7 @@
         </div>
     </form>
 
-    {{-- 商品選択モーダル（既存の注文明細編集と同じ操作） --}}
-    <dialog id="product-select-modal" class="modal">
-        <div class="modal-box">
-            <h3 class="text-lg font-bold">商品を選択</h3>
-            <p class="mt-2 text-sm text-slate-500">商品を選択すると、注文書表示名に商品名が自動入力されます。</p>
-            <div class="mt-5">
-                <label for="product-select" class="mb-2 block text-sm font-semibold">商品</label>
-                <select id="product-select" class="select w-full">
-                    <option value="">商品を選択してください</option>
-                    @foreach ($products as $product)
-                        <option value="{{ $product->id }}">{{ $product->name }}（{{ formatYen($product->price) }}）</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="modal-action">
-                <button type="button" id="cancel-product" class="btn btn-outline btn-neutral">キャンセル</button>
-                <button type="button" id="confirm-product" class="btn btn-success">選択する</button>
-            </div>
-        </div>
-        <form method="dialog" class="modal-backdrop"><button>閉じる</button></form>
-    </dialog>
+    @include('admin.fax-order-form.partials.product-select-modal')
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -163,41 +143,7 @@
                 event.returnValue = '';
             });
 
-            const productModal = document.getElementById('product-select-modal');
-            const productSelect = document.getElementById('product-select');
-            let editingProductIndex = null;
-
-            function openProductModal(index) {
-                editingProductIndex = index;
-                const currentId = rows[index].product_id;
-                const available = products.some(product => String(product.id) === String(currentId));
-                productSelect.value = available ? String(currentId) : '';
-                productModal.showModal();
-            }
-
-            productSelect.addEventListener('change', () => productSelect.setCustomValidity(''));
-            document.getElementById('cancel-product').addEventListener('click', () => productModal.close());
-            document.getElementById('confirm-product').addEventListener('click', () => {
-                if (editingProductIndex === null || !productSelect.value) {
-                    productSelect.setCustomValidity('商品を選択してください。');
-                    productSelect.reportValidity();
-                    return;
-                }
-                const product = products.find(item => String(item.id) === productSelect.value);
-                rows[editingProductIndex].product_id = product.id;
-                rows[editingProductIndex].display_name = product.name;
-                const index = editingProductIndex;
-                editingProductIndex = null;
-                productModal.close();
-                markDirty();
-                render();
-                document.getElementById(`display-name-${index}`)?.focus({
-                    preventScroll: true
-                });
-            });
-            productModal.addEventListener('close', () => {
-                editingProductIndex = null;
-            });
+            @include('admin.fax-order-form.partials.product-select-script')
 
             function render() {
                 columns.forEach(column => {

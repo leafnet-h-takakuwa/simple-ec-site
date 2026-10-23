@@ -1,7 +1,7 @@
 {{-- 顧客選択モーダル --}}
 <dialog id="customer-select-modal" class="modal">
     <div class="modal-box w-11/12 max-w-3xl">
-        <h3 class="text-lg font-bold">
+        <h3 class="text-lg font-bold" tabindex="-1" autofocus>
             顧客台帳から選択
         </h3>
 

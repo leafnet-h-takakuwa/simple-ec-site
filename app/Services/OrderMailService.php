@@ -173,19 +173,28 @@ class OrderMailService
         string $body
     ): void {
         $from = config('mail.from.address');
+        $bcc = array_values(array_filter(array_map(
+            'trim',
+            explode(',', config('mail.bcc.address') ?? '')
+        )));
 
         $history = $related->mailHistories()->create([
             'type' => $type,
             'status' => MailStatus::PENDING,
             'from_address' => $from,
             'to_address' => $to,
+            'bcc_address' => $bcc ? implode(',', $bcc) : null,
             'subject' => $subject,
             'body' => $body,
         ]);
 
         try {
-            Mail::raw($body, function ($message) use ($to, $subject) {
+            Mail::raw($body, function ($message) use ($to, $subject, $bcc) {
                 $message->to($to)->subject($subject);
+
+                if (filled($bcc)) {
+                    $message->bcc($bcc);
+                }
             });
 
             $history->update([

@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\NoticeController as AdminNoticeController;
+use App\Http\Controllers\Admin\MailHistoryController as AdminMailHistoryController;
 use App\Http\Controllers\Admin\FaxOrderFormController;
 use App\Http\Controllers\FaxOrderFormPdfController;
 use App\Http\Controllers\NoticeController;
@@ -168,6 +169,12 @@ Route::middleware(['auth', EnsureUserIsAdmin::class])
             ->name('fax-order-form.update');
         Route::post('/fax-order-form/preview', [FaxOrderFormPdfController::class, 'preview'])
             ->name('fax-order-form.preview');
+
+        // メール送信履歴
+        Route::get('/mail-histories', [AdminMailHistoryController::class, 'index'])
+            ->name('mail-histories.index');
+        Route::get('/mail-histories/{mailHistory}', [AdminMailHistoryController::class, 'show'])
+            ->name('mail-histories.show');
 
         // お知らせ管理
         Route::resource('notices', AdminNoticeController::class)

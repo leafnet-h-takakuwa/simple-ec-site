@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use App\Enums\MailType;
+use App\Enums\MailStatus;
 
 class MailHistory extends Model
 {
@@ -27,6 +29,8 @@ class MailHistory extends Model
     protected function casts(): array
     {
         return [
+            'type' => MailType::class,
+            'status' => MailStatus::class,
             'sent_at' => 'datetime',
         ];
     }

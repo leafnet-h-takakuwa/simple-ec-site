@@ -6,6 +6,7 @@ return [
         'orders' => 10,
         'admin_products' => 10,
         'admin_orders' => 10,
+        'admin_mail_histories' => 20,
         'admin_users' => 20,
         'admin_user_orders' => 10,
     ],

@@ -176,6 +176,17 @@
                             </a>
                         </li>
 
+                        {{-- メール送信履歴 --}}
+                        <li>
+                            <a href="{{ route('admin.mail-histories.index') }}" @class([
+                                'gap-3',
+                                'menu-active' => request()->routeIs('admin.mail-histories.*'),
+                            ])>
+                                <x-icons.mail-history class="size-5" />
+                                メール送信履歴
+                            </a>
+                        </li>
+
                         {{-- ショップを見る --}}
                         <li>
                             <a href="{{ route('home') }}" class="gap-3">
@@ -290,6 +301,16 @@
                 ])>
                     <x-icons.users class="size-5" />
                     WEB会員管理
+                </a>
+
+                {{-- メール送信履歴 --}}
+                <a href="{{ route('admin.mail-histories.index') }}" @class([
+                    'flex items-center gap-3 rounded-lg px-4 py-3 transition-colors hover:bg-green-100',
+                    'bg-green-100 font-semibold text-green-800' => request()->routeIs(
+                        'admin.mail-histories.*'),
+                ])>
+                    <x-icons.mail-history class="size-5" />
+                    メール送信履歴
                 </a>
 
             </nav>

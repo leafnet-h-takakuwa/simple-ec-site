@@ -2,11 +2,13 @@
 
 namespace App\Services;
 
+use App\Enums\MailStatus;
+use App\Enums\MailType;
+use App\Enums\OrderStatus;
+use App\Enums\PaymentMethod;
 use App\Models\Order;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use App\Enums\OrderStatus;
-use App\Enums\PaymentMethod;
 use Illuminate\Support\Facades\View;
 
 class OrderMailService
@@ -15,49 +17,49 @@ class OrderMailService
     private const STATUS_MAILS = [
         'bank_transfer' => [
             'received:awaiting_payment' => [
-                'type' => 'payment_guide',
+                'type' => MailType::PAYMENT_GUIDE,
                 'view' => 'emails.orders.payment-guide',
                 'subject' => '[重要]ご入金先のご案内',
             ],
             'preparing:shipped' => [
-                'type' => 'shipping_notice',
+                'type' => MailType::SHIPPING_NOTICE,
                 'view' => 'emails.orders.shipping-notice',
                 'subject' => '商品発送のご案内',
             ],
             'received:cancelled' => [
-                'type' => 'order_cancelled',
+                'type' => MailType::ORDER_CANCELLED,
                 'view' => 'emails.orders.cancelled',
                 'subject' => 'ご注文キャンセルのお知らせ',
             ],
             'awaiting_payment:cancelled' => [
-                'type' => 'order_cancelled',
+                'type' => MailType::ORDER_CANCELLED,
                 'view' => 'emails.orders.cancelled',
                 'subject' => 'ご注文キャンセルのお知らせ',
             ],
             'preparing:cancelled' => [
-                'type' => 'order_cancelled',
+                'type' => MailType::ORDER_CANCELLED,
                 'view' => 'emails.orders.cancelled',
                 'subject' => 'ご注文キャンセルのお知らせ',
             ],
         ],
         'cod' => [
             'received:preparing' => [
-                'type' => 'total_confirmed',
+                'type' => MailType::TOTAL_CONFIRMED,
                 'view' => 'emails.orders.total-confirmed',
                 'subject' => 'お支払い金額確定のご案内',
             ],
             'preparing:shipped' => [
-                'type' => 'shipping_notice',
+                'type' => MailType::SHIPPING_NOTICE,
                 'view' => 'emails.orders.shipping-notice',
                 'subject' => '商品発送のご案内',
             ],
             'received:cancelled' => [
-                'type' => 'order_cancelled',
+                'type' => MailType::ORDER_CANCELLED,
                 'view' => 'emails.orders.cancelled',
                 'subject' => 'ご注文キャンセルのお知らせ',
             ],
             'preparing:cancelled' => [
-                'type' => 'order_cancelled',
+                'type' => MailType::ORDER_CANCELLED,
                 'view' => 'emails.orders.cancelled',
                 'subject' => 'ご注文キャンセルのお知らせ',
             ],
@@ -141,7 +143,7 @@ class OrderMailService
         ) {
             $this->send(
                 $order,
-                'order_received',
+                MailType::ORDER_RECEIVED,
                 $order->orderer_email,
                 '【' . config('company.shop_name') . '】ご注文受付完了',
                 view('emails.orders.received', compact('order'))->render()
@@ -151,7 +153,7 @@ class OrderMailService
         // 店舗宛て
         $this->send(
             $order,
-            'order_notice',
+            MailType::ORDER_NOTICE,
             config('company.email'),
             '【' . config('company.shop_name') . '】お申込み (' .
                 $order->orderer_name . ')',
@@ -162,7 +164,7 @@ class OrderMailService
     // 送信処理
     private function send(
         Order $order,
-        string $type,
+        MailType $type,
         string $to,
         string $subject,
         string $body
@@ -171,7 +173,7 @@ class OrderMailService
 
         $history = $order->mailHistories()->create([
             'type' => $type,
-            'status' => 'pending',
+            'status' => MailStatus::PENDING,
             'from_address' => $from,
             'to_address' => $to,
             'subject' => $subject,
@@ -184,18 +186,18 @@ class OrderMailService
             });
 
             $history->update([
-                'status' => 'sent',
+                'status' => MailStatus::SENT,
                 'sent_at' => now(),
             ]);
         } catch (\Throwable $e) {
             $history->update([
-                'status' => 'failed',
+                'status' => MailStatus::FAILED,
                 'error_message' => $e->getMessage(),
             ]);
 
             Log::error('注文メールの送信に失敗しました。', [
                 'order_id' => $order->id,
-                'type' => $type,
+                'type' => $type->value,
                 'exception' => $e,
             ]);
         }

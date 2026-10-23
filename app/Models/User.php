@@ -11,8 +11,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 
-class User extends Authenticatable // implements MustVerifyEmail
+class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, SoftDeletes;
@@ -74,5 +75,12 @@ class User extends Authenticatable // implements MustVerifyEmail
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class);
+    }
+
+    // 管理者はメールアドレスの確認をスキップする
+    public function hasVerifiedEmail(): bool
+    {
+        return $this->is_admin
+            || !is_null($this->email_verified_at);
     }
 }

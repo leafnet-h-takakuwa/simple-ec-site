@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\FaxOrderFormController;
 use App\Http\Controllers\FaxOrderFormPdfController;
 use App\Http\Controllers\NoticeController;
 use App\Http\Controllers\Admin\CustomerController;
+use App\Http\Middleware\EnsureEmailVerifiedForCheckout;
 
 /**
  * 認証不要ルート
@@ -47,17 +48,19 @@ Route::patch('/carts/{product_id}', [CartController::class, 'update'])
 Route::delete('/carts/{product_id}', [CartController::class, 'destroy'])
     ->name('carts.destroy');
 
-// 注文
-Route::get('/orders/create', [OrderController::class, 'create'])
-    ->name('orders.create');
-Route::post('/orders/confirm', [OrderController::class, 'confirm'])
-    ->name('orders.confirm');
-Route::get('/orders/confirm', [OrderController::class, 'showConfirm'])
-    ->name('orders.confirm.show');
-Route::post('/orders', [OrderController::class, 'store'])
-    ->name('orders.store');
-Route::get('/orders/complete', [OrderController::class, 'complete'])
-    ->name('orders.complete');
+// 注文(会員の場合はメール認証必須)
+Route::middleware([EnsureEmailVerifiedForCheckout::class])->group(function () {
+    Route::get('/orders/create', [OrderController::class, 'create'])
+        ->name('orders.create');
+    Route::post('/orders/confirm', [OrderController::class, 'confirm'])
+        ->name('orders.confirm');
+    Route::get('/orders/confirm', [OrderController::class, 'showConfirm'])
+        ->name('orders.confirm.show');
+    Route::post('/orders', [OrderController::class, 'store'])
+        ->name('orders.store');
+    Route::get('/orders/complete', [OrderController::class, 'complete'])
+        ->name('orders.complete');
+});
 
 // FAX注文書
 Route::get('/fax-order-form/pdf', [FaxOrderFormPdfController::class, 'show'])

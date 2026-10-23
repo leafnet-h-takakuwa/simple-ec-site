@@ -31,8 +31,7 @@ new #[Layout('components.layouts.auth', ['title' => '会員登録'])] class exte
 
         Auth::login($user);
 
-        session()->flash('success', '会員登録ありがとうございます');
-        $this->redirect(route('home', absolute: false), navigate: true);
+        $this->redirect(route('verification.notice', absolute: false), navigate: true);
     }
 }; ?>
 
@@ -45,14 +44,16 @@ new #[Layout('components.layouts.auth', ['title' => '会員登録'])] class exte
     <form wire:submit="register" class="flex flex-col gap-6">
         <!-- Name -->
         <div class="grid gap-2">
-            <flux:input wire:model="name" id="name" label="{{ __('Name') }}" type="text" name="name" maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}" required
-                autofocus autocomplete="name" placeholder="氏名を入力してください" />
+            <flux:input wire:model="name" id="name" label="{{ __('Name') }}" type="text" name="name"
+                maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}" required autofocus autocomplete="name"
+                placeholder="氏名を入力してください" />
         </div>
 
         <!-- Email Address -->
         <div class="grid gap-2">
             <flux:input wire:model="email" id="email" label="{{ __('Email address') }}" type="email"
-                name="email" maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}" required autocomplete="email" placeholder="email@example.com" />
+                name="email" maxlength="{{ \App\Support\InputLimits::SHORT_TEXT }}" required autocomplete="email"
+                placeholder="email@example.com" />
         </div>
 
         <!-- Password -->

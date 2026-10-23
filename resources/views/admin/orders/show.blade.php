@@ -732,9 +732,8 @@
                                 <div tabindex="0"
                                     class="dropdown-content z-50 mt-2 w-80 max-w-[80vw] rounded-lg border border-slate-200 bg-white p-4 shadow-lg">
                                     <p class="mb-2 text-sm font-bold">注文時の備考</p>
-                                    <p
-                                        class="max-h-48 overflow-y-auto whitespace-pre-wrap break-words text-sm text-slate-700">
-                                        {{ $order->customer_note }}</p>
+                                    {{-- prettier-ignore --}}
+                                    <p class="max-h-48 overflow-y-auto whitespace-pre-wrap break-words text-sm text-slate-700">{{ $order->customer_note }}</p>
                                 </div>
                             </div>
                         @endif

@@ -10,13 +10,18 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $categories = ProductCategory::cases();
+        $categories = ProductCategory::availableCases();
         $category = $request->query('category');
         $sort = $request->query('sort');
 
-        // 指定されたカテゴリが有効か確認
+        // 公開中の商品が存在するカテゴリか確認
         if ($category !== null) {
-            if (ProductCategory::tryFrom($category) === null) {
+            $availableCategories = array_map(
+                fn(ProductCategory $category) => $category->value,
+                $categories
+            );
+
+            if (!in_array($category, $availableCategories, true)) {
                 abort(404);
             }
         }

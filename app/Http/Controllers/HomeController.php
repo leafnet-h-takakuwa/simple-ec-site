@@ -16,7 +16,7 @@ class HomeController extends Controller
         $productsNew = Product::active()->newest()
             ->take(config('shop.home.new_products'))->get();
 
-        $categories = ProductCategory::cases();
+        $categories = ProductCategory::availableCases();
 
         // 最新のお知らせ5件
         $notices = Notice::where('is_published', true)

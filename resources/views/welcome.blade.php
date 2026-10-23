@@ -215,26 +215,18 @@
             カテゴリから探す
         </h2>
 
-        <div class="grid grid-cols-1 gap-5 sm:grid-cols-3">
+        <div class="grid grid-cols-2 gap-3 lg:grid-cols-3">
 
             @foreach ($categories as $category)
                 <a href="{{ route('products.index', ['category' => $category->value]) }}"
-                    class="group overflow-hidden rounded-xl border border-base-300 bg-base-100 transition hover:shadow-md">
+                    class="group flex min-h-20 items-center justify-between gap-3 rounded-xl border border-base-300 bg-base-100 px-5 py-4 transition-colors hover:bg-base-200">
 
-                    {{-- カテゴリ画像 --}}
-                    <div class="overflow-hidden">
-                        <img src="{{ asset('images/categories/' . $category->value . '.webp') }}"
-                            alt="{{ $category->label() }}"
-                            class="aspect-[400/260] w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                            loading="lazy">
-                    </div>
+                    <span class="font-bold">
+                        {{ $category->label() }}
+                    </span>
 
-                    <div class="flex items-center justify-between p-4">
-                        <h3 class="font-bold">
-                            {{ $category->label() }}
-                        </h3>
-                    </div>
-
+                    <x-arrow direction="right"
+                        class="size-5 shrink-0 text-base-content/40 transition-transform group-hover:translate-x-1" />
                 </a>
             @endforeach
 

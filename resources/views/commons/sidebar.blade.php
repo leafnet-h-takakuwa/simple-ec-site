@@ -15,7 +15,7 @@
         </li>
 
         {{-- カテゴリ別リンク --}}
-        @foreach (\App\Enums\ProductCategory::cases() as $category)
+        @foreach (\App\Enums\ProductCategory::availableCases() as $category)
             <li>
                 <a href="{{ route('products.index', ['category' => $category->value]) }}"
                     class="rounded-lg {{ request()->routeIs('products.index') && request()->query('category') === $category->value ? 'menu-active' : '' }}">

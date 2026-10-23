@@ -38,10 +38,17 @@
                                 <p class="mt-1 text-sm text-slate-500">
                                     {{ $product->volume }}
                                 </p>
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <p class="mt-1 text-sm text-slate-600">
+                                        {{ formatYen($product->price) }}
+                                    </p>
 
-                                <p class="mt-1 text-sm text-slate-600">
-                                    {{ formatYen($product->price) }}
-                                </p>
+                                    @if (in_array($product->id, $faxProductIds))
+                                        <span class="badge badge-outline badge-success badge-sm shrink-0">
+                                            FAX
+                                        </span>
+                                    @endif
+                                </div>
                             </div>
 
                             {{-- 選択ボタン --}}

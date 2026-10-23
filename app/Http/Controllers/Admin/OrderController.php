@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Customer;
+use App\Models\FaxOrderFormRow;
 use App\Support\ContactRules;
 use App\Support\InputLimits;
 use App\Services\TaxCalculator;
@@ -145,9 +146,17 @@ class OrderController extends Controller
                 'is_recipient',
             ]);
 
+        // FAX注文書に掲載されている商品ID
+        $faxProductIds = FaxOrderFormRow::query()
+            ->where('type', 'product')
+            ->whereNotNull('product_id')
+            ->pluck('product_id')
+            ->all();
+
         return view('admin.orders.create', [
             'products' => $products,
             'customers' => $customers,
+            'faxProductIds' => $faxProductIds,
             'orderSources' => OrderSource::cases(),
             'paymentMethods' => PaymentMethod::cases(),
         ]);
@@ -292,6 +301,13 @@ class OrderController extends Controller
         // 注文情報と注文明細を取得
         $order = Order::with('orderItems')->findOrFail($id);
 
+        // FAX注文書に掲載されている商品ID
+        $faxProductIds = FaxOrderFormRow::query()
+            ->where('type', 'product')
+            ->whereNotNull('product_id')
+            ->pluck('product_id')
+            ->all();
+
         if (!$order->isEditable()) {
             return redirect()
                 ->route('admin.orders.show', $order)
@@ -307,6 +323,7 @@ class OrderController extends Controller
         return view('admin.orders.edit-items', [
             'order' => $order,
             'products' => $products,
+            'faxProductIds' => $faxProductIds,
         ]);
     }
 

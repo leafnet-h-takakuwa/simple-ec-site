@@ -1,4 +1,8 @@
 {{-- FAX注文書用 商品選択モーダル --}}
+@php
+    // ページ表示時点でFAX注文書に登録されている商品ID
+    $faxProductIds = $rows->flatten(1)->where('type', 'product')->pluck('product_id')->filter()->all();
+@endphp
 <dialog id="product-select-modal" class="modal">
     <div class="modal-box w-11/12 max-w-3xl">
         <h3 class="text-lg font-bold" tabindex="-1" autofocus>商品を選択</h3>
@@ -24,9 +28,20 @@
                             <div class="min-w-0 flex-1">
                                 <p class="break-words font-semibold">{{ $product->name }}</p>
                                 <p class="mt-1 text-sm text-slate-500">{{ $product->volume }}</p>
-                                <p class="mt-1 text-sm text-slate-600">{{ formatYen($product->price) }}</p>
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <p class="mt-1 text-sm text-slate-600">
+                                        {{ formatYen($product->price) }}
+                                    </p>
+
+                                    @if (in_array($product->id, $faxProductIds))
+                                        <span class="badge badge-outline badge-success badge-sm shrink-0">
+                                            FAX
+                                        </span>
+                                    @endif
+                                </div>
                             </div>
-                            <button type="button" class="choose-product btn btn-outline btn-success btn-sm shrink-0">選択</button>
+                            <button type="button"
+                                class="choose-product btn btn-outline btn-success btn-sm shrink-0">選択</button>
                         </div>
                     </div>
                 @empty

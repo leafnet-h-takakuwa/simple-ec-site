@@ -145,25 +145,39 @@
     @endif
 
     {{-- 関連情報 --}}
-    @if ($mail_history->related instanceof \App\Models\Order)
-        <section class="mb-8 rounded-xl border border-slate-200 bg-white p-5 lg:p-7">
-            <h2 class="mb-6 text-lg font-bold">
-                関連情報
+    @php
+        $related = $mail_history->related;
+
+        $relatedOrder = match (true) {
+            $related instanceof \App\Models\Order => $related,
+            $related instanceof \App\Models\OrderStatusHistory => $related->order,
+            default => null,
+        };
+    @endphp
+
+    @if ($relatedOrder)
+        <section class="rounded-xl border border-slate-200 bg-white p-5 lg:p-7">
+            <h2 class="mb-4 flex items-center gap-2 text-lg font-bold">
+                関連する注文
             </h2>
 
-            <dl>
+            <a href="{{ route('admin.orders.show', $relatedOrder) }}"
+                class="group flex flex-wrap items-center justify-between gap-4 rounded-lg border border-slate-200 bg-slate-50 p-4 transition-colors hover:border-green-300 hover:bg-green-50">
+
                 <div>
-                    <dt class="mb-2 text-sm font-semibold text-slate-500">
+                    <p class="mb-1 text-xs text-slate-500">
                         注文番号
-                    </dt>
-                    <dd>
-                        <a href="{{ route('admin.orders.show', $mail_history->related->id) }}"
-                            class="font-semibold text-green-800 hover:underline">
-                            #{{ sprintf('%08d', $mail_history->related->id) }}
-                        </a>
-                    </dd>
+                    </p>
+
+                    <p class="flex items-center gap-2 font-semibold text-slate-800">
+                        #{{ sprintf('%08d', $relatedOrder->id) }}
+                    </p>
                 </div>
-            </dl>
+
+                <span class="inline-flex items-center gap-1 text-sm font-semibold text-green-700 group-hover:underline">
+                    注文詳細を見る
+                </span>
+            </a>
         </section>
     @endif
 @endsection

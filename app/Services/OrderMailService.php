@@ -10,6 +10,8 @@ use App\Models\Order;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\View;
+use App\Models\OrderStatusHistory;
+use Illuminate\Database\Eloquent\Model;
 
 class OrderMailService
 {
@@ -100,7 +102,8 @@ class OrderMailService
     public function sendForStatus(
         Order $order,
         OrderStatus $oldStatus,
-        OrderStatus $newStatus
+        OrderStatus $newStatus,
+        OrderStatusHistory $statusHistory
     ): void {
         $mail = $this->resolveStatusMail(
             $order,
@@ -119,7 +122,7 @@ class OrderMailService
         ]);
 
         $this->send(
-            $order,
+            $statusHistory,
             $mail['type'],
             $order->orderer_email,
             '【' . config('company.shop_name') . '】' . $mail['subject'],
@@ -128,7 +131,7 @@ class OrderMailService
     }
 
     // 注文受付
-    public function sendReceived(Order $order): void
+    public function sendReceived(Order $order, OrderStatusHistory $statusHistory): void
     {
         $order->loadMissing([
             'orderItems',
@@ -142,7 +145,7 @@ class OrderMailService
             filled($order->orderer_email)
         ) {
             $this->send(
-                $order,
+                $statusHistory,
                 MailType::ORDER_RECEIVED,
                 $order->orderer_email,
                 '【' . config('company.shop_name') . '】ご注文受付完了',
@@ -152,7 +155,7 @@ class OrderMailService
 
         // 店舗宛て
         $this->send(
-            $order,
+            $statusHistory,
             MailType::ORDER_NOTICE,
             config('company.email'),
             '【' . config('company.shop_name') . '】お申込み (' .
@@ -163,7 +166,7 @@ class OrderMailService
 
     // 送信処理
     private function send(
-        Order $order,
+        Model $related,
         MailType $type,
         string $to,
         string $subject,
@@ -171,7 +174,7 @@ class OrderMailService
     ): void {
         $from = config('mail.from.address');
 
-        $history = $order->mailHistories()->create([
+        $history = $related->mailHistories()->create([
             'type' => $type,
             'status' => MailStatus::PENDING,
             'from_address' => $from,
@@ -196,7 +199,8 @@ class OrderMailService
             ]);
 
             Log::error('注文メールの送信に失敗しました。', [
-                'order_id' => $order->id,
+                'related_type' => $related->getMorphClass(),
+                'related_id' => $related->getKey(),
                 'type' => $type->value,
                 'exception' => $e,
             ]);

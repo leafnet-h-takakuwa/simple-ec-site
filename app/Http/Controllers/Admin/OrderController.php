@@ -105,6 +105,7 @@ class OrderController extends Controller
             'taxSummaries',
             'statusHistories' => fn($query) => $query->latest('id'),
             'statusHistories.user',
+            'statusHistories.mailHistories',
         ])->findOrFail($id);
 
         $nextStatus = $order->status->next($order->payment_method);
@@ -205,7 +206,7 @@ class OrderController extends Controller
         }
 
         // 注文と注文明細をまとめて登録
-        $order = DB::transaction(function () use ($validated, $items, $totalAmount) {
+        [$order, $statusHistory] = DB::transaction(function () use ($validated, $items, $totalAmount) {
 
             $order = Order::create([
                 'user_id' => null,
@@ -267,7 +268,7 @@ class OrderController extends Controller
             $order->taxSummaries()->createMany($taxSummaries);
 
             // 注文受付履歴を登録
-            $order->statusHistories()->create([
+            $statusHistory = $order->statusHistories()->create([
                 'from_status' => null,
                 'to_status' => OrderStatus::RECEIVED->value,
                 'contact_method' => 'none',
@@ -278,12 +279,12 @@ class OrderController extends Controller
             // 顧客台帳に反映（重複時は利用区分のみ更新）
             $this->customerService->registerFromOrder($order);
 
-            return $order;
+            return [$order, $statusHistory];
         });
 
         // 注文受付メールを送信
         try {
-            $this->orderMailService->sendReceived($order);
+            $this->orderMailService->sendReceived($order, $statusHistory);
         } catch (\Throwable $e) {
             Log::error('注文受付メールの処理でエラーが発生しました。', [
                 'order_id' => $order->id,
@@ -537,13 +538,14 @@ class OrderController extends Controller
             ]);
         }
 
-        DB::transaction(function () use ($order, $oldStatus, $newStatus, $validated, $request) {
+        // ステータス更新と履歴登録
+        $statusHistory = DB::transaction(function () use ($order, $oldStatus, $newStatus, $validated, $request) {
             // ステータスを更新
             $order->status = $newStatus;
             $order->save();
 
             // ステータス変更履歴を登録
-            $order->statusHistories()->create([
+            return $order->statusHistories()->create([
                 'from_status' => $oldStatus->value,
                 'to_status' => $newStatus->value,
                 'contact_method' => $validated['contact_method'],
@@ -558,7 +560,8 @@ class OrderController extends Controller
                 $this->orderMailService->sendForStatus(
                     $order,
                     $oldStatus,
-                    $newStatus
+                    $newStatus,
+                    $statusHistory
                 );
             } catch (\Throwable $e) {
                 Log::error('注文メールの処理でエラーが発生しました。', [

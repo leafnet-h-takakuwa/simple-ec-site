@@ -239,7 +239,7 @@ class OrderController extends Controller
 
         try {
             // 注文・注文明細・会員カート削除をまとめて実行
-            $order = DB::transaction(function () use ($order_data, $cart_items, $total_amount, $cart, $checkout_token) {
+            [$order, $statusHistory] = DB::transaction(function () use ($order_data, $cart_items, $total_amount, $cart, $checkout_token) {
 
                 // 注文ヘッダー登録
                 $order = Order::create([
@@ -298,7 +298,7 @@ class OrderController extends Controller
                 $order->taxSummaries()->createMany($tax_summaries);
 
                 // 注文受付履歴を登録
-                $order->statusHistories()->create([
+                $statusHistory = $order->statusHistories()->create([
                     'from_status' => null,
                     'to_status' => OrderStatus::RECEIVED->value,
                     'contact_method' => 'none',
@@ -314,7 +314,7 @@ class OrderController extends Controller
                     CartItem::where('cart_id', $cart->id)->delete();
                 }
 
-                return $order;
+                return [$order, $statusHistory];
             });
         } catch (QueryException $e) {
             $existing_order = Order::where('checkout_token', $checkout_token)->first();
@@ -342,7 +342,7 @@ class OrderController extends Controller
 
         // 注文登録完了後にメール送信
         try {
-            $this->orderMailService->sendReceived($order);
+            $this->orderMailService->sendReceived($order, $statusHistory);
         } catch (\Throwable $e) {
             Log::error('注文メール処理でエラーが発生しました。', [
                 'order_id' => $order->id,

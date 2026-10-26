@@ -143,7 +143,7 @@
             <div
                 class="flex h-48 w-48 items-center justify-center overflow-hidden rounded-lg border border-slate-200 bg-slate-50">
                 @if ($product->image_path)
-                    <img src="{{ Storage::url($product->image_path) }}" alt="{{ $product->name }}"
+                    <img src="{{ Storage::disk('public')->url($product->image_path) }}" alt="{{ $product->name }}"
                         class="h-full w-full object-contain">
                 @else
                     <x-no-image />

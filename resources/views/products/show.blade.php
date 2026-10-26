@@ -37,7 +37,7 @@
             <div>
                 <div class="relative aspect-square w-full overflow-hidden rounded-xl border border-base-300 bg-base-200">
                     @if ($product->image_path)
-                        <img src="{{ Storage::url($product->image_path) }}" alt="{{ $product->name }}"
+                        <img src="{{ Storage::disk('public')->url($product->image_path) }}" alt="{{ $product->name }}"
                             class="h-full w-full object-contain">
                     @else
                         <x-no-image />

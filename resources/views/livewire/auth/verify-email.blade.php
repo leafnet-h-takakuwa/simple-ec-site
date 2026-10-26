@@ -30,7 +30,7 @@ new #[Layout('components.layouts.auth', ['title' => 'メールアドレス確認
     {
         $logout();
 
-        $this->redirect('/', navigate: true);
+        $this->redirectRoute('home', navigate: true);
     }
 }; ?>
 

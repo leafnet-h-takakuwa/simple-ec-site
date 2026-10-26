@@ -53,7 +53,7 @@
                                     class="flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-base-200 text-sm text-base-content/40 sm:h-32 sm:w-40">
                                     {{-- 商品画像 --}}
                                     @if ($product->image_path)
-                                        <img src="{{ Storage::url($product->image_path) }}" alt="{{ $product->name }}"
+                                        <img src="{{ Storage::disk('public')->url($product->image_path) }}" alt="{{ $product->name }}"
                                             class="h-full w-full object-cover">
                                     @else
                                         <x-no-image />

@@ -1,3 +1,9 @@
+self.addEventListener('message', (event) => {
+    if (event.data?.type === 'SKIP_WAITING') {
+        self.skipWaiting();
+    }
+});
+
 // プッシュ通知を受信
 self.addEventListener('push', (event) => {
     let data = {};
@@ -17,7 +23,7 @@ self.addEventListener('push', (event) => {
         icon: '/favicon.svg',
         badge: '/favicon.svg',
         data: {
-            url: data.url || '/admin',
+            url: data.data?.url || data.url || new URL('admin', self.registration.scope).href,
         },
     };
 

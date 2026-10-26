@@ -112,7 +112,7 @@
                     {{-- 商品画像 --}}
                     <div class="aspect-[4/3] overflow-hidden bg-base-200">
                         @if ($product->image_path)
-                            <img src="{{ Storage::url($product->image_path) }}" alt="{{ $product->name }}"
+                            <img src="{{ Storage::disk('public')->url($product->image_path) }}" alt="{{ $product->name }}"
                                 class="h-full w-full object-cover transition duration-300 group-hover:scale-105">
                         @else
                             <x-no-image />
@@ -166,7 +166,7 @@
                     {{-- 商品画像 --}}
                     <div class="relative aspect-[4/3] overflow-hidden bg-base-200">
                         @if ($product->image_path)
-                            <img src="{{ Storage::url($product->image_path) }}" alt="{{ $product->name }}"
+                            <img src="{{ Storage::disk('public')->url($product->image_path) }}" alt="{{ $product->name }}"
                                 class="h-full w-full object-cover transition duration-300 group-hover:scale-105">
                         @else
                             <x-no-image />

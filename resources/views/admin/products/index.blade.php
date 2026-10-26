@@ -84,7 +84,7 @@
                         <td>
                             <div class="flex h-14 w-14 items-center justify-center overflow-hidden rounded-lg bg-slate-100">
                                 @if ($product->image_path)
-                                    <img src="{{ Storage::url($product->image_path) }}" alt="{{ $product->name }}"
+                                    <img src="{{ Storage::disk('public')->url($product->image_path) }}" alt="{{ $product->name }}"
                                         class="h-full w-full object-cover">
                                 @else
                                     <x-no-image />
@@ -146,7 +146,7 @@
                     <div
                         class="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-slate-100">
                         @if ($product->image_path)
-                            <img src="{{ Storage::url($product->image_path) }}" alt="{{ $product->name }}"
+                            <img src="{{ Storage::disk('public')->url($product->image_path) }}" alt="{{ $product->name }}"
                                 class="h-full w-full object-cover">
                         @else
                             <span class="text-xs text-slate-400">

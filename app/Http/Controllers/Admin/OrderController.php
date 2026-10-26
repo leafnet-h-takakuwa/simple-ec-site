@@ -482,7 +482,7 @@ class OrderController extends Controller
         ], true)) {
             return back()->withErrors([
                 'error' => '発送済み・キャンセル済みの注文は変更できません。',
-            ]);
+            ])->withInput();
         }
 
         // 次のステータスを取得
@@ -495,7 +495,7 @@ class OrderController extends Controller
         ) {
             return back()->withErrors([
                 'error' => '指定されたステータスには変更できません。',
-            ]);
+            ])->withInput();
         }
 
         // 受付から先へ進む場合は金額の確定が必要
@@ -512,7 +512,7 @@ class OrderController extends Controller
             ) {
                 return back()->withErrors([
                     'error' => '送料・手数料を確定してからステータスを変更してください。',
-                ]);
+                ])->withInput();
             }
         }
 
@@ -526,7 +526,7 @@ class OrderController extends Controller
             ) {
                 return back()->withErrors([
                     'error' => 'すべての個口に送り状番号を登録してから発送済みに変更してください。',
-                ]);
+                ])->withInput();
             }
         }
 

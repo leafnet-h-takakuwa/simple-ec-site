@@ -592,6 +592,7 @@
     @if ($nextStatus)
         <dialog id="status_modal" class="modal">
             <div class="modal-box">
+                @include('admin.orders.partials.modal-errors', ['form' => 'status'])
                 <h3 class="text-lg font-bold" tabindex="-1" autofocus>注文ステータスの更新</h3>
 
                 <p class="mt-4">
@@ -621,6 +622,7 @@
                     @method('PATCH')
 
                     <input type="hidden" name="status" value="{{ $nextStatus->value }}">
+                    <input type="hidden" name="_modal" value="status">
 
                     @include('admin.orders.partials.contact-fields')
 
@@ -644,15 +646,9 @@
     @endif
 
     {{-- 送料・代引手数料編集モーダル --}}
-    @if ($errors->has('shipping_fee') || $errors->has('cod_fee'))
-        <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                document.getElementById('fees_modal').showModal();
-            });
-        </script>
-    @endif
     <dialog id="fees_modal" class="modal">
         <div class="modal-box">
+            @include('admin.orders.partials.modal-errors', ['form' => 'fees'])
             <h3 class="text-lg font-bold" tabindex="-1" autofocus>送料・代引手数料の編集</h3>
 
             <p class="mt-2 text-sm text-slate-500">
@@ -668,6 +664,7 @@
             <form method="POST" action="{{ route('admin.orders.fees.update', $order) }}">
                 @csrf
                 @method('PATCH')
+                <input type="hidden" name="_modal" value="fees">
 
                 <div class="mt-6 space-y-5">
                     <div>
@@ -676,7 +673,9 @@
                         </label>
 
                         <input type="number" id="shipping_fee" name="shipping_fee" class="input w-full" min="0"
-                            step="1" value="{{ old('shipping_fee', $order->shipping_fee) }}" placeholder="未入力">
+                            step="1"
+                            value="{{ is_scalar(old('shipping_fee')) ? old('shipping_fee') : (old('_modal') === 'fees' ? '' : ($order->shipping_fee ?? '')) }}"
+                            placeholder="未入力">
 
                         @error('shipping_fee')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -690,7 +689,9 @@
                             </label>
 
                             <input type="number" id="cod_fee" name="cod_fee" class="input w-full" min="0"
-                                step="1" value="{{ old('cod_fee', $order->cod_fee) }}" placeholder="未入力">
+                                step="1"
+                                value="{{ is_scalar(old('cod_fee')) ? old('cod_fee') : (old('_modal') === 'fees' ? '' : ($order->cod_fee ?? '')) }}"
+                                placeholder="未入力">
 
                             @error('cod_fee')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -720,6 +721,7 @@
     {{-- 支払い方法変更モーダル --}}
     <dialog id="payment_modal" class="modal">
         <div class="modal-box">
+            @include('admin.orders.partials.modal-errors', ['form' => 'payment'])
             <h3 class="text-lg font-bold" tabindex="-1" autofocus>お支払い方法の変更</h3>
 
             <p class="mt-2 text-sm text-slate-500">
@@ -729,6 +731,7 @@
             <form method="POST" action="{{ route('admin.orders.payment.update', $order) }}">
                 @csrf
                 @method('PATCH')
+                <input type="hidden" name="_modal" value="payment">
 
                 <div class="mt-6">
                     <label for="payment_method" class="mb-2 block text-sm font-semibold">
@@ -737,7 +740,7 @@
 
                     <select id="payment_method" name="payment_method" class="select w-full" required>
                         @foreach (\App\Enums\PaymentMethod::cases() as $method)
-                            <option value="{{ $method->value }}" @selected(old('payment_method', $order->payment_method->value) === $method->value)>
+                            <option value="{{ $method->value }}" @selected((old('_modal') === 'payment' && is_scalar(old('payment_method')) ? old('payment_method') : $order->payment_method->value) === $method->value)>
                                 {{ $method->label() }}
                             </option>
                         @endforeach
@@ -763,8 +766,31 @@
     </dialog>
 
     {{-- ヤマト連携情報編集モーダル --}}
+    @php
+        $restoreB2Shippings = old('_modal') === 'b2_shippings';
+        $b2ShippingRows = $restoreB2Shippings
+            ? (is_array(old('b2_shippings')) ? old('b2_shippings') : [])
+            : $order->orderShippings
+                ->sortBy('id')
+                ->map(fn($shipping) => [
+                    'id' => $shipping->id,
+                    'cool_type' => $shipping->cool_type?->value,
+                    'item_name' => $shipping->item_name,
+                ])
+                ->all();
+
+        if (!$restoreB2Shippings && $b2ShippingRows === []) {
+            $b2ShippingRows = [
+                [
+                    'cool_type' => null,
+                    'item_name' => $order->orderItems->pluck('product_name')->implode('、'),
+                ],
+            ];
+        }
+    @endphp
     <dialog id="b2_shippings_modal" class="modal">
         <div class="modal-box max-w-2xl">
+            @include('admin.orders.partials.modal-errors', ['form' => 'b2_shippings'])
             <h3 class="text-lg font-bold" tabindex="-1" autofocus>
                 ヤマト連携情報の編集
             </h3>
@@ -777,14 +803,20 @@
             <form id="b2-shippings-form" method="POST" action="{{ route('admin.orders.b2Shippings.update', $order) }}">
                 @csrf
                 @method('PATCH')
+                <input type="hidden" name="_modal" value="b2_shippings">
                 <div class="mt-6">
                     <h4 class="mb-4 font-semibold">個口別の設定</h4>
 
                     <div id="b2-shipping-fields" class="space-y-4">
-                        @forelse ($order->orderShippings->sortBy('id') as $shipping)
+                        @foreach ($b2ShippingRows as $index => $shipping)
+                            @php
+                                $shipping = is_array($shipping) ? $shipping : [];
+                            @endphp
                             <div class="b2-shipping-row rounded-lg border border-slate-200 p-4">
-                                <input type="hidden" name="b2_shippings[{{ $loop->index }}][id]"
-                                    value="{{ $shipping->id }}">
+                                @if (array_key_exists('id', $shipping))
+                                    <input type="hidden" name="b2_shippings[{{ $index }}][id]"
+                                        value="{{ is_scalar($shipping['id']) ? $shipping['id'] : '' }}">
+                                @endif
 
                                 <div class="mb-4 flex items-center justify-between gap-3">
                                     <h5 class="font-semibold">
@@ -803,12 +835,12 @@
                                             温度帯
                                         </label>
 
-                                        <select name="b2_shippings[{{ $loop->index }}][cool_type]"
+                                        <select name="b2_shippings[{{ $index }}][cool_type]"
                                             class="select w-full">
                                             <option value="">未設定</option>
 
                                             @foreach (\App\Enums\CoolType::cases() as $type)
-                                                <option value="{{ $type->value }}" @selected($shipping->cool_type === $type)>
+                                                <option value="{{ $type->value }}" @selected(($shipping['cool_type'] ?? null) === $type->value)>
                                                     {{ $type->label() }}
                                                 </option>
                                             @endforeach
@@ -821,55 +853,14 @@
                                                 最大{{ \App\Support\InputLimits::B2_ITEM_NAME }}文字</span>
                                         </label>
 
-                                        <input type="text" name="b2_shippings[{{ $loop->index }}][item_name]"
-                                            value="{{ $shipping->item_name ?? ($loop->first ? $order->orderItems->pluck('product_name')->implode('、') : '') }}"
+                                        <input type="text" name="b2_shippings[{{ $index }}][item_name]"
+                                            value="{{ is_scalar($shipping['item_name'] ?? null) ? $shipping['item_name'] : '' }}"
                                             maxlength="{{ \App\Support\InputLimits::B2_ITEM_NAME }}" class="input w-full"
                                             placeholder="送り状に記載する品名">
                                     </div>
                                 </div>
                             </div>
-                        @empty
-                            <div class="b2-shipping-row rounded-lg border border-slate-200 p-4">
-                                <div class="mb-4 flex items-center justify-between gap-3">
-                                    <h5 class="font-semibold">個口 1</h5>
-
-                                    <button type="button" class="btn btn-outline btn-error btn-sm"
-                                        onclick="this.closest('.b2-shipping-row').remove()">
-                                        削除
-                                    </button>
-                                </div>
-
-                                <div class="space-y-4">
-                                    <div>
-                                        <label class="mb-2 block text-sm font-semibold">
-                                            温度帯
-                                        </label>
-
-                                        <select name="b2_shippings[0][cool_type]" class="select w-full">
-                                            <option value="">未設定</option>
-
-                                            @foreach (\App\Enums\CoolType::cases() as $type)
-                                                <option value="{{ $type->value }}">
-                                                    {{ $type->label() }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-
-                                    <div>
-                                        <label class="mb-2 block text-sm font-semibold">
-                                            品名 <span class="text-xs font-normal text-slate-500">※
-                                                最大{{ \App\Support\InputLimits::B2_ITEM_NAME }}文字</span>
-                                        </label>
-
-                                        <input type="text" name="b2_shippings[0][item_name]"
-                                            value="{{ $order->orderItems->pluck('product_name')->implode('、') }}"
-                                            maxlength="{{ \App\Support\InputLimits::B2_ITEM_NAME }}" class="input w-full"
-                                            placeholder="送り状に記載する品名">
-                                    </div>
-                                </div>
-                            </div>
-                        @endforelse
+                        @endforeach
                     </div>
 
                     <button type="button" id="add-b2-shipping" class="btn btn-outline btn-neutral btn-sm mt-4">
@@ -896,16 +887,25 @@
     </dialog>
 
     {{-- 配送情報編集モーダル --}}
-    @if ($errors->has('delivery_date') || $errors->has('delivery_time_slot') || $errors->has('shippings'))
-        <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                document.getElementById('shippings_modal').showModal();
-            });
-        </script>
-    @endif
+    @php
+        $restoreShippings = old('_modal') === 'shippings';
+        $shippingRows = $restoreShippings
+            ? (is_array(old('shippings')) ? old('shippings') : [])
+            : $order->orderShippings
+                ->sortBy('id')
+                ->map(fn($shipping) => [
+                    'id' => $shipping->id,
+                    'tracking_number' => $shipping->tracking_number,
+                ])
+                ->all();
 
+        if (!$restoreShippings && $shippingRows === []) {
+            $shippingRows = [['tracking_number' => null]];
+        }
+    @endphp
     <dialog id="shippings_modal" class="modal">
         <div class="modal-box">
+            @include('admin.orders.partials.modal-errors', ['form' => 'shippings'])
             <h3 class="text-lg font-bold" tabindex="-1" autofocus>配送情報の編集</h3>
 
             <p class="mt-2 text-sm text-slate-500">
@@ -915,6 +915,7 @@
             <form method="POST" action="{{ route('admin.orders.shippings.update', $order) }}">
                 @csrf
                 @method('PATCH')
+                <input type="hidden" name="_modal" value="shippings">
 
                 {{-- お届け予定日時 --}}
                 <div class="mt-6 space-y-4 border-b border-slate-200 pb-6">
@@ -944,7 +945,7 @@
                         </label>
 
                         <input type="date" id="delivery_date" name="delivery_date"
-                            value="{{ old('delivery_date', $order->delivery_date?->format('Y-m-d')) }}"
+                            value="{{ is_scalar(old('delivery_date')) ? old('delivery_date') : (old('_modal') === 'shippings' ? '' : ($order->delivery_date?->format('Y-m-d') ?? '')) }}"
                             class="input w-full">
 
                         @error('delivery_date')
@@ -961,7 +962,7 @@
                             <option value="">指定なし</option>
 
                             @foreach (\App\Enums\DeliveryTimeSlot::cases() as $slot)
-                                <option value="{{ $slot->value }}" @selected(old('delivery_time_slot', $order->delivery_time_slot?->value) === $slot->value)>
+                                <option value="{{ $slot->value }}" @selected((old('_modal') === 'shippings' && is_scalar(old('delivery_time_slot')) ? old('delivery_time_slot') : $order->delivery_time_slot?->value) === $slot->value)>
                                     {{ $slot->label() }}
                                 </option>
                             @endforeach
@@ -978,10 +979,15 @@
                     <h4 class="mb-4 font-semibold">送り状番号（個口別）</h4>
 
                     <div id="shipping-fields" class="space-y-4">
-                        @forelse  ($order->orderShippings as $shipping)
+                        @foreach ($shippingRows as $index => $shipping)
+                            @php
+                                $shipping = is_array($shipping) ? $shipping : [];
+                            @endphp
                             <div class="shipping-row rounded-lg border border-slate-200 p-4">
-                                <input type="hidden" name="shippings[{{ $loop->index }}][id]"
-                                    value="{{ $shipping->id }}">
+                                @if (array_key_exists('id', $shipping))
+                                    <input type="hidden" name="shippings[{{ $index }}][id]"
+                                        value="{{ is_scalar($shipping['id']) ? $shipping['id'] : '' }}">
+                                @endif
 
                                 <div class="mb-2 flex items-center justify-between">
                                     <label class="text-sm font-semibold">送り状番号</label>
@@ -992,26 +998,12 @@
                                     </button>
                                 </div>
 
-                                <input type="text" name="shippings[{{ $loop->index }}][tracking_number]"
-                                    value="{{ $shipping->tracking_number }}" class="input w-full"
+                                <input type="text" name="shippings[{{ $index }}][tracking_number]"
+                                    value="{{ is_scalar($shipping['tracking_number'] ?? null) ? $shipping['tracking_number'] : '' }}"
+                                    class="input w-full"
                                     maxlength="{{ \App\Support\InputLimits::TRACKING_NUMBER }}" placeholder="送り状番号">
                             </div>
-                        @empty
-                            {{-- 送り状未登録の場合は空欄を1件表示 --}}
-                            <div class="shipping-row rounded-lg border border-slate-200 p-4">
-                                <div class="mb-2 flex items-center justify-between">
-                                    <label class="text-sm font-semibold">送り状番号</label>
-
-                                    <button type="button" class="remove-item btn btn-outline btn-error btn-sm"
-                                        onclick="this.closest('.shipping-row').remove()">
-                                        削除
-                                    </button>
-                                </div>
-
-                                <input type="text" name="shippings[0][tracking_number]" class="input w-full"
-                                    maxlength="{{ \App\Support\InputLimits::TRACKING_NUMBER }}" placeholder="送り状番号">
-                            </div>
-                        @endforelse
+                        @endforeach
                     </div>
 
                     <button type="button" id="add-shipping" class="btn btn-outline btn-neutral btn-sm mt-4">
@@ -1041,6 +1033,7 @@
     @if (!in_array($order->status, [\App\Enums\OrderStatus::SHIPPED, \App\Enums\OrderStatus::CANCELLED], true))
         <dialog id="cancel_modal" class="modal">
             <div class="modal-box">
+                @include('admin.orders.partials.modal-errors', ['form' => 'cancel'])
                 <h3 class="text-lg font-bold text-red-700" tabindex="-1" autofocus>
                     注文をキャンセルしますか？
                 </h3>
@@ -1060,6 +1053,7 @@
                     @method('PATCH')
 
                     <input type="hidden" name="status" value="{{ \App\Enums\OrderStatus::CANCELLED->value }}">
+                    <input type="hidden" name="_modal" value="cancel">
 
                     @include('admin.orders.partials.contact-fields', [
                         'canSendEmail' => $canSendCancelEmail,
@@ -1082,6 +1076,25 @@
                 <button>閉じる</button>
             </form>
         </dialog>
+    @endif
+
+    @php
+        $errorModalId = match (old('_modal')) {
+            'status' => 'status_modal',
+            'fees' => 'fees_modal',
+            'payment' => 'payment_modal',
+            'b2_shippings' => 'b2_shippings_modal',
+            'shippings' => 'shippings_modal',
+            'cancel' => 'cancel_modal',
+            default => null,
+        };
+    @endphp
+    @if ($errorModalId && $errors->any())
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                document.getElementById(@json($errorModalId))?.showModal();
+            });
+        </script>
     @endif
 
     <script>
@@ -1135,7 +1148,7 @@
             const container = document.getElementById('b2-shipping-fields');
             const addButton = document.getElementById('add-b2-shipping');
 
-            let nextIndex = {{ max(1, $order->orderShippings->count()) }};
+            let nextIndex = {{ $b2ShippingRows === [] ? 0 : max(array_map('intval', array_keys($b2ShippingRows))) + 1 }};
 
             addButton.addEventListener('click', () => {
                 const row = document.createElement('div');
@@ -1186,7 +1199,7 @@
             const container = document.getElementById('shipping-fields');
             const addButton = document.getElementById('add-shipping');
 
-            let nextIndex = {{ max(1, $order->orderShippings->count()) }};
+            let nextIndex = {{ $shippingRows === [] ? 0 : max(array_map('intval', array_keys($shippingRows))) + 1 }};
 
             addButton.addEventListener('click', () => {
                 const row = document.createElement('div');

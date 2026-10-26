@@ -47,9 +47,8 @@
                             <x-icons.notice class="size-5" />
 
                             @if ($newNoticeCount > 0)
-                                <span
-                                    class="absolute -top-2 -right-2 flex size-4 items-center justify-center rounded-full bg-amber-600 text-[10px] font-bold text-white">
-                                    {{ $newNoticeCount > 9 ? '9+' : $newNoticeCount }}
+                                <span class="absolute -top-0.5 -right-0.5 size-2 rounded-full bg-red-500"
+                                    aria-hidden="true">
                                 </span>
                             @endif
                         </span>
@@ -62,7 +61,17 @@
                 @if (!(Auth::check() && Auth::user()->is_admin))
                     <li>
                         <a href="{{ route('carts.index') }}" aria-label="カート" @class(['gap-2', 'menu-active' => request()->routeIs('carts.*')])>
-                            <x-icons.shopping-cart class="size-5 shrink-0" />
+                            <span class="relative inline-flex shrink-0">
+                                <x-icons.shopping-cart class="size-5" />
+
+                                @if ($cartCount > 0)
+                                    <span
+                                        class="absolute -top-2 -right-2 flex min-w-4 h-4 items-center justify-center rounded-full bg-red-500 px-0.5 text-[10px] font-bold leading-none text-white">
+                                        {{ $cartCount > 99 ? '99+' : $cartCount }}
+                                    </span>
+                                @endif
+                            </span>
+
                             <span>カート</span>
                         </a>
                     </li>
@@ -78,9 +87,7 @@
                     <x-icons.notice class="size-5" />
 
                     @if ($newNoticeCount > 0)
-                        <span
-                            class="absolute -top-2 -right-2 flex size-4 items-center justify-center rounded-full bg-amber-600 text-[10px] font-bold text-white">
-                            {{ $newNoticeCount > 9 ? '9+' : $newNoticeCount }}
+                        <span class="absolute -top-0.5 -right-0.5 size-2 rounded-full bg-red-500" aria-hidden="true">
                         </span>
                     @endif
                 </span>
@@ -91,7 +98,16 @@
         @if (!(Auth::check() && Auth::user()->is_admin))
             <div class="flex-none md:hidden">
                 <a href="{{ route('carts.index') }}" class="btn btn-ghost btn-square" aria-label="カート">
-                    <x-icons.shopping-cart class="size-5 shrink-0" />
+                    <span class="relative inline-flex">
+                        <x-icons.shopping-cart class="size-5" />
+
+                        @if ($cartCount > 0)
+                            <span
+                                class="absolute -top-2 -right-2 flex min-w-4 h-4 items-center justify-center rounded-full bg-red-500 px-0.5 text-[10px] font-bold leading-none text-white">
+                                {{ $cartCount > 99 ? '99+' : $cartCount }}
+                            </span>
+                        @endif
+                    </span>
                 </a>
             </div>
         @endif

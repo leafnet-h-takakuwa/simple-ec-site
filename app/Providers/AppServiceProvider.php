@@ -5,10 +5,12 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use App\Models\Notice;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use App\Models\Order;
 use App\Models\OrderStatusHistory;
 use App\Models\User;
+use App\Services\CartService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,8 +27,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // ナビバーのお知らせ新着件数
+        // ナビバーのお知らせ新着件数・カート数量
         View::composer('layouts.app', function ($view) {
+
+            // お知らせ新着件数
             $newNoticeCount = Notice::where('is_published', true)
                 ->whereBetween('published_at', [
                     today()->subDays(config('shop.notices.new_days')),
@@ -34,7 +38,22 @@ class AppServiceProvider extends ServiceProvider
                 ])
                 ->count();
 
-            $view->with('newNoticeCount', $newNoticeCount);
+            // カート数量
+            $cartCount = 0;
+
+            // 管理者以外のみ取得
+            if (!Auth::check() || !Auth::user()->is_admin) {
+                $cartService = app(CartService::class);
+
+                $cartItems = $cartService->items(request());
+
+                $cartCount = $cartItems->sum('quantity');
+            }
+
+            $view->with([
+                'newNoticeCount' => $newNoticeCount,
+                'cartCount' => $cartCount,
+            ]);
         });
 
         // ポリモーフィックリレーション

@@ -348,7 +348,8 @@
 
 
             {{-- パンフレット --}}
-            <a href="{{ asset('documents/pamphlet.pdf') }}" target="_blank" rel="noopener noreferrer"
+            <a href="{{ asset('documents/pamphlet.pdf') }}?ts={{ filemtime(public_path('documents/pamphlet.pdf')) }}"
+                target="_blank" rel="noopener noreferrer"
                 class="group flex items-center gap-4 rounded-xl border border-base-300 p-6 transition hover:bg-base-200">
                 <svg xmlns="http://www.w3.org/2000/svg" class="size-10 shrink-0" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">

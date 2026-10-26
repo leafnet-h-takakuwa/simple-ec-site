@@ -19,6 +19,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use App\Models\User;
+use App\Notifications\NewOrderPushNotification;
 
 class OrderController extends Controller
 {
@@ -345,6 +347,28 @@ class OrderController extends Controller
             $this->orderMailService->sendReceived($order, $statusHistory);
         } catch (\Throwable $e) {
             Log::error('注文メール処理でエラーが発生しました。', [
+                'order_id' => $order->id,
+                'exception' => $e,
+            ]);
+        }
+
+        // 新規注文を管理者へプッシュ通知
+        try {
+            User::where('is_admin', true)
+                ->whereHas('pushSubscriptions')
+                ->each(function (User $admin) use ($order) {
+                    try {
+                        $admin->notify(new NewOrderPushNotification($order));
+                    } catch (\Throwable $e) {
+                        Log::error('新規注文プッシュ通知でエラーが発生しました。', [
+                            'order_id' => $order->id,
+                            'admin_id' => $admin->id,
+                            'exception' => $e,
+                        ]);
+                    }
+                });
+        } catch (\Throwable $e) {
+            Log::error('プッシュ通知対象者の取得でエラーが発生しました。', [
                 'order_id' => $order->id,
                 'exception' => $e,
             ]);

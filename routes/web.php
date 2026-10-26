@@ -20,6 +20,7 @@ use App\Http\Controllers\NoticeController;
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Middleware\EnsureEmailVerifiedForCheckout;
 use App\Http\Controllers\EmailChangeController;
+use App\Http\Controllers\Admin\PushSubscriptionController;
 
 /**
  * 認証不要ルート
@@ -113,6 +114,16 @@ Route::middleware(['auth', EnsureUserIsAdmin::class])
         // ダッシュボード
         Route::get('/', [DashboardController::class, 'index'])
             ->name('dashboard');
+
+        // プッシュ通知
+        Route::post('/push/subscribe', [PushSubscriptionController::class, 'subscribe'])
+            ->name('push.subscribe');
+        Route::post('/push/unsubscribe', [PushSubscriptionController::class, 'unsubscribe'])
+            ->name('push.unsubscribe');
+        Route::post('/push/test', [PushSubscriptionController::class, 'test'])
+            ->middleware('throttle:5,1')
+            ->name('push.test');
+
         // 注文管理
         Route::get('/orders', [AdminOrderController::class, 'index'])
             ->name('orders.index');

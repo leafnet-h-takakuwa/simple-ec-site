@@ -358,66 +358,131 @@
 
     {{-- 配送・送り状情報 --}}
     <section class="mb-8 rounded-xl border border-slate-200 bg-white p-5 lg:p-7">
-        <div class="mb-5 flex items-center justify-between gap-3">
-            <h2 class="text-lg font-bold">配送情報</h2>
 
-            @if ($order->status !== \App\Enums\OrderStatus::CANCELLED)
-                <button type="button" class="btn btn-outline btn-neutral btn-sm"
-                    onclick="document.getElementById('shippings_modal').showModal()">
-                    配送情報を編集
-                </button>
-            @endif
-        </div>
+        <h2 class="mb-5 text-lg font-bold">配送・送り状情報</h2>
 
-        {{-- 配送会社 --}}
-        <div class="mb-4 flex items-center justify-between gap-4">
-            <span class="text-sm text-slate-500">配送会社</span>
-            <span class="font-semibold">ヤマト運輸</span>
-        </div>
+        <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
 
-        {{-- お届け予定日時 --}}
-        <div class="border-t border-slate-200 py-4">
-            <div class="flex items-center justify-between gap-4">
-                <span class="text-sm text-slate-500">お届け予定日</span>
-                <span class="font-semibold">
-                    {{ $order->delivery_date?->format('Y年n月j日') ?? '指定なし' }}
-                </span>
-            </div>
+            {{-- ヤマト連携情報 --}}
+            <div class="rounded-xl border border-slate-200 bg-slate-50/10 p-5">
 
-            <div class="mt-4 flex items-center justify-between gap-4">
-                <span class="text-sm text-slate-500">お届け時間帯</span>
-                <span class="font-semibold">
-                    {{ $order->delivery_time_slot?->label() ?? '指定なし' }}
-                </span>
-            </div>
-        </div>
+                <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
+                    <h3 class="font-bold">ヤマト連携情報</h3>
 
-        @forelse ($order->orderShippings as $shipping)
-            <div class="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 py-4">
-                <div>
-                    <p class="mb-1 text-sm text-slate-500">
-                        個口 {{ $loop->iteration }}
-                    </p>
-
-                    <p class="font-semibold">
-                        {{ $shipping->tracking_number ?? '送り状番号未登録' }}
-                    </p>
+                    @if (!in_array($order->status, [\App\Enums\OrderStatus::SHIPPED, \App\Enums\OrderStatus::CANCELLED], true))
+                        <button type="button" class="btn btn-outline btn-neutral btn-sm bg-white"
+                            onclick="document.getElementById('b2_shippings_modal').showModal()">
+                            ヤマト連携情報を編集
+                        </button>
+                    @endif
                 </div>
 
-                @if ($shipping->tracking_number)
-                    <a href="{{ 'https://jizen.kuronekoyamato.co.jp/jizen/servlet/crjz.b.NQ0010?id=' . urlencode($shipping->tracking_number) }}"
-                        target="_blank" rel="noopener noreferrer"
-                        class="inline-flex items-center gap-1 text-sm text-green-700 hover:underline">
-                        配送状況を確認
-                        <x-icons.external-link width="16" height="16" />
-                    </a>
-                @endif
+                <p class="mb-5 text-sm text-slate-500">
+                    B2クラウド利用時のみ入力が必要です。利用しない場合は空欄可。
+                </p>
+
+                @forelse ($order->orderShippings->sortBy('id') as $shipping)
+                    <div class="border-t border-slate-200 py-4">
+                        <h4 class="mb-3 font-semibold">
+                            個口 {{ $loop->iteration }}
+                        </h4>
+
+                        <dl class="space-y-3">
+                            <div class="flex items-center justify-between gap-4">
+                                <dt class="shrink-0 text-sm text-slate-500">
+                                    温度帯
+                                </dt>
+                                <dd class="font-semibold">
+                                    {{ $shipping->cool_type?->label() ?? '未設定' }}
+                                </dd>
+                            </div>
+
+                            <div class="flex items-start justify-between gap-4">
+                                <dt class="shrink-0 text-sm text-slate-500">
+                                    品名
+                                </dt>
+                                <dd class="break-words text-right font-semibold">
+                                    {{ $shipping->item_name ?: '未入力' }}
+                                </dd>
+                            </div>
+                        </dl>
+                    </div>
+                @empty
+                    <p class="text-sm text-slate-500">
+                        ヤマト連携情報はまだ登録されていません。
+                    </p>
+                @endforelse
+
             </div>
-        @empty
-            <p class="text-sm text-slate-500">
-                配送情報はまだ登録されていません。
-            </p>
-        @endforelse
+
+            {{-- 配送情報 --}}
+            <div class="rounded-xl border border-slate-200 bg-slate-50/10 p-5">
+
+                <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
+                    <h3 class="font-bold">配送情報</h3>
+
+                    @if ($order->status !== \App\Enums\OrderStatus::CANCELLED)
+                        <button type="button" class="btn btn-outline btn-neutral btn-sm bg-white"
+                            onclick="document.getElementById('shippings_modal').showModal()">
+                            配送情報を編集
+                        </button>
+                    @endif
+                </div>
+
+                {{-- 配送会社 --}}
+                <div class="mb-4 flex items-center justify-between gap-4">
+                    <span class="text-sm text-slate-500">配送会社</span>
+                    <span class="font-semibold">ヤマト運輸</span>
+                </div>
+
+                {{-- お届け予定日時 --}}
+                <div class="border-t border-slate-200 py-4">
+                    <div class="flex items-center justify-between gap-4">
+                        <span class="text-sm text-slate-500">お届け予定日</span>
+                        <span class="font-semibold">
+                            {{ $order->delivery_date?->format('Y年n月j日') ?? '指定なし' }}
+                        </span>
+                    </div>
+
+                    <div class="mt-4 flex items-center justify-between gap-4">
+                        <span class="text-sm text-slate-500">お届け時間帯</span>
+                        <span class="font-semibold">
+                            {{ $order->delivery_time_slot?->label() ?? '指定なし' }}
+                        </span>
+                    </div>
+                </div>
+
+                {{-- 送り状番号（個口別） --}}
+                @forelse ($order->orderShippings as $shipping)
+                    <div class="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 py-4">
+                        <div>
+                            <p class="mb-1 text-sm text-slate-500">
+                                個口 {{ $loop->iteration }}
+                            </p>
+
+                            <p class="font-semibold">
+                                {{ $shipping->tracking_number ?? '送り状番号未登録' }}
+                            </p>
+                        </div>
+
+                        @if ($shipping->tracking_number)
+                            <a href="{{ 'https://jizen.kuronekoyamato.co.jp/jizen/servlet/crjz.b.NQ0010?id=' . urlencode($shipping->tracking_number) }}"
+                                target="_blank" rel="noopener noreferrer"
+                                class="inline-flex items-center gap-1 text-sm text-green-700 hover:underline">
+                                配送状況を確認
+                                <x-icons.external-link width="16" height="16" />
+                            </a>
+                        @endif
+                    </div>
+                @empty
+                    <p class="text-sm text-slate-500">
+                        配送情報はまだ登録されていません。
+                    </p>
+                @endforelse
+
+            </div>
+
+        </div>
     </section>
 
     {{-- お客様情報 --}}
@@ -428,7 +493,8 @@
             <h2 class="text-lg font-bold">お客様情報</h2>
 
             @if ($order->isEditable())
-                <a href="{{ route('admin.orders.customer.edit', $order) }}" class="btn btn-outline btn-neutral btn-sm">
+                <a href="{{ route('admin.orders.customer.edit', $order) }}"
+                    class="btn btn-outline btn-neutral btn-sm bg-white">
                     お客様情報を編集
                 </a>
             @endif
@@ -438,7 +504,7 @@
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
 
             {{-- 注文者情報 --}}
-            <div class="rounded-xl border border-slate-200 bg-slate-30 p-5">
+            <div class="rounded-xl border border-slate-200 bg-slate-50/10 p-5">
                 <h3 class="mb-5 font-bold">注文者情報</h3>
 
                 <dl class="space-y-4 text-sm">
@@ -466,7 +532,7 @@
             </div>
 
             {{-- お届け先情報 --}}
-            <div class="rounded-xl border border-slate-200 bg-slate-30 p-5">
+            <div class="rounded-xl border border-slate-200 bg-slate-50/10 p-5">
                 <h3 class="mb-5 font-bold">お届け先情報</h3>
 
                 <dl class="space-y-4 text-sm">
@@ -681,6 +747,139 @@
                 <div class="modal-action">
                     <button type="button" class="btn btn-outline btn-neutral"
                         onclick="document.getElementById('payment_modal').close()">
+                        キャンセル
+                    </button>
+
+                    <button type="submit" class="btn btn-success">
+                        変更を保存
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <form method="dialog" class="modal-backdrop">
+            <button>閉じる</button>
+        </form>
+    </dialog>
+
+    {{-- ヤマト連携情報編集モーダル --}}
+    <dialog id="b2_shippings_modal" class="modal">
+        <div class="modal-box max-w-2xl">
+            <h3 class="text-lg font-bold" tabindex="-1" autofocus>
+                ヤマト連携情報の編集
+            </h3>
+
+            <p class="mt-2 text-sm text-slate-500">
+                B2クラウドで送り状を発行する場合に入力してください。
+                個口ごとに温度帯と品名を設定できます。
+            </p>
+
+            <form id="b2-shippings-form" method="POST" action="{{ route('admin.orders.b2Shippings.update', $order) }}">
+                @csrf
+                @method('PATCH')
+                <div class="mt-6">
+                    <h4 class="mb-4 font-semibold">個口別の設定</h4>
+
+                    <div id="b2-shipping-fields" class="space-y-4">
+                        @forelse ($order->orderShippings->sortBy('id') as $shipping)
+                            <div class="b2-shipping-row rounded-lg border border-slate-200 p-4">
+                                <input type="hidden" name="b2_shippings[{{ $loop->index }}][id]"
+                                    value="{{ $shipping->id }}">
+
+                                <div class="mb-4 flex items-center justify-between gap-3">
+                                    <h5 class="font-semibold">
+                                        個口 {{ $loop->iteration }}
+                                    </h5>
+
+                                    <button type="button" class="btn btn-outline btn-error btn-sm"
+                                        onclick="this.closest('.b2-shipping-row').remove()">
+                                        削除
+                                    </button>
+                                </div>
+
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="mb-2 block text-sm font-semibold">
+                                            温度帯
+                                        </label>
+
+                                        <select name="b2_shippings[{{ $loop->index }}][cool_type]"
+                                            class="select w-full">
+                                            <option value="">未設定</option>
+
+                                            @foreach (\App\Enums\CoolType::cases() as $type)
+                                                <option value="{{ $type->value }}" @selected($shipping->cool_type === $type)>
+                                                    {{ $type->label() }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label class="mb-2 block text-sm font-semibold">
+                                            品名 <span class="text-xs font-normal text-slate-500">※
+                                                最大{{ \App\Support\InputLimits::B2_ITEM_NAME }}文字</span>
+                                        </label>
+
+                                        <input type="text" name="b2_shippings[{{ $loop->index }}][item_name]"
+                                            value="{{ $shipping->item_name ?? ($loop->first ? $order->orderItems->pluck('product_name')->implode('、') : '') }}"
+                                            maxlength="{{ \App\Support\InputLimits::B2_ITEM_NAME }}" class="input w-full"
+                                            placeholder="送り状に記載する品名">
+                                    </div>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="b2-shipping-row rounded-lg border border-slate-200 p-4">
+                                <div class="mb-4 flex items-center justify-between gap-3">
+                                    <h5 class="font-semibold">個口 1</h5>
+
+                                    <button type="button" class="btn btn-outline btn-error btn-sm"
+                                        onclick="this.closest('.b2-shipping-row').remove()">
+                                        削除
+                                    </button>
+                                </div>
+
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="mb-2 block text-sm font-semibold">
+                                            温度帯
+                                        </label>
+
+                                        <select name="b2_shippings[0][cool_type]" class="select w-full">
+                                            <option value="">未設定</option>
+
+                                            @foreach (\App\Enums\CoolType::cases() as $type)
+                                                <option value="{{ $type->value }}">
+                                                    {{ $type->label() }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label class="mb-2 block text-sm font-semibold">
+                                            品名 <span class="text-xs font-normal text-slate-500">※
+                                                最大{{ \App\Support\InputLimits::B2_ITEM_NAME }}文字</span>
+                                        </label>
+
+                                        <input type="text" name="b2_shippings[0][item_name]"
+                                            value="{{ $order->orderItems->pluck('product_name')->implode('、') }}"
+                                            maxlength="{{ \App\Support\InputLimits::B2_ITEM_NAME }}" class="input w-full"
+                                            placeholder="送り状に記載する品名">
+                                    </div>
+                                </div>
+                            </div>
+                        @endforelse
+                    </div>
+
+                    <button type="button" id="add-b2-shipping" class="btn btn-outline btn-neutral btn-sm mt-4">
+                        <x-plus /> 個口を追加
+                    </button>
+                </div>
+
+                <div class="modal-action">
+                    <button type="button" class="btn btn-outline btn-neutral"
+                        onclick="document.getElementById('b2_shippings_modal').close()">
                         キャンセル
                     </button>
 
@@ -928,6 +1127,57 @@
                     status.textContent = '保存に失敗しました';
                     status.className = 'text-xs text-red-600';
                 }
+            });
+        });
+
+        // ヤマト連携情報
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('b2-shipping-fields');
+            const addButton = document.getElementById('add-b2-shipping');
+
+            let nextIndex = {{ max(1, $order->orderShippings->count()) }};
+
+            addButton.addEventListener('click', () => {
+                const row = document.createElement('div');
+                row.className = 'b2-shipping-row rounded-lg border border-slate-200 p-4';
+
+                row.innerHTML = `
+            <div class="mb-4 flex items-center justify-between gap-3">
+                <h5 class="font-semibold">追加した個口</h5>
+
+                <button type="button" class="btn btn-outline btn-error btn-sm"
+                    onclick="this.closest('.b2-shipping-row').remove()">
+                    削除
+                </button>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="mb-2 block text-sm font-semibold">温度帯</label>
+
+                    <select name="b2_shippings[${nextIndex}][cool_type]"
+                        class="select w-full">
+                        <option value="">未設定</option>
+                        @foreach (\App\Enums\CoolType::cases() as $type)
+                            <option value="{{ $type->value }}">{{ $type->label() }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div>
+                    <label class="mb-2 block text-sm font-semibold">品名 <span class="text-xs font-normal text-slate-500">※ 最大{{ \App\Support\InputLimits::B2_ITEM_NAME }}文字</span></label>
+
+                    <input type="text"
+                        name="b2_shippings[${nextIndex}][item_name]"
+                        maxlength="{{ \App\Support\InputLimits::B2_ITEM_NAME }}"
+                        class="input w-full"
+                        placeholder="送り状に記載する品名">
+                </div>
+            </div>
+        `;
+
+                container.appendChild(row);
+                nextIndex++;
             });
         });
 

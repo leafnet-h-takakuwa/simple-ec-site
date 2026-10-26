@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\OrderSource;
 use App\Enums\OrderStatus;
 use App\Enums\PaymentMethod;
+use App\Enums\CoolType;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Product;
@@ -756,10 +757,21 @@ class OrderController extends Controller
                 }
             }
 
-            // 画面から削除された配送レコードを削除
+            // 画面から削除された配送レコードを取得
             $deleteIds = $existingShippings->keys()->diff($submittedIds);
 
             if ($deleteIds->isNotEmpty()) {
+                // 送り状番号が登録済みの個口は削除禁止
+                $hasTrackingNumber = $existingShippings
+                    ->only($deleteIds->all())
+                    ->contains(fn($shipping) => filled($shipping->tracking_number));
+
+                if ($hasTrackingNumber) {
+                    throw ValidationException::withMessages([
+                        'shippings' => '送り状番号が登録されている個口は削除できません。',
+                    ]);
+                }
+
                 $order->orderShippings()
                     ->whereIn('id', $deleteIds)
                     ->delete();
@@ -769,6 +781,97 @@ class OrderController extends Controller
         return redirect()
             ->route('admin.orders.show', $order)
             ->with('success', '配送情報を更新しました。');
+    }
+
+    /**
+     * ヤマト連携情報を更新
+     */
+    public function updateB2Shippings(Request $request, Order $order)
+    {
+        $validated = $request->validate([
+            'b2_shippings' => ['nullable', 'array'],
+            'b2_shippings.*.id' => ['nullable', 'integer', 'distinct'],
+            'b2_shippings.*.cool_type' => ['nullable', Rule::enum(CoolType::class)],
+            'b2_shippings.*.item_name' => [
+                'nullable',
+                'string',
+                'max:' . InputLimits::B2_ITEM_NAME,
+            ],
+        ]);
+
+        DB::transaction(function () use ($order, $validated) {
+            // 同じ注文への同時更新を防ぐ
+            $order = Order::whereKey($order->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            // 発送済み・キャンセル済みは編集不可
+            if (!$order->isEditable()) {
+                throw ValidationException::withMessages([
+                    'b2_shippings' => '発送済み・キャンセル済みの注文はヤマト連携情報を編集できません。',
+                ]);
+            }
+
+            // 現在の個口情報を取得
+            $existingShippings = $order->orderShippings()
+                ->lockForUpdate()
+                ->get()
+                ->keyBy('id');
+
+            $shippings = $validated['b2_shippings'] ?? [];
+
+            // フォームから送信された既存個口ID
+            $submittedIds = collect($shippings)
+                ->pluck('id')
+                ->filter(fn($id) => $id !== null)
+                ->map(fn($id) => (int) $id);
+
+            // 別の注文の個口IDが含まれていないか確認
+            if ($submittedIds->diff($existingShippings->keys())->isNotEmpty()) {
+                throw ValidationException::withMessages([
+                    'b2_shippings' => '更新対象の個口情報が正しくありません。',
+                ]);
+            }
+
+            foreach ($shippings as $shipping) {
+                $data = [
+                    'cool_type' => $shipping['cool_type'] ?? null,
+                    'item_name' => $shipping['item_name'] ?? null,
+                ];
+
+                if (!empty($shipping['id'])) {
+                    // 既存個口のヤマト連携情報のみ更新
+                    $existingShippings->get((int) $shipping['id'])->update($data);
+                } else {
+                    // 新しい個口を追加
+                    $order->orderShippings()->create($data);
+                }
+            }
+
+            // フォームから削除された個口を取得
+            $deleteIds = $existingShippings->keys()->diff($submittedIds);
+
+            if ($deleteIds->isNotEmpty()) {
+                // 追跡番号登録済みの個口は削除禁止
+                $hasTrackingNumber = $existingShippings
+                    ->only($deleteIds->all())
+                    ->contains(fn($shipping) => filled($shipping->tracking_number));
+
+                if ($hasTrackingNumber) {
+                    throw ValidationException::withMessages([
+                        'b2_shippings' => '送り状番号が登録されている個口は削除できません。',
+                    ]);
+                }
+
+                $order->orderShippings()
+                    ->whereIn('id', $deleteIds)
+                    ->delete();
+            }
+        });
+
+        return redirect()
+            ->route('admin.orders.show', $order)
+            ->with('success', 'ヤマト連携情報を更新しました。');
     }
 
     // 納品書PDF作成

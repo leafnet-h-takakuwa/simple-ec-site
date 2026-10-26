@@ -14,4 +14,6 @@ final class InputLimits
     public const TRACKING_NUMBER = 20;
 
     public const CUSTOMER_NOTE = 1000;
+
+    public const B2_ITEM_NAME = 50;
 }

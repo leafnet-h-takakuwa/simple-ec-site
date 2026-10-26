@@ -265,6 +265,13 @@ class OrderController extends Controller
                     'customer_note' => $order_data['customer_note'] ?? null,
                 ]);
 
+                // 配送個口を初期登録
+                $order->orderShippings()->create([
+                    'tracking_number' => null,
+                    'cool_type' => null,
+                    'item_name' => null,
+                ]);
+
                 // 注文明細登録
                 $tax_items = [];
 

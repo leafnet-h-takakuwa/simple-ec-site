@@ -21,6 +21,7 @@ use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Middleware\EnsureEmailVerifiedForCheckout;
 use App\Http\Controllers\EmailChangeController;
 use App\Http\Controllers\Admin\PushSubscriptionController;
+use App\Http\Controllers\Admin\B2CloudController;
 
 /**
  * 認証不要ルート
@@ -197,6 +198,12 @@ Route::middleware(['auth', EnsureUserIsAdmin::class])
         // 顧客台帳
         Route::resource('customers', CustomerController::class)
             ->names('customers');
+
+        // B2クラウド連携
+        Route::get('/b2-cloud', [B2CloudController::class, 'index'])
+            ->name('b2-cloud.index');
+        Route::post('/b2-cloud/export', [B2CloudController::class, 'export'])
+            ->name('b2-cloud.export');
 
         // パスワード変更
         Route::view('/password', 'admin.password.edit')

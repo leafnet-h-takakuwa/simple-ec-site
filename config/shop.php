@@ -9,6 +9,7 @@ return [
         'admin_mail_histories' => 20,
         'admin_users' => 20,
         'admin_user_orders' => 10,
+        'admin_b2_cloud_shippings' => 30,
     ],
     'home' => [
         'popular_products' => 3,

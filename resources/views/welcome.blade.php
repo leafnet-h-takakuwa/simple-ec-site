@@ -314,13 +314,7 @@
             <a href="{{ route('guide.shipping') }}"
                 class="group flex items-center gap-4 rounded-xl border border-base-300 p-6 transition hover:bg-base-200">
 
-                <svg xmlns="http://www.w3.org/2000/svg" class="size-10 shrink-0" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M3 6h11v11H3z" />
-                    <path d="M14 10h4l3 4v3h-7z" />
-                    <circle cx="7.5" cy="18" r="2" />
-                    <circle cx="17.5" cy="18" r="2" />
-                </svg>
+                <x-icons.truck class="size-10 shrink-0" />
 
                 <div class="flex-1">
                     <h3 class="font-bold">

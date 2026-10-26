@@ -122,6 +122,17 @@
                             </a>
                         </li>
 
+                        {{-- B2クラウド連携 --}}
+                        <li>
+                            <a href="{{ route('admin.b2-cloud.index') }}" @class([
+                                'gap-3',
+                                'menu-active' => request()->routeIs('admin.b2-cloud.*'),
+                            ])>
+                                <x-icons.truck class="size-5 shrink-0" />
+                                B2クラウド連携
+                            </a>
+                        </li>
+
                         {{-- 商品管理 --}}
                         <li>
                             <a href="{{ route('admin.products.index') }}" @class([
@@ -252,6 +263,16 @@
                 ])>
                     <x-icons.receipt class="size-5 shrink-0" />
                     注文管理
+                </a>
+
+                {{-- B2クラウド連携 --}}
+                <a href="{{ route('admin.b2-cloud.index') }}" @class([
+                    'flex items-center gap-3 rounded-lg px-4 py-3 transition-colors hover:bg-green-100',
+                    'bg-green-100 font-semibold text-green-800' => request()->routeIs(
+                        'admin.b2-cloud.*'),
+                ])>
+                    <x-icons.truck class="size-5 shrink-0" />
+                    B2クラウド連携
                 </a>
 
                 {{-- 商品管理 --}}

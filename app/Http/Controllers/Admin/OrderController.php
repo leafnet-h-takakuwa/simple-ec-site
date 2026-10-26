@@ -235,6 +235,13 @@ class OrderController extends Controller
                 'memo' => $validated['memo'] ?? null,
             ]);
 
+            // 配送個口を初期登録
+            $order->orderShippings()->create([
+                'tracking_number' => null,
+                'cool_type' => null,
+                'item_name' => null,
+            ]);
+
             $taxItems = [];
 
             foreach ($items as $item) {

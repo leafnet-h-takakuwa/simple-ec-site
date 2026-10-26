@@ -674,7 +674,7 @@
 
                         <input type="number" id="shipping_fee" name="shipping_fee" class="input w-full" min="0"
                             step="1"
-                            value="{{ is_scalar(old('shipping_fee')) ? old('shipping_fee') : (old('_modal') === 'fees' ? '' : ($order->shipping_fee ?? '')) }}"
+                            value="{{ is_scalar(old('shipping_fee')) ? old('shipping_fee') : (old('_modal') === 'fees' ? '' : $order->shipping_fee ?? '') }}"
                             placeholder="未入力">
 
                         @error('shipping_fee')
@@ -690,7 +690,7 @@
 
                             <input type="number" id="cod_fee" name="cod_fee" class="input w-full" min="0"
                                 step="1"
-                                value="{{ is_scalar(old('cod_fee')) ? old('cod_fee') : (old('_modal') === 'fees' ? '' : ($order->cod_fee ?? '')) }}"
+                                value="{{ is_scalar(old('cod_fee')) ? old('cod_fee') : (old('_modal') === 'fees' ? '' : $order->cod_fee ?? '') }}"
                                 placeholder="未入力">
 
                             @error('cod_fee')
@@ -768,22 +768,31 @@
     {{-- ヤマト連携情報編集モーダル --}}
     @php
         $restoreB2Shippings = old('_modal') === 'b2_shippings';
+
+        // 注文商品名から初期品名を生成
+        $defaultItemName = $order->orderItems->pluck('product_name')->implode('、');
+
         $b2ShippingRows = $restoreB2Shippings
-            ? (is_array(old('b2_shippings')) ? old('b2_shippings') : [])
+            ? (is_array(old('b2_shippings'))
+                ? old('b2_shippings')
+                : [])
             : $order->orderShippings
                 ->sortBy('id')
-                ->map(fn($shipping) => [
-                    'id' => $shipping->id,
-                    'cool_type' => $shipping->cool_type?->value,
-                    'item_name' => $shipping->item_name,
-                ])
+                ->map(
+                    fn($shipping) => [
+                        'id' => $shipping->id,
+                        'cool_type' => $shipping->cool_type?->value,
+                        'item_name' => filled($shipping->item_name) ? $shipping->item_name : $defaultItemName,
+                    ],
+                )
                 ->all();
 
+        // 個口が0件の場合も入力欄を1件表示
         if (!$restoreB2Shippings && $b2ShippingRows === []) {
             $b2ShippingRows = [
                 [
                     'cool_type' => null,
-                    'item_name' => $order->orderItems->pluck('product_name')->implode('、'),
+                    'item_name' => $defaultItemName,
                 ],
             ];
         }
@@ -890,13 +899,17 @@
     @php
         $restoreShippings = old('_modal') === 'shippings';
         $shippingRows = $restoreShippings
-            ? (is_array(old('shippings')) ? old('shippings') : [])
+            ? (is_array(old('shippings'))
+                ? old('shippings')
+                : [])
             : $order->orderShippings
                 ->sortBy('id')
-                ->map(fn($shipping) => [
-                    'id' => $shipping->id,
-                    'tracking_number' => $shipping->tracking_number,
-                ])
+                ->map(
+                    fn($shipping) => [
+                        'id' => $shipping->id,
+                        'tracking_number' => $shipping->tracking_number,
+                    ],
+                )
                 ->all();
 
         if (!$restoreShippings && $shippingRows === []) {
@@ -945,7 +958,7 @@
                         </label>
 
                         <input type="date" id="delivery_date" name="delivery_date"
-                            value="{{ is_scalar(old('delivery_date')) ? old('delivery_date') : (old('_modal') === 'shippings' ? '' : ($order->delivery_date?->format('Y-m-d') ?? '')) }}"
+                            value="{{ is_scalar(old('delivery_date')) ? old('delivery_date') : (old('_modal') === 'shippings' ? '' : $order->delivery_date?->format('Y-m-d') ?? '') }}"
                             class="input w-full">
 
                         @error('delivery_date')
@@ -1000,8 +1013,8 @@
 
                                 <input type="text" name="shippings[{{ $index }}][tracking_number]"
                                     value="{{ is_scalar($shipping['tracking_number'] ?? null) ? $shipping['tracking_number'] : '' }}"
-                                    class="input w-full"
-                                    maxlength="{{ \App\Support\InputLimits::TRACKING_NUMBER }}" placeholder="送り状番号">
+                                    class="input w-full" maxlength="{{ \App\Support\InputLimits::TRACKING_NUMBER }}"
+                                    placeholder="送り状番号">
                             </div>
                         @endforeach
                     </div>
@@ -1148,7 +1161,8 @@
             const container = document.getElementById('b2-shipping-fields');
             const addButton = document.getElementById('add-b2-shipping');
 
-            let nextIndex = {{ $b2ShippingRows === [] ? 0 : max(array_map('intval', array_keys($b2ShippingRows))) + 1 }};
+            let nextIndex =
+                {{ $b2ShippingRows === [] ? 0 : max(array_map('intval', array_keys($b2ShippingRows))) + 1 }};
 
             addButton.addEventListener('click', () => {
                 const row = document.createElement('div');
@@ -1199,7 +1213,8 @@
             const container = document.getElementById('shipping-fields');
             const addButton = document.getElementById('add-shipping');
 
-            let nextIndex = {{ $shippingRows === [] ? 0 : max(array_map('intval', array_keys($shippingRows))) + 1 }};
+            let nextIndex =
+                {{ $shippingRows === [] ? 0 : max(array_map('intval', array_keys($shippingRows))) + 1 }};
 
             addButton.addEventListener('click', () => {
                 const row = document.createElement('div');

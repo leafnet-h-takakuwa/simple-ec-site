@@ -413,6 +413,14 @@
                     </p>
                 @endforelse
 
+                {{-- B2クラウド連携画面へのリンク --}}
+                <div class="mt-4 border-t border-slate-200 pt-4">
+                    <a href="{{ route('admin.b2-cloud.index') }}"
+                        class="inline-flex items-center gap-1 text-sm font-semibold text-green-700 hover:underline">
+                        B2クラウド連携へ
+                        <x-icons.external-link width="16" height="16" />
+                    </a>
+                </div>
             </div>
 
             {{-- 配送情報 --}}
@@ -443,7 +451,6 @@
                             {{ $order->delivery_date?->format('Y年n月j日') ?? '指定なし' }}
                         </span>
                     </div>
-
                     <div class="mt-4 flex items-center justify-between gap-4">
                         <span class="text-sm text-slate-500">お届け時間帯</span>
                         <span class="font-semibold">

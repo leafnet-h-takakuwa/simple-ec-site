@@ -36,12 +36,21 @@
                 <div>
                     <label for="category" class="mb-2 block font-semibold">
                         分類 <span class="text-red-600">*</span>
+                        <span class="text-xs font-normal text-slate-500">
+                            （登録数 / 非公開数）
+                        </span>
                     </label>
                     <select name="category" id="category" class="select w-full" required>
                         <option value="">選択してください</option>
                         @foreach ($categories as $category)
+                            @php
+                                $count = $categoryCounts[$category->value] ?? null;
+                                $total = $count?->total ?? 0;
+                                $inactive = $count?->inactive ?? 0;
+                            @endphp
                             <option value="{{ $category->value }}" @selected(old('category') === $category->value)>
-                                {{ $category->label() }}
+                                {{ $category->label() }}（{{ $categoryCounts[$category->value]->total ?? 0 }} /
+                                {{ $categoryCounts[$category->value]->inactive ?? 0 }}）
                             </option>
                         @endforeach
                     </select>

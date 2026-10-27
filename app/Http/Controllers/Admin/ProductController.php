@@ -52,6 +52,7 @@ class ProductController extends Controller
     {
         return view('admin.products.create', [
             'categories' => ProductCategory::cases(),
+            'categoryCounts' => $this->categoryCounts(),
         ]);
     }
 
@@ -78,6 +79,7 @@ class ProductController extends Controller
         return view('admin.products.edit', [
             'product' => $product,
             'categories' => ProductCategory::cases(),
+            'categoryCounts' => $this->categoryCounts(),
         ]);
     }
 
@@ -126,5 +128,19 @@ class ProductController extends Controller
 
         return redirect()->route('admin.products.index')
             ->with('success', '商品を削除しました。');
+    }
+
+    // カテゴリへの商品設定数を取得
+    private function categoryCounts()
+    {
+        return Product::query()
+            ->selectRaw('
+            category,
+            COUNT(*) AS total,
+            COUNT(*) FILTER (WHERE is_active = false) AS inactive
+        ')
+            ->groupBy('category')
+            ->get()
+            ->keyBy('category');
     }
 }

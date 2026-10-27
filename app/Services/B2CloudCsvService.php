@@ -8,6 +8,7 @@ use App\Models\Order;
 use App\Models\OrderShipping;
 use Illuminate\Support\Collection;
 use RuntimeException;
+use App\Support\B2CustomerManagementNumber;
 
 
 class B2CloudCsvService
@@ -87,7 +88,7 @@ class B2CloudCsvService
 
                 $row = array_fill(0, count(self::HEADERS), '');
 
-                $row[0] = (string) $shipping->id;
+                $row[0] = B2CustomerManagementNumber::generate($order->id, $shipping->id);
                 $row[1] = $firstCod ? '2' : '0';
                 $row[2] = $shipping->cool_type->b2Code();
                 // 出荷予定日

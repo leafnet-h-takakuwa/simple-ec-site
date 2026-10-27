@@ -8,9 +8,15 @@
 
 @section('content')
     <div class="mb-8">
-        <h1 class="text-2xl font-bold lg:text-3xl">
-            B2クラウド連携
-        </h1>
+        <div class="mb-8 flex flex-wrap items-center justify-between gap-4">
+            <h1 class="text-2xl font-bold lg:text-3xl">
+                B2クラウド連携
+            </h1>
+
+            <a href="{{ route('admin.b2-cloud.import') }}" class="btn btn-outline btn-neutral btn-sm">
+                発行結果CSVを取り込む
+            </a>
+        </div>
         <p class="mt-2 text-sm text-slate-500">
             ヤマト運輸「B2クラウド」で使用する送り状データを作成・管理する画面です。<br>
             出力する個口にチェックを入れ、CSVファイルを作成します。<br>

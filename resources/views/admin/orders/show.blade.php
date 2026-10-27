@@ -487,6 +487,14 @@
                     </p>
                 @endforelse
 
+                {{-- B2クラウド発行結果CSV取り込み --}}
+                <div class="mt-4 border-t border-slate-200 pt-4">
+                    <a href="{{ route('admin.b2-cloud.import') }}"
+                        class="inline-flex items-center gap-1 text-sm font-semibold text-green-700 hover:underline">
+                        発行結果CSVを取り込む
+                        <x-icons.external-link width="16" height="16" />
+                    </a>
+                </div>
             </div>
 
         </div>

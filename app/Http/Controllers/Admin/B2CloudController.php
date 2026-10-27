@@ -9,6 +9,8 @@ use App\Enums\PaymentMethod;
 use App\Services\B2CloudCsvService;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use App\Services\B2CloudImportService;
+use Illuminate\Support\Facades\DB;
 
 class B2CloudController extends Controller
 {
@@ -119,5 +121,93 @@ class B2CloudController extends Controller
             'Content-Disposition' => 'attachment; filename="' . $filename . '"',
             'Cache-Control' => 'no-store',
         ]);
+    }
+
+    /**
+     * B2クラウド発行結果CSVの取り込み画面
+     */
+    public function import()
+    {
+        return view('admin.b2-cloud.import');
+    }
+
+    /**
+     * 発行結果CSVの解析・プレビュー
+     */
+    public function previewImport(Request $request, B2CloudImportService $importService)
+    {
+        $validated = $request->validate([
+            'csv_file' => ['required', 'file', 'mimes:csv,txt', 'max:5120'],
+        ]);
+
+        $results = $importService->compare(
+            $importService->parse($validated['csv_file'])
+        );
+
+        // 更新に必要な情報だけセッションに保存
+        $importRows = collect($results)
+            ->filter(fn($result) => $result['error'] === null)
+            ->map(fn($result) => [
+                'order_id' => $result['order_id'],
+                'shipping_id' => $result['shipping_id'],
+                'tracking_number' => $result['tracking_number'],
+            ])
+            ->values()
+            ->all();
+
+        $request->session()->put('b2_import_rows', $importRows);
+
+        return view('admin.b2-cloud.import-preview', compact('results'));
+    }
+
+    public function executeImport(Request $request)
+    {
+        $rows = $request->session()->get('b2_import_rows');
+
+        if (!is_array($rows) || count($rows) === 0) {
+            return redirect()
+                ->route('admin.b2-cloud.import')
+                ->with('error', '取り込み対象のデータがありません。');
+        }
+
+        // 同じ個口が複数行に含まれていないか確認
+        $shippingIds = array_column($rows, 'shipping_id');
+
+        if (count($shippingIds) !== count(array_unique($shippingIds))) {
+            return back()->with('error', '同じ個口がCSV内に重複しています。');
+        }
+
+        $updated = DB::transaction(function () use ($rows) {
+            $count = 0;
+
+            foreach ($rows as $row) {
+                $shipping = OrderShipping::whereKey($row['shipping_id'])
+                    ->lockForUpdate()
+                    ->first();
+
+                // 注文IDと個口IDが一致することを再確認
+                if (!$shipping || (int) $shipping->order_id !== (int) $row['order_id']) {
+                    continue;
+                }
+
+                // 同じ送り状番号なら更新しない
+                if ($shipping->tracking_number === $row['tracking_number']) {
+                    continue;
+                }
+
+                $shipping->tracking_number = $row['tracking_number'];
+                $shipping->save();
+
+                $count++;
+            }
+
+            return $count;
+        });
+
+        $request->session()->forget('b2_import_rows');
+
+        return redirect()
+            ->route('admin.b2-cloud.import')
+            ->with('success', "送り状番号を{$updated}件登録・更新しました。");
     }
 }

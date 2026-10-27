@@ -204,6 +204,13 @@ Route::middleware(['auth', EnsureUserIsAdmin::class])
             ->name('b2-cloud.index');
         Route::post('/b2-cloud/export', [B2CloudController::class, 'export'])
             ->name('b2-cloud.export');
+        // CSV取り込み
+        Route::get('/b2-cloud/import', [B2CloudController::class, 'import'])
+            ->name('b2-cloud.import');
+        Route::post('/b2-cloud/import/preview', [B2CloudController::class, 'previewImport'])
+            ->name('b2-cloud.import.preview');
+        Route::post('/b2-cloud/import/execute', [B2CloudController::class, 'executeImport'])
+            ->name('b2-cloud.import.execute');
 
         // パスワード変更
         Route::view('/password', 'admin.password.edit')

@@ -89,11 +89,7 @@ class B2CloudCsvService
 
                 $row[0] = (string) $shipping->id;
                 $row[1] = $firstCod ? '2' : '0';
-                $row[2] = match ($shipping->cool_type->value) {
-                    'normal' => '0',
-                    'refrigerated' => '1',
-                    'frozen' => '2',
-                };
+                $row[2] = $shipping->cool_type->b2Code();
                 // 出荷予定日
                 $row[4] = $shippingDate;
 

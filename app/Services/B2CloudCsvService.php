@@ -99,14 +99,7 @@ class B2CloudCsvService
                     : '最短日';
 
                 // 配達時間帯（未指定なら空欄）
-                $row[6] = match ($order->delivery_time_slot) {
-                    DeliveryTimeSlot::MORNING => '0812',
-                    DeliveryTimeSlot::AFTERNOON_14_16 => '1416',
-                    DeliveryTimeSlot::EVENING_16_18 => '1618',
-                    DeliveryTimeSlot::EVENING_18_20 => '1820',
-                    DeliveryTimeSlot::NIGHT_19_21 => '1921',
-                    default => '',
-                };
+                $row[6] = $order->delivery_time_slot?->b2Code() ?? '';
 
                 // お届け先
                 $row[8] = $order->shipping_phone;
@@ -121,21 +114,21 @@ class B2CloudCsvService
                     $row[22] = $order->orderer_address;
                     $row[24] = $order->orderer_name;
                 } else {
-                    $row[19] = '0177226138';
-                    $row[21] = '0300862';
-                    $row[22] = '青森県青森市古川１丁目11-16';
-                    $row[23] = '青森魚菜センター内';
-                    $row[24] = '（有）髙桑商店';
+                    $row[19] = config('company.phone');
+                    $row[21] = config('company.postal_code');
+                    $row[22] = config('company.address');
+                    $row[23] = config('company.facility_name_in');
+                    $row[24] = config('company.company_name_ari');
                 }
 
                 $row[27] = $shipping->item_name;
-                $row[30] = '天地無用';
-                $row[31] = '下積厳禁';
+                $row[30] = config('b2cloud.handling.item1');
+                $row[31] = config('b2cloud.handling.item2');
 
                 if ($firstCod) {
                     if (!isset($collectAmounts[$order->id])) {
                         throw new RuntimeException(
-                            "注文 #{$order->id} の代引金額・税額が未確定です。"
+                            "注文 #" . sprintf('%08d', $order->id) . " の代引金額・税額が未確定です。"
                         );
                     }
 
@@ -143,8 +136,9 @@ class B2CloudCsvService
                     $row[34] = (string) $collectAmounts[$order->id]['tax'];
                 }
 
-                $row[39] = '0177226138';
-                $row[41] = '01';
+                $row[39] = config('b2cloud.billing.customer_code');
+                $row[40] = config('b2cloud.billing.classification_code');
+                $row[41] = config('b2cloud.billing.freight_management_number');
 
                 fputcsv($stream, $row);
             }
@@ -156,7 +150,11 @@ class B2CloudCsvService
                 throw new RuntimeException('CSVの読み込みに失敗しました。');
             }
 
-            $converted = mb_convert_encoding($csv, 'CP932', 'UTF-8');
+            $converted = mb_convert_encoding(
+                $csv,
+                config('b2cloud.encoding'),
+                'UTF-8'
+            );
 
             return $converted;
         } finally {

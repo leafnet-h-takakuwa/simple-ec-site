@@ -46,7 +46,7 @@
                         <dd>
                             〒{{ config('company.postal_code') }}<br>
                             {{ config('company.address') }}<br>
-                            （{{ config('company.facility_name') }}内）
+                            （{{ config('company.facility_name_in') }}）
                         </dd>
                     </div>
 

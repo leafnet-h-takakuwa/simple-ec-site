@@ -6,6 +6,7 @@ return [
 
     // 運営会社
     'company_name' => '有限会社 髙桑商店',
+    'company_name_ari' => '（有）髙桑商店',
 
     // 責任者
     'company_manager' => '髙桑 亜紀',
@@ -15,6 +16,7 @@ return [
     'address' => '青森県青森市古川1丁目11番地16号', // 店舗住所
     'address_sub' => '青森県青森市古川1丁目2番地5号', // 事務所
     'facility_name' => '株式会社青森魚菜センター',
+    'facility_name_in' => '株式会社青森魚菜センター内',
 
     // 連絡先
     'phone' => '017-722-6138',

@@ -49,7 +49,7 @@
                         〒{{ config('company.postal_code') }}<br>
                         {{ config('company.address_sub') }}（事務所）<br>
                         {{ config('company.address') }}（店舗）<br>
-                        （{{ config('company.facility_name') }}内）
+                        （{{ config('company.facility_name_in') }}）
                     </dd>
                 </div>
 

@@ -20,4 +20,15 @@ enum DeliveryTimeSlot: string
             self::NIGHT_19_21 => '19:00〜21:00',
         };
     }
+
+    public function b2Code(): string
+    {
+        return match ($this) {
+            self::MORNING => '0812',
+            self::AFTERNOON_14_16 => '1416',
+            self::EVENING_16_18 => '1618',
+            self::EVENING_18_20 => '1820',
+            self::NIGHT_19_21 => '1921',
+        };
+    }
 }

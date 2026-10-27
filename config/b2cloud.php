@@ -4,12 +4,10 @@ return [
     // CSV出力時の文字コード
     'encoding' => env('B2_CSV_ENCODING', 'SJIS-win'),
 
-    // ご依頼主情報
-    'sender' => [
-        'name' => env('B2_SENDER_NAME', ''),               // No.25 ご依頼主名
-        'phone' => env('B2_SENDER_PHONE', ''),             // No.20 ご依頼主電話番号
-        'postal_code' => env('B2_SENDER_POSTAL_CODE', ''), // No.22 ご依頼主郵便番号
-        'address' => env('B2_SENDER_ADDRESS', ''),         // No.23 ご依頼主住所
+    // 荷扱い
+    'handling' => [
+        'item1' => '天地無用',  // No.31 荷扱い1
+        'item2' => '下積厳禁',  // No.32 荷扱い2
     ],
 
     // 運賃請求先情報

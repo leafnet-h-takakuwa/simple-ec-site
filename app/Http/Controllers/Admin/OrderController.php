@@ -49,6 +49,14 @@ class OrderController extends Controller
                     ...array_column(OrderStatus::cases(), 'value'),
                 ]),
             ],
+            'attention' => [
+                'nullable',
+                Rule::in([
+                    'old_received',
+                    'unconfirmed_amount',
+                    'missing_tracking',
+                ]),
+            ],
         ]);
 
         $query = Order::query();
@@ -83,6 +91,43 @@ class OrderController extends Controller
                 $query->whereIn('status', OrderStatus::activeValues());
             } else {
                 $query->where('status', $conditions['status']);
+            }
+        }
+
+        // ダッシュボード「要確認」からの絞り込み
+        if (!empty($conditions['attention'])) {
+            switch ($conditions['attention']) {
+                case 'old_received':
+                    // 受付から24時間以上経過
+                    $query->where('status', OrderStatus::RECEIVED->value)
+                        ->where('created_at', '<=', now()->subDay());
+                    break;
+
+                case 'unconfirmed_amount':
+                    // 送料・代引手数料が未確定
+                    $query->whereIn('status', [
+                        OrderStatus::AWAITING_PAYMENT->value,
+                        OrderStatus::PREPARING->value,
+                    ])->where(function ($query) {
+                        $query->whereNull('shipping_fee')
+                            ->orWhere(function ($query) {
+                                $query->where('payment_method', PaymentMethod::CASH_ON_DELIVERY->value)
+                                    ->whereNull('cod_fee');
+                            });
+                    });
+                    break;
+
+                case 'missing_tracking':
+                    // 発送準備中で送り状番号が未登録
+                    $query->where('status', OrderStatus::PREPARING->value)
+                        ->where(function ($query) {
+                            $query->whereDoesntHave('orderShippings')
+                                ->orWhereHas('orderShippings', function ($query) {
+                                    $query->whereNull('tracking_number')
+                                        ->orWhere('tracking_number', '');
+                                });
+                        });
+                    break;
             }
         }
 

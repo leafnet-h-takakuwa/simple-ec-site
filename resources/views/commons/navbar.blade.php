@@ -94,9 +94,17 @@
             </a>
         </div>
 
-        {{-- スマホ用カート --}}
-        @if (!(Auth::check() && Auth::user()->is_admin))
-            <div class="flex-none md:hidden">
+
+        {{-- スマホ用カート / 管理画面 --}}
+        <div class="flex-none md:hidden">
+            @if (Auth::check() && Auth::user()->is_admin)
+                {{-- 管理者は管理画面へのリンク --}}
+                <a href="{{ route('admin.dashboard') }}" class="btn btn-ghost btn-square" aria-label="管理画面"
+                    title="管理画面">
+                    <x-icons.settings class="size-5" />
+                </a>
+            @else
+                {{-- 一般ユーザー・ゲストはカート --}}
                 <a href="{{ route('carts.index') }}" class="btn btn-ghost btn-square" aria-label="カート">
                     <span class="relative inline-flex">
                         <x-icons.shopping-cart class="size-5" />
@@ -109,8 +117,9 @@
                         @endif
                     </span>
                 </a>
-            </div>
-        @endif
+            @endif
+        </div>
+
 
         {{-- PC用会員メニュー --}}
         <div class="hidden flex-none md:block">

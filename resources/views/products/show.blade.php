@@ -8,6 +8,14 @@
         $category = $product->category;
     @endphp
 
+    @if ($isPreview ?? false)
+        <div class="alert alert-warning mb-6">
+            <span>
+                プレビュー表示中です。お客様には公開されていない場合があります。
+            </span>
+        </div>
+    @endif
+
     {{-- パンくずリスト --}}
     <nav class="mb-5 text-sm text-base-content/60">
         <a href="{{ route('home') }}" class="link link-hover">
@@ -76,7 +84,7 @@
                 </p>
 
                 {{-- 購入操作 --}}
-                @if (Auth::check() && Auth::user()->is_admin)
+                @if (Auth::check() && Auth::user()->is_admin && !($isPreview ?? false))
                     {{-- 管理者には購入操作を表示しない --}}
                     <div class="rounded-lg border border-warning/40 bg-warning/10 p-4">
 
@@ -84,15 +92,15 @@
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
                                 stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z
-                                                   M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-1.8 1.8-.06-.06
-                                                   A1.7 1.7 0 0 0 16.06 18.4a1.7 1.7 0 0 0-1.56 1.1V20h-5
-                                                   v-.5a1.7 1.7 0 0 0-1.56-1.1 1.7 1.7 0 0 0-1.88.34l-.06.06
-                                                   -1.8-1.8.06-.06A1.7 1.7 0 0 0 4.6 15.06 1.7 1.7 0 0 0 3.5 13.5H3v-3h.5
-                                                   A1.7 1.7 0 0 0 4.6 8.94a1.7 1.7 0 0 0-.34-1.88L4.2 7l1.8-1.8.06.06
-                                                   A1.7 1.7 0 0 0 7.94 5.6 1.7 1.7 0 0 0 9.5 4.5V4h5v.5
-                                                   a1.7 1.7 0 0 0 1.56 1.1 1.7 1.7 0 0 0 1.88-.34L18 5.2 19.8 7l-.06.06
-                                                   A1.7 1.7 0 0 0 19.4 8.94a1.7 1.7 0 0 0 1.1 1.56h.5v3h-.5
-                                                   A1.7 1.7 0 0 0 19.4 15Z" />
+                                                                           M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-1.8 1.8-.06-.06
+                                                                           A1.7 1.7 0 0 0 16.06 18.4a1.7 1.7 0 0 0-1.56 1.1V20h-5
+                                                                           v-.5a1.7 1.7 0 0 0-1.56-1.1 1.7 1.7 0 0 0-1.88.34l-.06.06
+                                                                           -1.8-1.8.06-.06A1.7 1.7 0 0 0 4.6 15.06 1.7 1.7 0 0 0 3.5 13.5H3v-3h.5
+                                                                           A1.7 1.7 0 0 0 4.6 8.94a1.7 1.7 0 0 0-.34-1.88L4.2 7l1.8-1.8.06.06
+                                                                           A1.7 1.7 0 0 0 7.94 5.6 1.7 1.7 0 0 0 9.5 4.5V4h5v.5
+                                                                           a1.7 1.7 0 0 0 1.56 1.1 1.7 1.7 0 0 0 1.88-.34L18 5.2 19.8 7l-.06.06
+                                                                           A1.7 1.7 0 0 0 19.4 8.94a1.7 1.7 0 0 0 1.1 1.56h.5v3h-.5
+                                                                           A1.7 1.7 0 0 0 19.4 15Z" />
                             </svg>
                             管理者用メニュー
                         </p>
@@ -111,14 +119,14 @@
 
                             @csrf
                             <input type="hidden" name="product_id" value="{{ $product->id }}">
-                            <select name="quantity" class="select select-bordered">
+                            <select name="quantity" class="select select-bordered" @disabled($isPreview ?? false)>
                                 @for ($i = 1; $i <= config('cart.max_quantity'); $i++)
                                     <option value="{{ $i }}">{{ $i }}</option>
                                 @endfor
                             </select>
                         </div>
 
-                        <button type="submit" class="btn btn-primary w-full">
+                        <button type="submit" class="btn btn-primary w-full" @disabled($isPreview ?? false)>
                             カートに入れる
                         </button>
                     </form>

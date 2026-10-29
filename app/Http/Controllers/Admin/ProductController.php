@@ -48,6 +48,16 @@ class ProductController extends Controller
         ]);
     }
 
+    public function preview(Product $product)
+    {
+        return response()
+            ->view('products.show', [
+                'product' => $product,
+                'isPreview' => true,
+            ])
+            ->header('X-Robots-Tag', 'noindex, nofollow');
+    }
+
     public function create()
     {
         return view('admin.products.create', [

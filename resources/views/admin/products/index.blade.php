@@ -84,15 +84,24 @@
                         <td>
                             <div class="flex h-14 w-14 items-center justify-center overflow-hidden rounded-lg bg-slate-100">
                                 @if ($product->image_path)
-                                    <img src="{{ Storage::disk('public')->url($product->image_path) }}" alt="{{ $product->name }}"
-                                        class="h-full w-full object-cover">
+                                    <img src="{{ Storage::disk('public')->url($product->image_path) }}"
+                                        alt="{{ $product->name }}" class="h-full w-full object-cover">
                                 @else
                                     <x-no-image />
                                 @endif
                             </div>
                         </td>
                         <td class="font-semibold">
-                            <span>{{ $product->name }}</span>
+                            <div class="flex items-center justify-between gap-3">
+                                <span>{{ $product->name }}</span>
+
+                                <a href="{{ route('admin.products.preview', $product) }}" target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="shrink-0 text-slate-400 transition hover:text-green-700" title="プレビュー"
+                                    aria-label="{{ $product->name }}をプレビュー">
+                                    <x-icons.preview-eye />
+                                </a>
+                            </div>
                             @if ($product->is_standard)
                                 <span class="ml-4 badge badge-outline badge-success badge-sm">
                                     定番
@@ -141,7 +150,12 @@
     {{-- スマホ：カード --}}
     <div class="space-y-4 lg:hidden">
         @forelse ($products as $product)
-            <div class="rounded-xl border border-slate-200 bg-white p-4">
+            <div class="relative rounded-xl border border-slate-200 bg-white p-4">
+                <a href="{{ route('admin.products.preview', $product) }}" target="_blank" rel="noopener noreferrer"
+                    class="absolute right-3 top-3 flex size-10 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-green-700"
+                    title="プレビュー" aria-label="{{ $product->name }}をプレビュー">
+                    <x-icons.preview-eye />
+                </a>
                 <div class="flex gap-4">
                     <div
                         class="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-slate-100">
@@ -155,7 +169,7 @@
                         @endif
                     </div>
 
-                    <div class="min-w-0 flex-1">
+                    <div class="min-w-0 flex-1 pr-10">
                         <p class="font-semibold break-all">
                             {{ $product->name }}
                         </p>

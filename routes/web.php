@@ -159,6 +159,8 @@ Route::middleware(['auth', EnsureUserIsAdmin::class])
         // 商品管理
         Route::get('/products', [AdminProductController::class, 'index'])
             ->name('products.index');
+        Route::get('/products/{product}/preview', [AdminProductController::class, 'preview'])
+            ->name('products.preview');
         Route::get('/products/create', [AdminProductController::class, 'create'])
             ->name('products.create');
         Route::post('/products', [AdminProductController::class, 'store'])
